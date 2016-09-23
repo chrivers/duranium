@@ -4,7 +4,6 @@ def section(name):
     print(("[ %s ]" % name).center(80, "-"))
 
 def indent(lines, amount=4):
-#    indentation = ("|" + "." * (amount-1))
     indentation = " " * amount
     return [indentation + line for line in lines]
 
