@@ -4,6 +4,8 @@ from pprint import pprint
 
 SAME_LINE_BRACES = True
 LINE_WIDTH = 80
+MIN_TEXT_WIDTH = 20
+MIN_HEX_WIDTH = 2
 
 def section(name):
     print(("[ %s ]" % name).center(80, "-"))
@@ -11,6 +13,16 @@ def section(name):
 def indent(lines, amount=4):
     indentation = " " * amount
     return [indentation + line for line in lines]
+
+def text_width(cases):
+    # find the longest string, go with that
+    # unless smaller than MIN_TEXT_WIDTH, then go with that instead
+    return max(max(len(case[0]) for case in cases), MIN_TEXT_WIDTH)
+
+def hex_width(cases):
+    # find an even number of hex digits that will fit all fields
+    # unless smaller than MIN_HEX_WIDTH, then go with that instead
+    return max(max(round(len("%x" % case[1]) / 2.0) * 2 for case in cases), MIN_HEX_WIDTH)
 
 def format_field(name, typ, cmt):
     res = []
@@ -51,7 +63,7 @@ def format_packet(name, cases, cmt):
 def format_enum(name, cases, cmt):
     res = []
     for index, case in enumerate(cases):
-        res.append("%-20s = 0x%08x," % (case[0], case[1]))
+        res.append("{:{text_width}} = 0x{:0{hex_width}x},".format(case[0], case[1], text_width=text_width(cases), hex_width=hex_width(cases)))
     return "\n".join(["pub enum %s {" % name] + indent(res) + ["}", ""])
 
 def format_struct(name, cases, cmt):
