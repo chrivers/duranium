@@ -1,5 +1,7 @@
 from pprint import pprint
 
+SAME_LINE_BRACES = True
+
 def section(name):
     print(("[ %s ]" % name).center(80, "-"))
 
@@ -16,7 +18,11 @@ def format_field(name, typ, cmt):
 
 def format_case(name, fields):
     res = []
-    res.append("%s {" % name)
+    if SAME_LINE_BRACES:
+        res.append("%s {" % name)
+    else:
+        res.append(name)
+        res.append("{")
     for index, field in enumerate(fields):
         if index > 0:
             res.append("")
@@ -38,7 +44,7 @@ def generate(cortex, *args):
 
     sections = cortex.organize(cortex.parse(open(template, "r")))
     enums, packets, structs = [], [], []
-    for header, lines, comment in sections.get("packet"):
+    for header, lines, comment in sections.get("packet", []):
         packets.append(cortex.parse_packet(header, lines))
 
     for packet in packets:
