@@ -1,9 +1,12 @@
 pub mod reader;
 pub mod writer;
+pub mod util;
+pub mod object;
+pub mod update;
 
-use ::packet::server::Ship;
 use ::packet::enums::*;
 
+use std::collections::HashMap;
 <% packet = packets.get("ServerPacket") %>\
 #[derive(Debug)]
 pub enum ${packet.name}
@@ -18,7 +21,7 @@ pub enum ${packet.name}
         % for line in format_comment(field.comment, indent="/// ", width=73):
         ${line}
         % endfor
-        ${field.name}: ${field.type},
+        ${field.name}: ${lang.rust_type(field.type)},
         % endfor
     },
 
