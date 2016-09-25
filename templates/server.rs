@@ -18,7 +18,7 @@ pub enum ${packet.name}
         % if index > 0:
 
         % endif
-        % for line in format_comment(field.comment, indent="/// ", width=73):
+        % for line in util.format_comment(field.comment, indent="/// ", width=73):
         ${line}
         % endfor
         ${field.name}: ${lang.rust_type(field.type)},
