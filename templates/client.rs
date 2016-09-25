@@ -12,10 +12,10 @@ pub enum ${packet[0]}
     ${case.name}
     {
         % for field in case.fields:
-        % for line in format_comment(field[2], indent="/// "):
+        % for line in format_comment(field.comment, indent="/// "):
         ${line}
         % endfor
-        ${field[0]}: ${field[1]},
+        ${field.name}: ${field.type},
         % endfor
     },
     
