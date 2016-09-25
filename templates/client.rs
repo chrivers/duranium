@@ -4,11 +4,11 @@ pub mod writer;
 use ::packet::server::Ship;
 use ::packet::enums::*;
 
-<% packet = packets[0] %>\
+<% packet = packets.get("ClientPacket") %>\
 #[derive(Debug)]
 pub enum ${packet.name}
 {
-    % for case in packet.fields:
+    % for name, case in packet.fields.items():
     ${case.name}
     {
         % for field in case.fields:
