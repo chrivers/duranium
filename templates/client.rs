@@ -6,9 +6,9 @@ use ::packet::enums::*;
 
 <% packet = packets[0] %>\
 #[derive(Debug)]
-pub enum ${packet[0]}
+pub enum ${packet.name}
 {
-    % for case in packet[1]:
+    % for case in packet.fields:
     ${case.name}
     {
         % for field in case.fields:
