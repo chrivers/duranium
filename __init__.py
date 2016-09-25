@@ -24,7 +24,7 @@ def hex_width(cases):
     # unless smaller than MIN_HEX_WIDTH, then go with that instead
     return max(max(round(len("%x" % case[1]) / 2.0) * 2 for case in cases), MIN_HEX_WIDTH)
 
-def format_field(name, typ, cmt):
+def format_field(name, typ, cmt, width):
     res = []
     ind = "/// "
     res.extend(
@@ -35,7 +35,7 @@ def format_field(name, typ, cmt):
             width=LINE_WIDTH
         )
     )
-    res.append("%s: %s," % (name, typ))
+    res.append("{:{width}}: {},".format(name, typ, width=width))
     return res
 
 def format_case(name, fields, cmt):
@@ -45,10 +45,11 @@ def format_case(name, fields, cmt):
     else:
         res.append(name)
         res.append("{")
+
     for index, field in enumerate(fields):
         if index > 0:
             res.append("")
-        res.extend(indent(format_field(*field)))
+        res.extend(indent(format_field(*field, width=text_width(fields))))
     res.append("},")
     return res
 
