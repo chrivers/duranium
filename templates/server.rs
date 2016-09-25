@@ -8,10 +8,10 @@ use ::packet::enums::*;
 #[derive(Debug)]
 pub enum ${packet.name}
 {
-    % for name, case in packet.fields.items():
+    % for case in packet.fields:
     ${case.name}
     {
-        % for index, field in enumerate(case.fields.values()):
+        % for index, field in enumerate(case.fields):
         % if index > 0:
 
         % endif

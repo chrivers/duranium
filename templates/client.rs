@@ -8,10 +8,10 @@ use ::packet::enums::*;
 #[derive(Debug)]
 pub enum ${packet.name}
 {
-    % for name, case in packet.fields.items():
+    % for case in packet.fields:
     ${case.name}
     {
-        % for field in case.fields.values():
+        % for field in case.fields:
         % for line in format_comment(field.comment, indent="/// "):
         ${line}
         % endfor
