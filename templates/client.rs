@@ -9,9 +9,9 @@ use ::packet::enums::*;
 pub enum ${packet[0]}
 {
     % for case in packet[1]:
-    ${case[0]}
+    ${case.name}
     {
-        % for field in case[1]:
+        % for field in case.fields:
         % for line in format_comment(field[2], indent="/// "):
         ${line}
         % endfor
