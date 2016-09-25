@@ -1,4 +1,4 @@
-% for struct in structs.values():
+% for struct in structs:
 #[derive(Debug)]
 pub enum ${struct.name}
 {
