@@ -17,10 +17,9 @@ macro_rules! enum_to_primitive {
 }
 
 % for enum in enums:
+<% if enum.name == "FrameType": continue %>\
 enum_from_primitive! {
-    %if enum.name == "AudioMode":
-    #[derive(Debug,Clone,Copy,PartialEq)]
-    %elif enum.name == "ConsoleType":
+    %if enum.name in ("AudioMode", "ConsoleType"):
     #[derive(Debug,Clone,Copy,Eq,PartialEq,Hash)]
     %else:
     #[derive(Debug,Clone,Copy)]
@@ -37,4 +36,25 @@ enum_from_primitive! {
 }
 enum_to_primitive!(${enum.name});
 
+% endfor
+pub mod frametype {
+    #![allow(non_upper_case_globals)]
+    % for enum in enums:
+    <% if enum.name != "FrameType": continue %>\
+    % for case in enum.fields:
+    pub const ${case.aligned_name}: u32 = ${case.aligned_hex_value};
+    % endfor
+    % endfor
+}
+
+% for Flag in flags:
+bitflags!
+{
+    pub flags ${Flag.name}: u32
+    {
+        % for flag in Flag.fields:
+        const ${flag.aligned_name} = ${flag.aligned_hex_value},
+        % endfor
+    }
+}
 % endfor
