@@ -6,7 +6,7 @@ pub enum ${struct.name}
     % if index > 0:
 
     % endif
-    % for line in format_comment(field.comment, indent="/// ", width=73):
+    % for line in format_comment(field.comment, indent="/// ", width=74):
     ${line}
     % endfor
     ${field.name}: ${field.type},
