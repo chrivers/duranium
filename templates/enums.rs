@@ -37,15 +37,15 @@ enum_from_primitive! {
 enum_to_primitive!(${enum.name});
 
 % endfor
+% for enum in enums:
+<% if enum.name != "FrameType": continue %>\
 pub mod frametype {
     #![allow(non_upper_case_globals)]
-    % for enum in enums:
-    <% if enum.name != "FrameType": continue %>\
     % for case in enum.fields:
     pub const ${case.aligned_name}: u32 = ${case.aligned_hex_value};
     % endfor
-    % endfor
 }
+% endfor
 
 % for Flag in flags:
 bitflags!
