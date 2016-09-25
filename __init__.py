@@ -22,16 +22,6 @@ def format_comment(comment, ind = "/// "):
         width=LINE_WIDTH
     )
 
-def text_width(cases):
-    # find the longest string, go with that
-    # unless smaller than MIN_TEXT_WIDTH, then go with that instead
-    return max(max(len(case[0]) for case in cases), MIN_TEXT_WIDTH)
-
-def hex_width(cases):
-    # find an even number of hex digits that will fit all fields
-    # unless smaller than MIN_HEX_WIDTH, then go with that instead
-    return max(max(round(len("%x" % case[1]) / 2.0) * 2 for case in cases), MIN_HEX_WIDTH)
-
 def format_case(name, fields, cmt):
     res = []
     if SAME_LINE_BRACES:
@@ -49,7 +39,8 @@ def format_case(name, fields, cmt):
     res.append("},")
     return res
 
-def format_packet(name, cases, cmt):
+def format_packet(pkt):
+    name, cases, cmt = pkt
     res = []
     for index, case in enumerate(cases):
         if index > 0:
@@ -57,13 +48,14 @@ def format_packet(name, cases, cmt):
         res.extend(format_case(*case))
     return "\n".join(["pub enum %s {" % name] + indent(res) + ["}", ""])
 
-def format_enum(name, cases, cmt):
+def format_enum(enum):
     res = []
-    for index, case in enumerate(cases):
-        res.append("{:{text_width}} = 0x{:0{hex_width}x},".format(case[0], case[1], text_width=text_width(cases), hex_width=hex_width(cases)))
-    return "\n".join(["pub enum %s {" % name] + indent(res) + ["}", ""])
+    for index, case in enumerate(enum.fields):
+        res.append("{} = {},".format(case.aligned_name, case.aligned_hex_value))
+    return "\n".join(["pub enum %s {" % enum.name] + indent(res) + ["}", ""])
 
-def format_struct(name, cases, cmt):
+def format_struct(struct):
+    name, cases, cmt = struct
     res = []
     for index, case in enumerate(cases):
         res.append("%-20s: %s," % (case[0], case[1]))
@@ -85,4 +77,4 @@ def generate(cortex, *args):
         formatter = formatters[name]
 
         for item in items:
-            print(formatter(*item))
+            print(formatter(item))
