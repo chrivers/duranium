@@ -14,6 +14,14 @@ def indent(lines, amount=4):
     indentation = " " * amount
     return [indentation + line for line in lines]
 
+def format_comment(comment, ind = "/// "):
+    return textwrap.wrap(
+        comment,
+        initial_indent=ind,
+        subsequent_indent=ind,
+        width=LINE_WIDTH
+    )
+
 def text_width(cases):
     # find the longest string, go with that
     # unless smaller than MIN_TEXT_WIDTH, then go with that instead
@@ -24,20 +32,6 @@ def hex_width(cases):
     # unless smaller than MIN_HEX_WIDTH, then go with that instead
     return max(max(round(len("%x" % case[1]) / 2.0) * 2 for case in cases), MIN_HEX_WIDTH)
 
-def format_field(name, typ, cmt, width):
-    res = []
-    ind = "/// "
-    res.extend(
-        textwrap.wrap(
-            " ".join(cmt),
-            initial_indent=ind,
-            subsequent_indent=ind,
-            width=LINE_WIDTH
-        )
-    )
-    res.append("{:{width}}: {},".format(name, typ, width=width))
-    return res
-
 def format_case(name, fields, cmt):
     res = []
     if SAME_LINE_BRACES:
@@ -47,9 +41,11 @@ def format_case(name, fields, cmt):
         res.append("{")
 
     for index, field in enumerate(fields):
+        name, typ, cmt = field
         if index > 0:
             res.append("")
-        res.extend(indent(format_field(*field, width=text_width(fields))))
+        res.extend(indent(format_comment(" ".join(cmt))))
+        res.extend(indent(["{}: {},".format(name, typ)]))
     res.append("},")
     return res
 
