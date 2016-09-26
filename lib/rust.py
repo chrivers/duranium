@@ -15,6 +15,7 @@ primitive_map = {
     "bool32": "bool",
 
     "string": "String",
+    "ascii_string": "String",
 }
 
 def rust_type(tp):
@@ -37,7 +38,7 @@ def rust_type(tp):
         return "Option<%s>" % rust_type(tp.target)
     elif tp.name == "bitflags":
         return "u32"
-    elif tp.name == "Object":
+    elif tp.name == "object":
         return "Object"
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
