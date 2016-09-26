@@ -1,3 +1,4 @@
+<% import rust as lang %>\
 % for struct in structs:
 #[derive(Debug)]
 pub enum ${struct.name}
