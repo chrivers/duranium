@@ -1,4 +1,5 @@
 <% import rust as lang %>\
+#![allow(unused_variables)]
 use std::io;
 use std::io::Result;
 use std::fmt;
@@ -16,24 +17,112 @@ fn make_error(desc: &str) -> io::Error {
 }
 
 % for object in objects:
-protocol! {
-    % for line in util.format_comment(object.comment, indent="// ", width=74):
+#[derive(Debug)]
+pub struct ${object.name} {
+    object_id: u32,
+% for index, field in enumerate(object.fields):
+    % if object.name == "PlayerShipUpgrade":
+    ${"{:30}".format(field.name+":")} ${lang.rust_type(field.type)}, // ${"".join(field.comment)}
+    % else:
+    % if index > 0:
+
+    % endif
+    % for line in util.format_comment(field.comment, indent="// ", width=74):
     ${line}
     % endfor
-    object ${object.name}, ${object.name}Update {
-    % for index, field in enumerate(object.fields):
-        % if object.name == "PlayerShipUpgrade":
-        ${"{:30}".format(field.name+":")} ${lang.object_type(field.type)}, // ${"".join(field.comment)}
-        % else:
-        % if index > 0:
+    pub ${field.name}: ${lang.rust_type(field.type)},
+    % endif
+% endfor
+}
+<%def name="read_update_field(rdr, mask, field, type)">\
+% if type.name == "OrdnanceType":
+if try_bit!($mask) {
+    Some($rdr.read_enum8().unwrap_or($enumname::from_u32(0).unwrap()))
+} else {
+    None
+}
+% elif lang.is_simple(type):
+  try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
+% elif type.name == "bitflags":
+  try_update_parse!(${mask}, ${type.arg}::from_bits(try_parse!(${rdr}.read_u32())).ok_or(make_error("could not parse bitflags")))\
+% elif type.name == "sizedarray":
+[
+% for x in range(0, type.arg):
+ ${read_update_field(rdr, mask, field, type.target)},
+% endfor
+]
+% else:
+  PANIC: ${type}
+% endif
+</%def>\
+#[derive(Debug)]
+pub struct ${object.name}Update {
+    object_id: u32,
+% for field in object.fields:
+    % if object.name == "PlayerShipUpgrade":
+    pub ${"{:30}".format(field.name+":")} ${lang.update_type(field.type)},
+    % else:
+    pub ${field.name}: ${lang.update_type(field.type)},
+    % endif
+% endfor
+}
 
-        % endif
-        % for line in util.format_comment(field.comment, indent="// ", width=74):
-        ${line}
-        % endfor
-        ${field.name}: ${lang.object_type(field.type)},
-        % endif
-    % endfor
+impl ${object.name} {
+    pub fn read(rdr: &mut ArtemisDecoder, header_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
+    {
+        ## let a = rdr.position();
+        ## let parse = ${object.name} {
+        ##     % for field in object.fields:
+        ##     ${field.name}: {
+        ##         trace!("Reading field {}::{}", "${object.name}", "${field.name}");
+        ##         ${read_field("rdr", field)}
+        ##     },
+        ##     % endfor
+        ## };
+        ## let b = rdr.position();
+        ## FrameReadAttempt::Ok((b - a + header_size as u64) as usize, ObjectUpdate::${object.name}(parse))
+        FrameReadAttempt::Closed
+    }
+}
+
+
+impl ${object.name}Update {
+    #[allow(unused_mut)]
+    pub fn read(rdr: &mut ArtemisDecoder, header_size: usize, mask_byte_size: usize, skip_fields: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
+    {
+        let a = rdr.position();
+        let object_id = try_parse!(rdr.read_u32());
+        let mask_bytes = try_parse!(rdr.read_bytes(mask_byte_size));
+        let mut mask = BitIterator::new(mask_bytes, skip_fields);
+        let parse = ${object.name}Update {
+            object_id: object_id,
+            % for field in object.fields:
+                ${field.name}: {
+                    trace!("Reading field ${object.name}::${field.name}");
+                    ${read_update_field("rdr", "mask", field, field.type)}
+                },
+            % endfor
+        };
+        let b = rdr.position();
+        FrameReadAttempt::Ok((b - a + header_size as u64) as usize, ObjectUpdate::${object.name}(parse))
+    }
+
+    #[allow(unused_mut)]
+    pub fn write(&self, object_type: ObjectType, header_size: usize, mask_byte_size: usize, skip_fields: usize) -> Result<Vec<u8>>
+    {
+        let mut wtr = ArtemisEncoder::new();
+        assert_eq!(header_size, 1);
+        let mut mask = BitWriter::fixed_size(mask_byte_size, skip_fields);
+        ## $(
+        ##     trace!("Writing field {}::{}", stringify!($delta), stringify!($field));
+        ##     write_field!(wtr, mask, self.$field, $t);
+        ## )*;
+        let mut res = ArtemisEncoder::new();
+        try!(res.write_u8(object_type as u8));
+        try!(res.write_u32(self.object_id));
+        try!(res.write_bytes(&mask.into_inner()));
+        try!(res.write_bytes(&wtr.into_inner()));
+        Ok(res.into_inner())
     }
 }
 
