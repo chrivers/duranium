@@ -40,7 +40,7 @@ enum_to_primitive!(${enum.name});
 pub mod frametype {
     #![allow(non_upper_case_globals)]
     % for case in enums.get("FrameType").fields:
-    pub const ${case.aligned_name}: u32 = ${case.aligned_hex_value};
+    pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
     % endfor
 }
 
