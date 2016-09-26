@@ -12,8 +12,8 @@ pub enum ${packet.name}
     % for case in packet.fields:
     ${case.name}
     {
-        % for index, field in enumerate(case.fields):
-        % if index > 0:
+        % for field in case.fields:
+        % if not loop.first:
 
         % endif
         % for line in util.format_comment(field.comment, indent="/// ", width=74):
