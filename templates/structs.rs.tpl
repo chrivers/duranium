@@ -3,8 +3,8 @@
 #[derive(Debug)]
 pub struct ${struct.name}
 {
-    % for index, field in enumerate(struct.fields):
-    % if index > 0:
+    % for field in struct.fields:
+    % if loop.index > 0:
 
     % endif
     % for line in util.format_comment(field.comment, indent="/// ", width=74):
