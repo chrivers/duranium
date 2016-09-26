@@ -31,7 +31,7 @@ def rust_type(tp):
     elif tp.name in ("enum8", "enum32"):
         return tp.target.name
     elif tp.name == "map":
-        return "HashMap<%s, %s>" % (rust_type(tp.target), tp.arg)
+        return "HashMap<%s, %s>" % (tp.arg, rust_type(tp.target))
     elif tp.name == "option":
         return "Option<%s>" % rust_type(tp.target)
     elif tp.name:
