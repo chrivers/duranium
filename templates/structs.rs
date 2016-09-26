@@ -1,7 +1,7 @@
 <% import rust as lang %>\
 % for struct in structs:
 #[derive(Debug)]
-pub enum ${struct.name}
+pub struct ${struct.name}
 {
     % for index, field in enumerate(struct.fields):
     % if index > 0:
