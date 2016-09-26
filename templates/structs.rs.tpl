@@ -4,7 +4,7 @@
 pub struct ${struct.name}
 {
     % for field in struct.fields:
-    % if loop.index > 0:
+    % if not loop.first
 
     % endif
     % for line in util.format_comment(field.comment, indent="/// ", width=74):
