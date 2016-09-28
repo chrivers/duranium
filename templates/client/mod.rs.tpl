@@ -7,6 +7,7 @@ use ::packet::enums::*;
 
 <% packet = packets.get("ClientPacket") %>\
 #[derive(Debug)]
+#[allow(non_camel_case_types)]
 pub enum ${packet.name}
 {
     % for case in packet.fields:
