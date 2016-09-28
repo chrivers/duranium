@@ -1,7 +1,6 @@
 <% import rust as lang %>\
 pub mod reader;
 pub mod writer;
-pub mod util;
 pub mod object;
 pub mod update;
 
