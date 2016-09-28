@@ -2,6 +2,7 @@
 #![allow(unused_variables)]
 use std::io;
 use std::io::Result;
+use std::fmt;
 use enum_primitive::FromPrimitive;
 
 use ::packet::enums::*;
@@ -70,7 +71,6 @@ write_single_field!(self.${field.name}, ${wtr}, ${mask}, write_${type.name})\
 % endif
 </%def>\
 
-#[derive(Debug)]
 pub struct ${object.name}Update {
     object_id: u32,
 % for field in object.fields:
@@ -138,6 +138,21 @@ impl ${object.name}Update {
         try!(res.write_bytes(&mask.into_inner()));
         try!(res.write_bytes(&wtr.into_inner()));
         Ok(res.into_inner())
+    }
+}
+
+impl fmt::Debug for ${object.name}Update {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
+    {
+        try!(write!(f, "[{}]\n", self.object_id));
+        % for field in object.fields:
+        % if field.type.name in ("array", "sizedarray"):
+        debug_opt_array!(self, f, &self.${field.name});
+        % else:
+        debug_opt_field!(self, f, &self.${field.name});
+        % endif
+        % endfor
+        Ok(())
     }
 }
 
