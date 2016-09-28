@@ -1,5 +1,8 @@
 <% import rust as lang %>\
+use ::packet::enums::*;
+
 % for struct in structs:
+<% if struct.name == "Update": continue %>\
 #[derive(Debug)]
 pub struct ${struct.name}
 {
@@ -15,3 +18,22 @@ pub struct ${struct.name}
 }
 
 % endfor
+impl Ship
+{
+    pub fn new(
+        drive_type: DriveType,
+        ship_type: u32,
+        accent_color: u32,
+        __unknown_1: u32,
+        name: String
+    ) -> Ship
+    {
+        Ship {
+            drive_type: drive_type,
+            ship_type: ship_type,
+            __unknown_1: __unknown_1,
+            accent_color: accent_color,
+            name: name
+        }
+    }
+}
