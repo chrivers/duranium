@@ -16,13 +16,30 @@ macro_rules! enum_to_primitive {
     }
 }
 
+macro_rules! enum_primitive {
+    (
+        $(#[$mt:meta])*
+        pub enum $name:ident {
+            $($field:tt)*
+        }
+    ) =>
+    {
+        enum_from_primitive! {
+            $(#[$mt])*
+            #[derive(Debug,Clone,Copy)]
+            pub enum $name {
+                $($field)*
+            }
+        }
+        enum_to_primitive!($name);
+    }
+}
+
 % for enum in enums:
 <% if enum.name == "FrameType": continue %>\
-enum_from_primitive! {
+enum_primitive! {
     %if enum.name in ("AudioMode", "ConsoleType"):
-    #[derive(Debug,Clone,Copy,Eq,PartialEq,Hash)]
-    %else:
-    #[derive(Debug,Clone,Copy)]
+    #[derive(Eq,PartialEq,Hash)]
     %endif
     %if enum.name == "ObjectType":
     #[allow(non_camel_case_types)]
@@ -34,7 +51,6 @@ enum_from_primitive! {
         % endfor
     }
 }
-enum_to_primitive!(${enum.name});
 
 % endfor
 pub mod frametype {
