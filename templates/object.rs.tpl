@@ -2,8 +2,7 @@
 #![allow(unused_variables)]
 use std::io;
 use std::io::Result;
-// use std::fmt;
-// use enum_primitive::FromPrimitive;
+use enum_primitive::FromPrimitive;
 
 use ::packet::enums::*;
 use ::packet::server::update::ObjectUpdate;
@@ -34,13 +33,9 @@ pub struct ${object.name} {
     % endif
 % endfor
 }
-<%def name="read_update_field(rdr, mask, field, type)">\
-% if type.name == "OrdnanceType":
-if try_bit!($mask) {
-    Some($rdr.read_enum8().unwrap_or($enumname::from_u32(0).unwrap()))
-} else {
-    None
-}
+<%def name="read_update_field(rdr, mask, object, field, type)">\
+% if type.name == "enum8" and type.target.name == "OrdnanceType":
+try_update_parse_opt!(${mask}, ${rdr}, OrdnanceType)\
 % elif lang.is_simple(type):
 try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
 % elif type.name == "bitflags":
@@ -48,7 +43,7 @@ try_update_parse!(${mask}, ${type.arg}::from_bits(try_parse!(${rdr}.read_u32()))
 % elif type.name == "sizedarray":
 [\
 % for x in range(0, type.arg):
-${read_update_field(rdr, mask, field, type.target)}, \
+${read_update_field(rdr, mask, object, field, type.target)}, \
 % endfor
 ]\
 % else:
@@ -60,12 +55,7 @@ ${read_update_field(rdr, mask, field, type.target)}, \
 ##
 <%def name="write_update_field(wtr, mask, field, type)">\
 % if type.name == "string":
-{
-let value = match self.${field.name} {
-    Some(ref x) => Some(x),
-    None => None
-};
-write_single_field!(value, ${wtr}, ${mask}, write_string) }\
+write_single_field!(self.${field.name}.as_ref(), ${wtr}, ${mask}, write_string)\
 % elif type.name == "bitflags":
 write_single_field!(self.${field.name}.map(|v| v.bits()), ${wtr}, ${mask}, write_u32)\
 % elif type.name == "sizedarray":
@@ -123,8 +113,8 @@ impl ${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
                 ${field.name}: {
-##                    trace!("Reading field ${object.name}::${field.name}");
-                    ${read_update_field("rdr", "mask", field, field.type)}
+                    trace!("Reading field ${object.name}::${field.name}");
+                    ${read_update_field("rdr", "mask", object, field, field.type)}
                 },
             % endfor
         };
@@ -139,7 +129,7 @@ impl ${object.name}Update {
         assert_eq!(header_size, 1);
         let mut mask = BitWriter::fixed_size(mask_byte_size, skip_fields);
         % for field in object.fields:
-        ##     trace!("Writing field {}::{}", stringify!($delta), stringify!($field));
+        trace!("Writing field ${object.name}::${field.name}");
         ${write_update_field("wtr", "mask", field, field.type)};
         % endfor
         let mut res = ArtemisEncoder::new();
