@@ -57,6 +57,8 @@ try_parse!(Ship::read(&mut rdr))\
  try_parse!(rdr.read_f32()),\
  try_parse!(rdr.read_f32()),\
  try_parse!(rdr.read_f32()),\
+ try_parse!(rdr.read_f32()),\
+ try_parse!(rdr.read_f32()),\
  try_parse!(rdr.read_f32()) \
 ]\
 % elif pkt.type.arg == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
@@ -86,8 +88,7 @@ impl FrameReader for ClientPacketReader
             },
             % else:
             supertype @ frametype::${field.name} => {
-                let subtype = try_parse!(rdr.read_${parser.arg}());
-                match subtype {
+                match try_parse!(rdr.read_${parser.arg}()) {
                 % for pkt in get_parser(field.type.arg).fields:
                     ${pkt.name} => ${pkt.type.arg} {
                         % for fld in get_packet(pkt.type.arg).fields:
