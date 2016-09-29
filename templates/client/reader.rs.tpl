@@ -35,6 +35,12 @@ macro_rules! try_enum {
         }
     }
 }
+<%def name="get_packet(field)">\
+<%
+  packetname, casename = field.type.arg.split("::",1)
+  return packets.get(packetname).fields.get(casename)
+%>
+</%def>
 <% parser = parsers.get("ClientParser") %>
 impl FrameReader for ClientPacketReader
 {
@@ -45,10 +51,14 @@ impl FrameReader for ClientPacketReader
     {
         let mut rdr = ArtemisDecoder::new(buffer);
         return FrameReadAttempt::Ok(0, ArtemisPayload::ClientPacket(match try_parse!(rdr.read_u32()) {
+
             % for parser in [parser]:
             % for field in parser.fields:
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type.arg} {
+                % for fld in get_packet(field).fields:
+                ${fld.name}: try_parse!(rdr.read_${fld.type.name}()),
+                % endfor
             },
             % else:
             supertype @ frametype::${field.name} => {
