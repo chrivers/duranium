@@ -1,5 +1,8 @@
 <% import rust as lang %>\
+use std::io;
+
 use ::packet::enums::*;
+use ::wire::{ArtemisDecoder};
 
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
@@ -36,4 +39,16 @@ impl Ship
             name: name
         }
     }
+
+    pub fn read(rdr: &mut ArtemisDecoder) -> Result<Ship, io::Error>
+    {
+        Ok(Ship::new(
+            try!(rdr.read_enum32()),
+            try!(rdr.read_u32()),
+            try!(rdr.read_u32()),
+            try!(rdr.read_u32()),
+            try!(rdr.read_string()),
+        ))
+    }
+
 }
