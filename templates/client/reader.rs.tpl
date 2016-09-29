@@ -44,26 +44,20 @@ macro_rules! try_enum {
   return parsers.get(name)
 %>
 </%def>\
-<%def name="read_field(pkt, fld)">\
-% if pkt.type.arg == "ClientPacket::SetShipSettingsV240" and fld.name == "ship":
-try_parse!(rdr.read_struct())\
-% elif pkt.type.arg == "ClientPacket::__unknown_4" and fld.name == "__unknown_1":
-[\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()),\
- try_parse!(rdr.read_f32()) \
-]\
-% elif pkt.type.arg == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
+<%def name="read_field(pkt, name, type)">\
+% if type.name == "sizedarray":
+[ \
+% for x in range(type.arg):
+% if not loop.first:
+, \
+% endif
+${read_field(pkt, name, type.target)}\
+% endfor
+ ]\
+% elif pkt.type.arg == "ClientPacket::GameMasterMessage" and name == "console_type":
 { match try_parse!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }\
 % else:
-try_parse!(rdr.read_${fld.type.name}())\
+try_parse!(rdr.read_${type.name}())\
 % endif
 </%def>\
 <% parser = parsers.get("ClientParser") %>
@@ -82,7 +76,7 @@ impl FrameReader for ClientPacketReader
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type.arg} {
                 % for fld in get_packet(field.type.arg).fields:
-                ${fld.name}: ${read_field(field, fld)},
+                ${fld.name}: ${read_field(field, fld.name, fld.type)},
                 % endfor
             },
             % else:
@@ -91,7 +85,7 @@ impl FrameReader for ClientPacketReader
                 % for pkt in get_parser(field.type.arg).fields:
                     ${pkt.name} => ${pkt.type.arg} {
                         % for fld in get_packet(pkt.type.arg).fields:
-                        ${fld.name}: ${read_field(pkt, fld)},
+                        ${fld.name}: ${read_field(pkt, fld.name, fld.type)},
                         % endfor
                     },
                     % endfor
