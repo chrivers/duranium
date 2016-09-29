@@ -8,7 +8,6 @@ use ::frame::{ArtemisPayload};
 use ::stream::{FrameReader, FrameReadAttempt};
 use ::packet::client::*;
 use ::wire::{ArtemisDecoder};
-use ::packet::structs::Ship;
 
 #[derive(Debug)]
 pub struct ClientPacketReader
@@ -47,7 +46,7 @@ macro_rules! try_enum {
 </%def>\
 <%def name="read_field(pkt, fld)">\
 % if pkt.type.arg == "ClientPacket::SetShipSettingsV240" and fld.name == "ship":
-try_parse!(Ship::read(&mut rdr))\
+try_parse!(rdr.read_struct())\
 % elif pkt.type.arg == "ClientPacket::__unknown_4" and fld.name == "__unknown_1":
 [\
  try_parse!(rdr.read_f32()),\

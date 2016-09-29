@@ -3,6 +3,7 @@ use std::io;
 
 use ::packet::enums::*;
 use ::wire::{ArtemisDecoder};
+use ::wire::traits::CanDecode;
 
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
@@ -21,34 +22,21 @@ pub struct ${struct.name}
 }
 
 % endfor
-impl Ship
+
+% for struct in structs:
+<% if struct.name == "Update": continue %>\
+impl CanDecode<${struct.name}> for ${struct.name}
 {
-    pub fn new(
-        drive_type: DriveType,
-        ship_type: u32,
-        accent_color: u32,
-        __unknown_1: u32,
-        name: String
-    ) -> Ship
+    fn read(rdr: &mut ArtemisDecoder) -> Result<${struct.name}, io::Error>
     {
-        Ship {
-            drive_type: drive_type,
-            ship_type: ship_type,
-            __unknown_1: __unknown_1,
-            accent_color: accent_color,
-            name: name
-        }
+        Ok(
+            ${struct.name} {
+            % for field in struct.fields:
+                ${field.name}: try!(rdr.read_${field.type.name}()),
+            % endfor
+            }
+        )
     }
-
-    pub fn read(rdr: &mut ArtemisDecoder) -> Result<Ship, io::Error>
-    {
-        Ok(Ship::new(
-            try!(rdr.read_enum32()),
-            try!(rdr.read_u32()),
-            try!(rdr.read_u32()),
-            try!(rdr.read_u32()),
-            try!(rdr.read_string()),
-        ))
-    }
-
 }
+
+% endfor
