@@ -5,7 +5,7 @@ use ::frame::{ArtemisPayload};
 use ::stream::{FrameReader, FrameReadAttempt};
 use ::packet::enums::*;
 use ::packet::server::ServerPacket;
-use ::packet::server::update::ObjectUpdateReader;
+use ::packet::server::update::{ObjectUpdate, ObjectUpdateReader};
 
 #[derive(Debug)]
 pub struct ServerPacketReader
@@ -19,6 +19,29 @@ impl ServerPacketReader
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
+}
+
+fn read_frame_stream(buffer: &[u8], rdr: &mut ArtemisDecoder) -> FrameReadAttempt<Vec<ObjectUpdate>, io::Error> {
+    let mut updates = vec![];
+    let mut uprdr = ObjectUpdateReader::new();
+    let mut pos = rdr.position() as usize;
+    loop {
+        // if pos == buffer.len()-1 {
+        //     return FrameReadAttempt::Closed
+        // } else if pos >= buffer.len() {
+        //     return FrameReadAttempt::Error(make_error("tried to read past end of array"));
+        // }
+        match uprdr.read_frame(&buffer[pos..]) {
+            FrameReadAttempt::Closed => break,
+            FrameReadAttempt::NeedBytes(bytes) => return FrameReadAttempt::NeedBytes(bytes),
+            FrameReadAttempt::Error(e) => return FrameReadAttempt::Error(e),
+            FrameReadAttempt::Ok(size, upd) => {
+                pos += size;
+                updates.push(upd);
+            }
+        }
+    }
+    FrameReadAttempt::Ok(pos, updates)
 }
 
 <%def name="get_packet(name)">\
@@ -36,7 +59,9 @@ fn make_error(desc: &str) -> io::Error {
 %>
 </%def>\
 <%def name="read_field(pkt, name, type)">\
-% if type.name == "sizedarray":
+% if pkt.type.arg == "ServerPacket::ObjectUpdate" and name == "updates":
+try_subparse!(read_frame_stream(buffer, &mut rdr))\
+% elif type.name == "sizedarray":
 [ \
 % for x in range(type.arg):
 % if not loop.first:
