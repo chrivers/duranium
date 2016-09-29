@@ -35,7 +35,7 @@ macro_rules! try_enum {
         }
     }
 }
-
+<% parser = parsers.get("ClientParser") %>
 impl FrameReader for ClientPacketReader
 {
     type Frame = ArtemisPayload;
@@ -45,13 +45,17 @@ impl FrameReader for ClientPacketReader
     {
         let mut rdr = ArtemisDecoder::new(buffer);
         return FrameReadAttempt::Ok(0, ArtemisPayload::ClientPacket(match try_parse!(rdr.read_u32()) {
-
-## % for parser in parsers:
-##   ${parser.name} (match a ${parser.match})
-##   % for field in parser.fields:
-##     ${"%-20s" % field.name} => ${field.type}
-##   % endfor
-## % endfor
+            % for parser in [parser]:
+            % for field in parser.fields:
+            % if field.type.name == "struct":
+            frametype::${field.name} => ${field.type.arg} {
+            },
+            % else:
+            supertype @ frametype::${field.name} => {
+            },
+            % endif
+            % endfor
+            % endfor
             supertype => return FrameReadAttempt::Error(make_error(&format!("Unknown client frame type 0x{:08x} (length {})", supertype, buffer.len())))
         }))
     }
