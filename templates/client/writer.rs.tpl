@@ -7,6 +7,7 @@ use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
 use ::stream::FrameWriter;
 use ::wire::ArtemisEncoder;
+use ::wire::traits::CanEncode;
 
 pub struct ClientPacketWriter
 {
