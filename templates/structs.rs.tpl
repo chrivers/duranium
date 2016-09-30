@@ -2,8 +2,8 @@
 use std::io;
 
 use ::packet::enums::*;
-use ::wire::{ArtemisDecoder};
-use ::wire::traits::CanDecode;
+use ::wire::{ArtemisDecoder, ArtemisEncoder};
+use ::wire::traits::{CanDecode, CanEncode};
 
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
@@ -25,6 +25,21 @@ pub struct ${struct.name}
 
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
+impl CanEncode for ${struct.name}
+{
+    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
+    {
+        % for field in struct.fields:
+        % if field.type.name == "string":
+        try!(wtr.write_${field.type.name}(&self.${field.name}));
+        % else:
+        try!(wtr.write_${field.type.name}(self.${field.name}));
+        % endif
+        % endfor
+        Ok(())
+    }
+}
+
 impl CanDecode<${struct.name}> for ${struct.name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<${struct.name}, io::Error>
