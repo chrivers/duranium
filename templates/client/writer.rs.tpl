@@ -66,7 +66,7 @@ for num in ${fld.name}.iter() { try!(wtr.write_f32(*num)); }\
 % elif type.name == "struct":
 try!(${fld.name}.write(&mut wtr));
 % elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
-match console_type { None => try!(wtr.write_u32(0)), Some(ct) => try!(wtr.write_u32(ct as u32 + 1)), }
+try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));\
 % else:
 try!(wtr.write_${type.name}(${fld.name}));\
 % endif
