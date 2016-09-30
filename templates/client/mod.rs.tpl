@@ -2,7 +2,7 @@
 pub mod reader;
 pub mod writer;
 
-use ::packet::structs::Ship;
+use ::packet::structs::*;
 use ::packet::enums::*;
 
 <% packet = packets.get("ClientPacket") %>\
