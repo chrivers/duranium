@@ -5,6 +5,7 @@ use std::io::Result;
 
 use ::stream::FrameWriter;
 use ::wire::ArtemisEncoder;
+use ::wire::traits::IterEnum;
 use ::packet::enums::*;
 use ::packet::structs::*;
 use ::packet::server::ServerPacket;
@@ -93,8 +94,8 @@ try!(wtr.write_array_u32(${fld.name}, ${type.arg}));\
 %   endif
 % elif type.name == "struct":
 try!(${fld.name}.write(&mut wtr));
-% elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
-try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));\
+% elif name == "ServerPacket::ConsoleStatus" and fld.name == "console_status":
+for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }\
 % else:
 try!(wtr.write_${type.name}(${fld.name}));\
 % endif
