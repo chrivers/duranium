@@ -50,7 +50,27 @@ def get_packet(type):
 packet_ids = dict()
 parser = parsers.get("ClientParser")
 visit(parser, packet_ids)
+
+def get_padding(info):
+    packet = get_packet(info[0])
+    if info[1] == "valueInt":
+        return 1 - len(packet.fields)
+    elif info[1] == "valueFourInts":
+        return 4 - len(packet.fields)
+    else:
+        return 0
 %>
+<%def name="write_field(name, fld, type)">\
+% if type.name == "sizedarray":
+for num in ${fld.name}.iter() { try!(wtr.write_f32(*num)); }\
+% elif type.name == "struct":
+try!(${fld.name}.write(&mut wtr));
+% elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
+match console_type { None => try!(wtr.write_u32(0)), Some(ct) => try!(wtr.write_u32(ct as u32 + 1)), }
+% else:
+try!(wtr.write_${type.name}(${fld.name}));\
+% endif
+</%def>\
 impl FrameWriter for ClientPacketWriter
 {
     type Frame = ClientPacket;
@@ -74,6 +94,16 @@ impl FrameWriter for ClientPacketWriter
             % else:
                 packet_type!(wtr, frametype::${info[1]});
             % endif
+            % for fld in get_packet(info[0]).fields:
+                ${write_field(name, fld, fld.type)}
+                ## try!(wtr.write_${fld.type.name}(${fld.name}));
+            % endfor
+            % for x in range(get_padding(info)):
+                % if loop.first:
+                // padding
+                % endif
+                try!(wtr.write_u32(0));
+            % endfor
             },
 
         % endfor
