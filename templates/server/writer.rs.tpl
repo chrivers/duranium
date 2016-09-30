@@ -9,7 +9,6 @@ use ::wire::traits::IterEnum;
 use ::packet::enums::*;
 use ::packet::structs::*;
 use ::packet::server::ServerPacket;
-use ::packet::server::update::ObjectUpdateWriter;
 
 pub struct ServerPacketWriter
 {
@@ -87,7 +86,7 @@ try!(wtr.write_array(${fld.name}));\
 % elif type.name == "array":
 %   if not type.arg:
 try!(wtr.write_array(${fld.name}));\
-%   elif len(type.arg) <= 4:
+%   elif len(type.arg) <= 4 and name != "ServerPacket::ObjectUpdate":
 try!(wtr.write_array_u8(${fld.name}, ${type.arg}));\
 %   else:
 try!(wtr.write_array_u32(${fld.name}, ${type.arg}));\
