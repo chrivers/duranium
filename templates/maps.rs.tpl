@@ -22,17 +22,9 @@ impl IterEnum<ConsoleType> for ConsoleType {
     {
         static TYPES: &'static [ConsoleType] =
             &[
-                ConsoleType::MainScreen,
-                ConsoleType::Helm,
-                ConsoleType::Weapons,
-                ConsoleType::Engineering,
-                ConsoleType::Science,
-                ConsoleType::Communications,
-                ConsoleType::Fighter,
-                ConsoleType::Data,
-                ConsoleType::Observer,
-                ConsoleType::CaptainsMap,
-                ConsoleType::GameMaster
+            % for field in enums.get("ConsoleType").fields:
+                ConsoleType::${field.name},
+            % endfor
             ];
         TYPES
     }
