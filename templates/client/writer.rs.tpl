@@ -4,9 +4,9 @@ use std::io;
 use std::io::Result;
 
 use ::packet::enums::frametype;
+use ::packet::client::ClientPacket;
 use ::stream::FrameWriter;
 use ::wire::ArtemisEncoder;
-use ::packet::client::ClientPacket;
 
 pub struct ClientPacketWriter
 {
