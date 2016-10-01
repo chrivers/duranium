@@ -35,18 +35,18 @@ pub struct ${object.name} {
 % endfor
 }
 <%def name="read_update_field(rdr, mask, object, field, type)">\
-% if type.name == "enum" and type.arg(1).name == "OrdnanceType":
+% if type.name == "enum" and type[1].name == "OrdnanceType":
 try_update_parse_opt!(${mask}, ${rdr}, OrdnanceType)\
 % elif lang.is_primitive(type):
 try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
 % elif type.name == "bitflags":
 try_update_parse!(${mask}, ${rdr}.read_item())\
 % elif type.name == "enum":
-try_update_parse!(${mask}, ${rdr}.read_enum${type.arg(0).name[1:]}())\
+try_update_parse!(${mask}, ${rdr}.read_enum${type[0].name[1:]}())\
 % elif type.name == "sizedarray":
 [\
-% for x in range(0, int(type.arg(1).name)):
-${read_update_field(rdr, mask, object, field, type.arg(0))}, \
+% for x in range(0, int(type[1].name)):
+${read_update_field(rdr, mask, object, field, type[0])}, \
 % endfor
 ]\
 % else:
@@ -65,11 +65,11 @@ write_single_field!(${fieldname}.map(|v| v.bits()), ${wtr}, ${mask}, write_u32)\
 ##% for x in range(0, type.arg):
 ##${write_update_field(wtr, mask, field, type.target)}; \
 ##% endfor
-for _elem in ${fieldname}.iter() { ${write_update_field(wtr, mask, "*_elem", type.arg(0))} }\
+for _elem in ${fieldname}.iter() { ${write_update_field(wtr, mask, "*_elem", type[0])} }\
 % elif lang.is_primitive(type):
 write_single_field!(${fieldname}, ${wtr}, ${mask}, write_${type.name})\
 % elif type.name == "enum":
-write_single_field!(${fieldname}, ${wtr}, ${mask}, write_enum${type.arg(0).name[1:]})\
+write_single_field!(${fieldname}, ${wtr}, ${mask}, write_enum${type[0].name[1:]})\
 % else:
   PANIC: ${type}
 % endif

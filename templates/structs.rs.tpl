@@ -7,7 +7,7 @@ use ::wire::traits::{CanDecode, CanEncode};
 
 <%def name="read_field(type)">\
 % if type.name == "enum":
-try!(rdr.read_enum${type.arg(0).name[1:]}())\
+try!(rdr.read_enum${type[0].name[1:]}())\
 % else:
 try!(rdr.read_${type.name}())\
 % endif
@@ -15,7 +15,7 @@ try!(rdr.read_${type.name}())\
 \
 <%def name="write_field(name, type)">\
 % if type.name == "enum":
-try!(wtr.write_${type.name}${type.arg(0).name[1:]}(${name}));\
+try!(wtr.write_${type.name}${type[0].name[1:]}(${name}));\
 % else:
 try!(wtr.write_${type.name}(${name}));\
 % endif
