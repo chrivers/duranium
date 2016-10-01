@@ -35,7 +35,7 @@ def declare_type(tp):
     elif tp.name == "option":
         return "Option<%s>" % declare_type(tp[0])
     elif tp.name == "bitflags":
-        return tp[0].name
+        return tp[1].name
     elif tp.name == "object":
         return "Object"
     elif is_primitive(tp):
