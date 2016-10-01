@@ -79,9 +79,11 @@ try_parse!(rdr.read_array_u8(${type.arg}))\
 try_parse!(rdr.read_array_u32(${type.arg}))\
 %   endif
 % elif type.name == "map":
-try_parse!(rdr.read_struct())\
+try_parse!(rdr.read_item())\
 % elif type.name == "option":
 rdr.read_${type.target.name}().ok()\
+% elif type.name == "struct":
+try_parse!(rdr.read_item())\
 % else:
 try_parse!(rdr.read_${type.name}())\
 % endif

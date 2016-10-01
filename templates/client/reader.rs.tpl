@@ -56,6 +56,8 @@ ${read_field(pkt, name, type.target)}\
  ]\
 % elif pkt.type.arg == "ClientPacket::GameMasterMessage" and name == "console_type":
 { match try_parse!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }\
+% elif type.name == "struct":
+try_parse!(rdr.read_item())\
 % else:
 try_parse!(rdr.read_${type.name}())\
 % endif
