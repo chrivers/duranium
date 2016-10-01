@@ -43,28 +43,6 @@ def rust_type(tp):
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
-def object_type(tp):
-    if not tp:
-        raise ValueError("Empty type")
-    if tp.name in primitive_map:
-        return primitive_map[tp.name]
-    elif tp.name == "sizedarray":
-        type = object_type(tp[0])
-        return "[%s; %d]" % (type, tp[0])
-    elif tp.name in ("enum8", "enum32"):
-        if tp[0].name == "OrdnanceType":
-            return "[%s try %s]" % (tp[0].name, tp.name)
-        else:
-            return "[%s is %s]" % (tp[0].name, tp.name)
-    elif tp.name == "map" and tp[0] == "ShipSystem":
-        return "[%s; 8]" % tp[0].name
-    elif tp.name == "map" and tp[0] == "BeamFrequency":
-        return "[%s; 5]" % tp[0].name
-    elif tp.name == "bitflags":
-        return "[%s is bitflags_u32]" % tp.arg
-    else:
-        raise TypeError("No type mapping defined for [%s]" % tp.name)
-
 def update_type(tp):
     if not tp:
         raise ValueError("Empty type")
