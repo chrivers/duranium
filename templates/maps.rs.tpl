@@ -17,6 +17,18 @@ impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, Con
     }
 }
 
+fn make_error(desc: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::Other, desc)
+}
+
+impl CanDecode<EliteAbilities> for EliteAbilities
+{
+    fn read(rdr: &mut ArtemisDecoder) -> Result<EliteAbilities, io::Error>
+    {
+        EliteAbilities::from_bits(try!(rdr.read_u32())).ok_or(make_error("could not parse bitflags"))
+    }
+}
+
 impl IterEnum<ConsoleType> for ConsoleType {
     fn iter_enum() -> &'static [ConsoleType]
     {

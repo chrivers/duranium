@@ -40,7 +40,7 @@ try_update_parse_opt!(${mask}, ${rdr}, OrdnanceType)\
 % elif lang.is_simple(type):
 try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
 % elif type.name == "bitflags":
-try_update_parse!(${mask}, ${type.arg}::from_bits(try_parse!(${rdr}.read_u32())).ok_or(make_error("could not parse bitflags")))\
+try_update_parse!(${mask}, ${rdr}.read_item())\
 % elif type.name == "sizedarray":
 [\
 % for x in range(0, type.arg):
