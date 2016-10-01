@@ -45,7 +45,7 @@ impl FrameReader for ObjectUpdateReader
             ObjectType::END_MARKER         => return FrameReadAttempt::Closed,
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
-            ObjectType::${type.name.ljust(18)} => ${type.name}Update::read(&mut rdr, ${objects.get(type.name)._match}, 0),
+            ObjectType::${type.name.ljust(18)} => ${type.name}Update::read(&mut rdr, ${objects.get(type.name)._match}),
             % endfor
         }
     }
@@ -73,7 +73,7 @@ impl FrameWriter for ObjectUpdateWriter
         match frame {
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
-            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => Ok(try!(data.write(ObjectType::${type.name}, ${objects.get(type.name)._match}, 0))),
+            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => Ok(try!(data.write(ObjectType::${type.name}, ${objects.get(type.name)._match}))),
             % endfor
             &ObjectUpdate::Whale(_)              => Err(make_error("unsupported protocol version")),
         }

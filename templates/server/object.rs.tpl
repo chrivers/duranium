@@ -67,13 +67,13 @@ impl ${object.name} {
 
 impl ${object.name}Update {
     #[allow(unused_mut)]
-    pub fn read(rdr: &mut ArtemisDecoder, mask_byte_size: usize, skip_fields: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
+    pub fn read(rdr: &mut ArtemisDecoder, mask_byte_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
     {
         const HEADER_SIZE: u32 = 1;
         let a = rdr.position();
         let object_id = try_parse!(rdr.read_u32());
         let mask_bytes = try_parse!(rdr.read_bytes(mask_byte_size));
-        let mut mask = BitIterator::new(mask_bytes, skip_fields);
+        let mut mask = BitIterator::new(mask_bytes, 0);
         let parse = ${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
@@ -88,10 +88,10 @@ impl ${object.name}Update {
     }
 
     #[allow(unused_mut)]
-    pub fn write(&self, object_type: ObjectType, mask_byte_size: usize, skip_fields: usize) -> Result<Vec<u8>>
+    pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
     {
         let mut wtr = ArtemisEncoder::new();
-        let mut mask = BitWriter::fixed_size(mask_byte_size, skip_fields);
+        let mut mask = BitWriter::fixed_size(mask_byte_size, 0);
         % for field in object.fields:
         trace!("Writing field ${object.name}::${field.name}");
         ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
