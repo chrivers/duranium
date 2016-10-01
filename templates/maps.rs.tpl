@@ -21,13 +21,15 @@ fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
 }
 
-impl CanDecode<EliteAbilities> for EliteAbilities
+% for flag in flags:
+impl CanDecode<${flag.name}> for ${flag.name}
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<EliteAbilities, io::Error>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<${flag.name}, io::Error>
     {
-        EliteAbilities::from_bits(try!(rdr.read_u32())).ok_or(make_error("could not parse bitflags"))
+        ${flag.name}::from_bits(try!(rdr.read_u32())).ok_or(make_error("could not parse ${flag.name} bitflags"))
     }
 }
+% endfor
 
 impl IterEnum<ConsoleType> for ConsoleType {
     fn iter_enum() -> &'static [ConsoleType]
