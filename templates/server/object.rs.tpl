@@ -55,27 +55,6 @@ ${read_update_field(rdr, mask, object, field, type[0])}, \
   PANIC: ${type}
 % endif
 </%def>\
-##
-##
-##
-<%def name="write_update_field(wtr, mask, fieldname, type)">\
-% if type.name == "string":
-write_single_field!(${fieldname}.as_ref(), ${wtr}, ${mask}, write_string)\
-% elif type.name == "bitflags":
-write_single_field!(${fieldname}.map(|v| v.bits()), ${wtr}, ${mask}, write_u32)\
-% elif type.name == "sizedarray":
-##% for x in range(0, type.arg):
-##${write_update_field(wtr, mask, field, type.target)}; \
-##% endfor
-for _elem in ${fieldname}.iter() { ${write_update_field(wtr, mask, "*_elem", type[0])} }\
-% elif rust.is_primitive(type):
-write_single_field!(${fieldname}, ${wtr}, ${mask}, write_${type.name})\
-% elif type.name == "enum":
-write_single_field!(${fieldname}, ${wtr}, ${mask}, write_enum${type[0].name[1:]})\
-% else:
-  PANIC: ${type}
-% endif
-</%def>\
 
 pub struct ${object.name}Update {
     object_id: u32,
@@ -136,7 +115,7 @@ impl ${object.name}Update {
         let mut mask = BitWriter::fixed_size(mask_byte_size, skip_fields);
         % for field in object.fields:
         trace!("Writing field ${object.name}::${field.name}");
-        ${write_update_field("wtr", "mask", "self."+field.name, field.type)};
+        ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
         % endfor
         let mut res = ArtemisEncoder::new();
         try!(res.write_u8(object_type as u8));
