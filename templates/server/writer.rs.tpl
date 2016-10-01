@@ -1,3 +1,4 @@
+<% import rust %>\
 #![allow(dead_code)]
 
 use std::io;
@@ -80,27 +81,6 @@ def get_padding(info):
     else:
         return 0
 %>
-<%def name="write_field(name, fld, type)">\
-% if type.name == "sizedarray":
-try!(wtr.write_array(${fld.name}));\
-% elif type.name == "array":
-%   if len(type._args) < 2:
-try!(wtr.write_array(${fld.name}));\
-%   elif len(type[1].name) <= 4 and name != "ServerPacket::ObjectUpdate":
-try!(wtr.write_array_u8(${fld.name}, ${type[1].name}));\
-%   else:
-try!(wtr.write_array_u32(${fld.name}, ${type[1].name}));\
-%   endif
-% elif type.name == "struct":
-try!(${fld.name}.write(&mut wtr));
-% elif type.name == "enum":
-try!(wtr.write_${type.name}${type[0].name[1:]}(${fld.name}));\
-% elif name == "ServerPacket::ConsoleStatus" and fld.name == "console_status":
-for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }\
-% else:
-try!(wtr.write_${type.name}(${fld.name}));\
-% endif
-</%def>\
 impl FrameWriter for ServerPacketWriter
 {
     type Frame = ServerPacket;
@@ -128,7 +108,7 @@ impl FrameWriter for ServerPacketWriter
                 packet_type!(wtr, frametype::${info[1]});
             % endif
             % for fld in get_packet(info[0]).fields:
-                ${write_field(name, fld, fld.type)}
+                ${rust.write_field(name, fld, fld.type)};
             % endfor
             % for x in range(get_padding(info)):
                 % if loop.first:

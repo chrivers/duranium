@@ -80,6 +80,8 @@ def writer_function(tp):
         return "write_%s" % primitive_map[tp.name]
     elif tp.name == "string":
         return "write_string"
+    elif tp.name == "ascii_string":
+        return "write_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "write_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -122,17 +124,27 @@ def write_struct_field(name, type):
         return "try!(wtr.%s(%s))" % (writer_function(type), name)
 
 def write_field(name, fld, type):
-    if type.name == "sizedarray":
-        return "for num in %s.iter() { try!(wtr.write_f32(*num)); }" % (fld.name)
-    elif type.name == "struct":
-        return "try!(%s.write(&mut wtr));" % (fld.name)
+    ## special cases
+    if name == "ServerPacket::ConsoleStatus" and fld.name == "console_status":
+        return "for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }"
     elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
-        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));"
+        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)))"
+    ## ordinary cases
+    elif type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
+        return "try!(wtr.write_array(%s))" % fld.name
+    elif type.name == "array" and len(type._args) == 2:
+        if len(type[1].name) <= 4:
+            return "try!(wtr.write_array_u8(%s, %s))" % (fld.name, type[1].name)
+        else:
+            return "try!(wtr.write_array_u32(%s, %s))" % (fld.name, type[1].name)
+    elif type.name == "option":
+        return "try!(wtr.write_option(%s))" % fld.name
+    elif type.name in ("struct", "map"):
+        return "try!(%s.write(&mut wtr))" % (fld.name)
     elif type.name == "enum":
         if type[0].name == "u8":
-            return "try!(wtr.write_enum8(%s));" % (fld.name)
+            return "try!(wtr.write_enum8(%s))" % (fld.name)
         elif type[0].name == "u32":
-            return "try!(wtr.write_enum32(%s));" % (fld.name)
+            return "try!(wtr.write_enum32(%s))" % (fld.name)
     else:
-        return "try!(wtr.write_%s(%s));" % (type.name, fld.name)
-    raise TypeError("No write field implementation for [%r]" % type)
+        return "try!(wtr.%s(%s))" % (writer_function(type), fld.name)
