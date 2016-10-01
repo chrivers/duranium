@@ -1,3 +1,4 @@
+<% import rust %>\
 #![allow(dead_code)]
 
 use std::io;
@@ -61,19 +62,6 @@ def get_padding(info):
     else:
         return 0
 %>
-<%def name="write_field(name, fld, type)">\
-% if type.name == "sizedarray":
-for num in ${fld.name}.iter() { try!(wtr.write_f32(*num)); }\
-% elif type.name == "struct":
-try!(${fld.name}.write(&mut wtr));
-% elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
-try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));\
-% elif type.name == "enum":
-try!(wtr.write_${type.name}${type[0].name[1:]}(${fld.name}));\
-% else:
-try!(wtr.write_${type.name}(${fld.name}));\
-% endif
-</%def>\
 impl FrameWriter for ClientPacketWriter
 {
     type Frame = ClientPacket;
@@ -98,8 +86,7 @@ impl FrameWriter for ClientPacketWriter
                 packet_type!(wtr, frametype::${info[1]});
             % endif
             % for fld in get_packet(info[0]).fields:
-                ${write_field(name, fld, fld.type)}
-                ## try!(wtr.write_${fld.type.name}(${fld.name}));
+                ${rust.write_field(name, fld, fld.type)}
             % endfor
             % for x in range(get_padding(info)):
                 % if loop.first:

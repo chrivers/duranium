@@ -120,3 +120,19 @@ def write_struct_field(name, type):
         return "try!(wtr.%s(&%s))" % (writer_function(type), name)
     else:
         return "try!(wtr.%s(%s))" % (writer_function(type), name)
+
+def write_field(name, fld, type):
+    if type.name == "sizedarray":
+        return "for num in %s.iter() { try!(wtr.write_f32(*num)); }" % (fld.name)
+    elif type.name == "struct":
+        return "try!(%s.write(&mut wtr));" % (fld.name)
+    elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
+        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));"
+    elif type.name == "enum":
+        if type[0].name == "u8":
+            return "try!(wtr.write_enum8(%s));" % (fld.name)
+        elif type[0].name == "u32":
+            return "try!(wtr.write_enum32(%s));" % (fld.name)
+    else:
+        return "try!(wtr.write_%s(%s));" % (type.name, fld.name)
+    raise TypeError("No write field implementation for [%r]" % type)
