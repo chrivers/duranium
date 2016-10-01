@@ -64,8 +64,10 @@ def is_primitive(tp):
 def reader_function(tp):
     if is_primitive(tp):
         return "read_%s" % primitive_map[tp.name]
-    elif tp.name == "string":
+    elif tp.name in "string":
         return "read_string"
+    elif tp.name in "ascii_string":
+        return "read_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "read_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -89,14 +91,25 @@ def read_struct_field(type):
     return "try!(rdr.%s())" % reader_function(type)
 
 def read_struct_field_parse(type):
-    if type.name == "struct":
+    if type.name in ("struct", "map"):
         return "try_parse!(rdr.read_item())"
+    elif type.name == "array" and type[0] and type[0].name == "struct" and type[0][0].name == "ObjectUpdate":
+        return "try_subparse!(read_frame_stream(buffer, &mut rdr))"
+    elif type.name == "array":
+        if type[1]:
+            if len(type[1].name) <= 4:
+                return "try_parse!(rdr.read_array_u8(%s))" % (type[1].name)
+            else:
+                return "try_parse!(rdr.read_array_u32(%s))" % (type[1].name)
+        else:
+            return "try_parse!(rdr.read_array())"
     elif type.name in ("bool8", "bool16", "bool32"):
         return "try_parse!(rdr.read_%s())" % type.name
     elif type.name == "option":
         if type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
             return "{ match try_parse!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }"
-        return "try_parse!(option)"
+        elif type[0] and type[0].name == "string":
+            return "rdr.read_string().ok()"
     elif type.name == "sizedarray":
         return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
     else:
