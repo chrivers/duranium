@@ -149,6 +149,17 @@ def write_field(name, fld, type):
     else:
         return "try!(wtr.%s(%s))" % (writer_function(type), fld.name)
 
+def read_update_field(rdr, mask, object, field, type):
+    if type.name == "enum" and type[1].name == "OrdnanceType":
+        return "try_update_parse_opt!(%s, %s, OrdnanceType)" % (mask, rdr)
+    elif type.name == "bitflags":
+        return "try_update_parse!(%s, %s.read_item())" % (mask, rdr)
+    elif type.name == "sizedarray":
+        rep = int(type[1].name)
+        return "[%s, ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
+    else:
+        return "try_update_parse!(%s, %s.%s())" % (mask, rdr, reader_function(type))
+
 def write_update_field(wtr, mask, fieldname, type):
     if type.name == "string":
         return "write_single_field!(%s.as_ref(), %s, %s, write_string)" % (fieldname, wtr, mask)

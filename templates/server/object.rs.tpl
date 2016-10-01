@@ -34,27 +34,6 @@ pub struct ${object.name} {
     % endif
 % endfor
 }
-<%def name="read_update_field(rdr, mask, object, field, type)">\
-% if type.name == "enum" and type[1].name == "OrdnanceType":
-try_update_parse_opt!(${mask}, ${rdr}, OrdnanceType)\
-% elif rust.is_primitive(type):
-try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
-% elif type.name in ("string", "ascii_string"):
-try_update_parse!(${mask}, ${rdr}.read_string())\
-% elif type.name == "bitflags":
-try_update_parse!(${mask}, ${rdr}.read_item())\
-% elif type.name == "enum":
-try_update_parse!(${mask}, ${rdr}.read_enum${type[0].name[1:]}())\
-% elif type.name == "sizedarray":
-[\
-% for x in range(0, int(type[1].name)):
-${read_update_field(rdr, mask, object, field, type[0])}, \
-% endfor
-]\
-% else:
-  PANIC: ${type}
-% endif
-</%def>\
 
 pub struct ${object.name}Update {
     object_id: u32,
@@ -99,7 +78,7 @@ impl ${object.name}Update {
             % for field in object.fields:
                 ${field.name}: {
                     trace!("Reading field ${object.name}::${field.name}");
-                    ${read_update_field("rdr", "mask", object, field, field.type)}
+                    ${rust.read_update_field("rdr", "mask", object, field, field.type)}
                 },
             % endfor
         };
