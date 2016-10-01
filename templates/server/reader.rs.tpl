@@ -45,20 +45,6 @@ fn read_frame_stream(buffer: &[u8], rdr: &mut ArtemisDecoder) -> FrameReadAttemp
     FrameReadAttempt::Ok(pos, updates)
 }
 
-<%def name="get_packet(name)">\
-<%
-  if "::" in name:
-    packetname, casename = name.split("::",1)
-    return packets.get(packetname).fields.get(casename)
-  else:
-    return packets.get(name)
-%>
-</%def>\
-<%def name="get_parser(name)">\
-<%
-  return parsers.get(name)
-%>
-</%def>\
 <% parser = parsers.get("ServerParser") %>\
 impl FrameReader for ServerPacketReader
 {
@@ -75,16 +61,16 @@ impl FrameReader for ServerPacketReader
             % for field in parser.fields:
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type[0].name} {
-                % for fld in get_packet(field.type[0].name).fields:
+                % for fld in rust.get_packet(field.type[0].name).fields:
                 ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
                 % endfor
             },
             % else:
             supertype @ frametype::${field.name} => {
-                match try_parse!(rdr.read_${get_parser(field.type[0].name).arg}()) {
-                % for pkt in get_parser(field.type[0].name).fields:
+                match try_parse!(rdr.read_${rust.get_parser(field.type[0].name).arg}()) {
+                % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
-                        % for fld in get_packet(pkt.type[0].name).fields:
+                        % for fld in rust.get_packet(pkt.type[0].name).fields:
                         ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
                         % endfor
                     },

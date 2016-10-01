@@ -34,17 +34,6 @@ macro_rules! try_enum {
         }
     }
 }
-<%def name="get_packet(name)">\
-<%
-  packetname, casename = name.split("::",1)
-  return packets.get(packetname).fields.get(casename)
-%>
-</%def>\
-<%def name="get_parser(name)">\
-<%
-  return parsers.get(name)
-%>
-</%def>\
 <% parser = parsers.get("ClientParser") %>
 impl FrameReader for ClientPacketReader
 {
@@ -60,16 +49,16 @@ impl FrameReader for ClientPacketReader
             % for field in parser.fields:
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type[0].name} {
-                % for fld in get_packet(field.type[0].name).fields:
+                % for fld in rust.get_packet(field.type[0].name).fields:
                 ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
                 % endfor
             },
             % else:
             supertype @ frametype::${field.name} => {
                 match try_parse!(rdr.read_${parser.arg}()) {
-                % for pkt in get_parser(field.type[0].name).fields:
+                % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
-                        % for fld in get_packet(pkt.type[0].name).fields:
+                        % for fld in rust.get_packet(pkt.type[0].name).fields:
                         ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
                         % endfor
                     },

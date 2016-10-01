@@ -1,3 +1,5 @@
+from template.util import get_context
+
 primitive_map = {
     "u8": "u8",
     "u16": "u16",
@@ -155,3 +157,14 @@ def write_update_field(wtr, mask, fieldname, type):
         return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
     else:
         return "write_single_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
+
+def get_packet(name):
+    packets = get_context()["packets"]
+    if "::" in name:
+        packetname, casename = name.split("::",1)
+        return packets.get(packetname).fields.get(casename)
+    else:
+        return packets.get(name)
+
+def get_parser(name):
+    return get_context()["parsers"].get(name)
