@@ -10,16 +10,16 @@ primitive_map = {
 
     "f32": "f32",
 
-    "bool8": "bool",
-    "bool16": "bool",
-    "bool32": "bool",
+    "bool8": "bool8",
+    "bool16": "bool16",
+    "bool32": "bool32",
 }
 
 def declare_type(tp):
     if not tp:
         raise ValueError("Empty type")
-    if is_primitive(tp):
-        return primitive_map[tp.name]
+    elif tp.name in ("bool8", "bool16", "bool32"):
+        return "bool"
     elif tp.name in ("string", "ascii_string"):
         return "String"
     elif tp.name == "sizedarray":
@@ -38,6 +38,8 @@ def declare_type(tp):
         return tp[0].name
     elif tp.name == "object":
         return "Object"
+    elif is_primitive(tp):
+        return primitive_map[tp.name]
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
@@ -85,6 +87,20 @@ def writer_function(tp):
 
 def read_struct_field(type):
     return "try!(rdr.%s())" % reader_function(type)
+
+def read_struct_field_parse(type):
+    if type.name == "struct":
+        return "try_parse!(rdr.read_item())"
+    elif type.name in ("bool8", "bool16", "bool32"):
+        return "try_parse!(rdr.read_%s())" % type.name
+    elif type.name == "option":
+        if type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
+            return "{ match try_parse!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }"
+        return "try_parse!(option)"
+    elif type.name == "sizedarray":
+        return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
+    else:
+        return "try_parse!(rdr.%s())" % reader_function(type)
 
 def write_struct_field(name, type):
     if type.name == "string":
