@@ -67,8 +67,9 @@ impl ${object.name} {
 
 impl ${object.name}Update {
     #[allow(unused_mut)]
-    pub fn read(rdr: &mut ArtemisDecoder, header_size: usize, mask_byte_size: usize, skip_fields: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
+    pub fn read(rdr: &mut ArtemisDecoder, mask_byte_size: usize, skip_fields: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
     {
+        const HEADER_SIZE: u32 = 1;
         let a = rdr.position();
         let object_id = try_parse!(rdr.read_u32());
         let mask_bytes = try_parse!(rdr.read_bytes(mask_byte_size));
@@ -83,7 +84,7 @@ impl ${object.name}Update {
             % endfor
         };
         let b = rdr.position();
-        FrameReadAttempt::Ok((b - a + header_size as u64) as usize, ObjectUpdate::${object.name}(parse))
+        FrameReadAttempt::Ok((b - a + HEADER_SIZE as u64) as usize, ObjectUpdate::${object.name}(parse))
     }
 
     #[allow(unused_mut)]
