@@ -20,11 +20,11 @@ fn make_error(desc: &str) -> io::Error {
 #[derive(Debug)]
 pub struct ${object.name} {
     object_id: u32,
-% for index, field in enumerate(object.fields):
+% for field in object.fields:
     % if object.name == "PlayerShipUpgrade":
     ${"{:30}".format(field.name+":")} ${lang.rust_type(field.type)}, // ${"".join(field.comment)}
     % else:
-    % if index > 0:
+    % if not loop.first:
 
     % endif
     % for line in util.format_comment(field.comment, indent="// ", width=74):
