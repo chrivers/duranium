@@ -49,12 +49,6 @@ def declare_update_type(tp):
     elif tp.name == "sizedarray":
         type = declare_update_type(tp[0])
         return "[%s; %d]" % (type, int(tp[1].name))
-    elif tp.name == "map" and tp.arg == "ShipSystem":
-        return "[Option<%s>; 8]" % tp[0].name
-    elif tp.name == "map" and tp.arg == "BeamFrequency":
-        return "[Option<%s>; 5]" % tp[0].name
-    elif tp.name == "bitflags":
-        return "Option<%s>" % tp[1].name
     else:
         return "Option<%s>" % declare_type(tp)
 
