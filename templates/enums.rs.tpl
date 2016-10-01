@@ -43,7 +43,7 @@ enum_primitive! {
     %endif
     %if enum.name == "ObjectType":
     #[allow(non_camel_case_types)]
-    %endif    
+    %endif
     pub enum ${enum.name}
     {
         % for case in enum.fields:
