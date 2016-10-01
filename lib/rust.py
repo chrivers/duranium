@@ -47,8 +47,7 @@ def declare_update_type(tp):
     if not tp:
         raise ValueError("Empty type")
     elif tp.name == "sizedarray":
-        type = declare_update_type(tp[0])
-        return "[%s; %d]" % (type, int(tp[1].name))
+        return "[%s; %d]" % (declare_update_type(tp[0]), int(tp[1].name))
     else:
         return "Option<%s>" % declare_type(tp)
 
