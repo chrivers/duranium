@@ -10,10 +10,10 @@ try!(rdr.${rust.reader_function(type)}())\
 </%def>\
 \
 <%def name="write_field(name, type)">\
-% if type.name == "enum":
-try!(wtr.write_${type.name}${type[0].name[1:]}(${name}));\
+% if type.name == "string":
+try!(wtr.${rust.writer_function(type)}(&${name}));\
 % else:
-try!(wtr.write_${type.name}(${name}));\
+try!(wtr.${rust.writer_function(type)}(${name}));\
 % endif
 </%def>\
 \
@@ -42,11 +42,7 @@ impl CanEncode for ${struct.name}
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
     {
         % for field in struct.fields:
-        % if field.type.name == "string":
-        try!(wtr.write_${field.type.name}(&self.${field.name}));
-        % else:
         ${write_field("self.%s" % field.name, field.type)}
-        % endif
         % endfor
         Ok(())
     }

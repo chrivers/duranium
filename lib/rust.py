@@ -69,4 +69,16 @@ def reader_function(tp):
     elif tp.name == "enum" and tp[0].name == "u32":
         return "read_enum32"
     else:
-        raise TypeError("No direct reader function for [%r]" % tp)
+        raise TypeError("No reader function for [%r]" % tp)
+
+def writer_function(tp):
+    if is_primitive(tp):
+        return "write_%s" % primitive_map[tp.name]
+    elif tp.name == "string":
+        return "write_string"
+    elif tp.name == "enum" and tp[0].name == "u8":
+        return "write_enum8"
+    elif tp.name == "enum" and tp[0].name == "u32":
+        return "write_enum32"
+    else:
+        raise TypeError("No writer function for [%r]" % tp)
