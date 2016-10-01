@@ -82,3 +82,12 @@ def writer_function(tp):
         return "write_enum32"
     else:
         raise TypeError("No writer function for [%r]" % tp)
+
+def read_struct_field(type):
+    return "try!(rdr.%s())" % reader_function(type)
+
+def write_struct_field(name, type):
+    if type.name == "string":
+        return "try!(wtr.%s(&%s))" % (writer_function(type), name)
+    else:
+        return "try!(wtr.%s(%s))" % (writer_function(type), name)

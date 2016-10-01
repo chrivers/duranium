@@ -5,18 +5,6 @@ use ::packet::enums::*;
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::wire::traits::{CanDecode, CanEncode};
 
-<%def name="read_field(type)">\
-try!(rdr.${rust.reader_function(type)}())\
-</%def>\
-\
-<%def name="write_field(name, type)">\
-% if type.name == "string":
-try!(wtr.${rust.writer_function(type)}(&${name}));\
-% else:
-try!(wtr.${rust.writer_function(type)}(${name}));\
-% endif
-</%def>\
-\
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
 #[derive(Debug)]
@@ -42,7 +30,7 @@ impl CanEncode for ${struct.name}
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
     {
         % for field in struct.fields:
-        ${write_field("self.%s" % field.name, field.type)}
+        ${rust.write_struct_field("self.%s" % field.name, field.type)};
         % endfor
         Ok(())
     }
@@ -55,7 +43,7 @@ impl CanDecode<${struct.name}> for ${struct.name}
         Ok(
             ${struct.name} {
             % for field in struct.fields:
-                ${field.name}: ${read_field(field.type)},
+                ${field.name}: ${rust.read_struct_field(field.type)},
             % endfor
             }
         )
