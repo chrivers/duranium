@@ -35,11 +35,11 @@ macro_rules! packet_type {
 def visit(parser, res):
     for field in parser.fields:
         if field.type.name == "struct":
-            res[field.type.arg] = (field.type, field.name, None, None)
+            res[field.type.arg(0).name] = (field.type, field.name, None, None)
         elif field.type.name == "parser":
-            prs = parsers.get(field.type.arg)
+            prs = parsers.get(field.type.arg(0).name)
             for fld in prs.fields:
-                res[fld.type.arg] = (fld.type, field.name, fld.name, prs.arg)
+                res[fld.type.arg(0).name] = (fld.type, field.name, fld.name, prs.arg)
 
 def get_packet(type):
     if "::" in name:
@@ -68,6 +68,8 @@ for num in ${fld.name}.iter() { try!(wtr.write_f32(*num)); }\
 try!(${fld.name}.write(&mut wtr));
 % elif name == "ClientPacket::GameMasterMessage" and fld.name == "console_type":
 try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)));\
+% elif type.name == "enum":
+try!(wtr.write_${type.name}${type.arg(0).name[1:]}(${fld.name}));\
 % else:
 try!(wtr.write_${type.name}(${fld.name}));\
 % endif

@@ -59,31 +59,33 @@ fn read_frame_stream(buffer: &[u8], rdr: &mut ArtemisDecoder) -> FrameReadAttemp
 %>
 </%def>\
 <%def name="read_field(pkt, name, type)">\
-% if pkt.type.arg == "ServerPacket::ObjectUpdate" and name == "updates":
+% if pkt.type.arg(0).name == "ServerPacket::ObjectUpdate" and name == "updates":
 try_subparse!(read_frame_stream(buffer, &mut rdr))\
 % elif type.name == "sizedarray":
 [ \
-% for x in range(type.arg):
+% for x in range(int(type.arg(1).name)):
 % if not loop.first:
 , \
 % endif
-${read_field(pkt, name, type.target)}\
+${read_field(pkt, name, type.arg(0))}\
 % endfor
  ]\
 % elif type.name == "array":
-%   if not type.arg:
+%   if len(type._args) < 2:
 try_parse!(rdr.read_array())\
-%   elif len(type.arg) <= 4:
-try_parse!(rdr.read_array_u8(${type.arg}))\
+%   elif len(type.arg(1).name) <= 4:
+try_parse!(rdr.read_array_u8(${type.arg(1).name}))\
 %   else:
-try_parse!(rdr.read_array_u32(${type.arg}))\
+try_parse!(rdr.read_array_u32(${type.arg(1).name}))\
 %   endif
 % elif type.name == "map":
 try_parse!(rdr.read_item())\
 % elif type.name == "option":
-rdr.read_${type.target.name}().ok()\
+rdr.read_${type.arg(0).name}().ok()\
 % elif type.name == "struct":
 try_parse!(rdr.read_item())\
+% elif type.name == "enum":
+try_parse!(rdr.read_enum${type.arg(0).name[1:]}())\
 % else:
 try_parse!(rdr.read_${type.name}())\
 % endif
@@ -103,17 +105,17 @@ impl FrameReader for ServerPacketReader
             % for parser in [parser]:
             % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.name} => ${field.type.arg} {
-                % for fld in get_packet(field.type.arg).fields:
+            frametype::${field.name} => ${field.type.arg(0).name} {
+                % for fld in get_packet(field.type.arg(0).name).fields:
                 ${fld.name}: ${read_field(field, fld.name, fld.type)},
                 % endfor
             },
             % else:
             supertype @ frametype::${field.name} => {
-                match try_parse!(rdr.read_${get_parser(field.type.arg).arg}()) {
-                % for pkt in get_parser(field.type.arg).fields:
-                    ${pkt.name} => ${pkt.type.arg} {
-                        % for fld in get_packet(pkt.type.arg).fields:
+                match try_parse!(rdr.read_${get_parser(field.type.arg(0).name).arg}()) {
+                % for pkt in get_parser(field.type.arg(0).name).fields:
+                    ${pkt.name} => ${pkt.type.arg(0).name} {
+                        % for fld in get_packet(pkt.type.arg(0).name).fields:
                         ${fld.name}: ${read_field(pkt, fld.name, fld.type)},
                         % endfor
                     },

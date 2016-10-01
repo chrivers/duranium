@@ -5,6 +5,22 @@ use ::packet::enums::*;
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::wire::traits::{CanDecode, CanEncode};
 
+<%def name="read_field(type)">\
+% if type.name == "enum":
+try!(rdr.read_enum${type.arg(0).name[1:]}())\
+% else:
+try!(rdr.read_${type.name}())\
+% endif
+</%def>\
+\
+<%def name="write_field(name, type)">\
+% if type.name == "enum":
+try!(wtr.write_${type.name}${type.arg(0).name[1:]}(${name}));\
+% else:
+try!(wtr.write_${type.name}(${name}));\
+% endif
+</%def>\
+\
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
 #[derive(Debug)]
@@ -33,7 +49,7 @@ impl CanEncode for ${struct.name}
         % if field.type.name == "string":
         try!(wtr.write_${field.type.name}(&self.${field.name}));
         % else:
-        try!(wtr.write_${field.type.name}(self.${field.name}));
+        ${write_field("self.%s" % field.name, field.type)}
         % endif
         % endfor
         Ok(())
@@ -47,7 +63,7 @@ impl CanDecode<${struct.name}> for ${struct.name}
         Ok(
             ${struct.name} {
             % for field in struct.fields:
-                ${field.name}: try!(rdr.read_${field.type.name}()),
+                ${field.name}: ${read_field(field.type)},
             % endfor
             }
         )

@@ -24,20 +24,20 @@ def rust_type(tp):
     if tp.name in primitive_map:
         return primitive_map[tp.name]
     elif tp.name == "sizedarray":
-        type = rust_type(tp.target)
-        return "[%s; %d]" % (type, tp.arg)
+        type = rust_type(tp.arg(0))
+        return "[%s; %d]" % (type, int(tp.arg(1).name))
     elif tp.name == "array":
-        return "Vec<%s>" % (rust_type(tp.target))
+        return "Vec<%s>" % (rust_type(tp.arg(0)))
     elif tp.name == "struct":
-        return tp.arg
-    elif tp.name in ("enum8", "enum32"):
-        return tp.target.name
+        return tp.arg(0).name
+    elif tp.name == "enum":
+        return tp.arg(1).name
     elif tp.name == "map":
-        return "HashMap<%s, %s>" % (tp.arg, rust_type(tp.target))
+        return "HashMap<%s, %s>" % (tp.arg(0).name, rust_type(tp.arg(1)))
     elif tp.name == "option":
-        return "Option<%s>" % rust_type(tp.target)
+        return "Option<%s>" % rust_type(tp.arg(0))
     elif tp.name == "bitflags":
-        return "u32"
+        return tp.arg(0).name
     elif tp.name == "object":
         return "Object"
     else:
@@ -49,17 +49,17 @@ def object_type(tp):
     if tp.name in primitive_map:
         return primitive_map[tp.name]
     elif tp.name == "sizedarray":
-        type = object_type(tp.target)
-        return "[%s; %d]" % (type, tp.arg)
+        type = object_type(tp.arg(0))
+        return "[%s; %d]" % (type, tp.arg(0))
     elif tp.name in ("enum8", "enum32"):
-        if tp.target.name == "OrdnanceType":
-            return "[%s try %s]" % (tp.target.name, tp.name)
+        if tp.arg(0).name == "OrdnanceType":
+            return "[%s try %s]" % (tp.arg(0).name, tp.name)
         else:
-            return "[%s is %s]" % (tp.target.name, tp.name)
-    elif tp.name == "map" and tp.arg == "ShipSystem":
-        return "[%s; 8]" % tp.target.name
-    elif tp.name == "map" and tp.arg == "BeamFrequency":
-        return "[%s; 5]" % tp.target.name
+            return "[%s is %s]" % (tp.arg(0).name, tp.name)
+    elif tp.name == "map" and tp.arg(0) == "ShipSystem":
+        return "[%s; 8]" % tp.arg(0).name
+    elif tp.name == "map" and tp.arg(0) == "BeamFrequency":
+        return "[%s; 5]" % tp.arg(0).name
     elif tp.name == "bitflags":
         return "[%s is bitflags_u32]" % tp.arg
     else:
@@ -71,21 +71,18 @@ def update_type(tp):
     if is_primitive(tp):
         return "Option<%s>" % primitive_map[tp.name]
     elif tp.name == "sizedarray":
-        type = update_type(tp.target)
-        return "[%s; %d]" % (type, tp.arg)
-    elif tp.name in ("enum8", "enum32"):
-        return "Option<%s>" % (tp.target.name)
+        type = update_type(tp.arg(0))
+        return "[%s; %d]" % (type, int(tp.arg(1).name))
+    elif tp.name == "enum":
+        return "Option<%s>" % (tp.arg(1).name)
     elif tp.name == "map" and tp.arg == "ShipSystem":
-        return "[Option<%s>; 8]" % tp.target.name
+        return "[Option<%s>; 8]" % tp.arg(0).name
     elif tp.name == "map" and tp.arg == "BeamFrequency":
-        return "[Option<%s>; 5]" % tp.target.name
+        return "[Option<%s>; 5]" % tp.arg(0).name
     elif tp.name == "bitflags":
-        return "Option<%s>" % tp.arg
+        return "Option<%s>" % tp.arg(1).name
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
 def is_primitive(tp):
     return tp.name in primitive_map
-
-def is_simple(tp):
-    return is_primitive(tp) or tp.name in ("enum8", "enum32")

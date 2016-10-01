@@ -54,11 +54,11 @@ impl Ship
 def visit(parser, res):
     for field in parser.fields:
         if field.type.name == "struct":
-            res[field.type.arg] = (field.type, field.name, None, None)
+            res[field.type.arg(0).name] = (field.type, field.name, None, None)
         elif field.type.name == "parser":
-            prs = parsers.get(field.type.arg)
+            prs = parsers.get(field.type.arg(0).name)
             for fld in prs.fields:
-                res[fld.type.arg] = (fld.type, field.name, fld.name, prs.arg)
+                res[fld.type.arg(0).name] = (fld.type, field.name, fld.name, prs.arg)
 
 def get_packet(type):
     if "::" in name:
@@ -84,15 +84,17 @@ def get_padding(info):
 % if type.name == "sizedarray":
 try!(wtr.write_array(${fld.name}));\
 % elif type.name == "array":
-%   if not type.arg:
+%   if len(type._args) < 2:
 try!(wtr.write_array(${fld.name}));\
-%   elif len(type.arg) <= 4 and name != "ServerPacket::ObjectUpdate":
-try!(wtr.write_array_u8(${fld.name}, ${type.arg}));\
+%   elif len(type.arg(1).name) <= 4 and name != "ServerPacket::ObjectUpdate":
+try!(wtr.write_array_u8(${fld.name}, ${type.arg(1).name}));\
 %   else:
-try!(wtr.write_array_u32(${fld.name}, ${type.arg}));\
+try!(wtr.write_array_u32(${fld.name}, ${type.arg(1).name}));\
 %   endif
 % elif type.name == "struct":
 try!(${fld.name}.write(&mut wtr));
+% elif type.name == "enum":
+try!(wtr.write_${type.name}${type.arg(0).name[1:]}(${fld.name}));\
 % elif name == "ServerPacket::ConsoleStatus" and fld.name == "console_status":
 for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }\
 % else:
