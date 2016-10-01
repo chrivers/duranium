@@ -87,10 +87,9 @@ impl ${object.name}Update {
     }
 
     #[allow(unused_mut)]
-    pub fn write(&self, object_type: ObjectType, header_size: usize, mask_byte_size: usize, skip_fields: usize) -> Result<Vec<u8>>
+    pub fn write(&self, object_type: ObjectType, mask_byte_size: usize, skip_fields: usize) -> Result<Vec<u8>>
     {
         let mut wtr = ArtemisEncoder::new();
-        assert_eq!(header_size, 1);
         let mut mask = BitWriter::fixed_size(mask_byte_size, skip_fields);
         % for field in object.fields:
         trace!("Writing field ${object.name}::${field.name}");
