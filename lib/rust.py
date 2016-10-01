@@ -18,7 +18,7 @@ primitive_map = {
 def declare_type(tp):
     if not tp:
         raise ValueError("Empty type")
-    if tp.name in primitive_map:
+    if is_primitive(tp):
         return primitive_map[tp.name]
     elif tp.name in ("string", "ascii_string"):
         return "String"
@@ -58,3 +58,15 @@ def declare_update_type(tp):
 
 def is_primitive(tp):
     return tp.name in primitive_map
+
+def reader_function(tp):
+    if is_primitive(tp):
+        return "read_%s" % primitive_map[tp.name]
+    elif tp.name == "string":
+        return "read_string"
+    elif tp.name == "enum" and tp[0].name == "u8":
+        return "read_enum8"
+    elif tp.name == "enum" and tp[0].name == "u32":
+        return "read_enum32"
+    else:
+        raise TypeError("No direct reader function for [%r]" % tp)
