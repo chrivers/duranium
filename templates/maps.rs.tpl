@@ -31,15 +31,17 @@ impl CanDecode<${flag.name}> for ${flag.name}
 }
 % endfor
 
-impl IterEnum<ConsoleType> for ConsoleType {
-    fn iter_enum() -> &'static [ConsoleType]
+% for item in [enums.get("ConsoleType")]:
+impl IterEnum<${item.name}> for ${item.name} {
+    fn iter_enum() -> &'static [${item.name}]
     {
-        static TYPES: &'static [ConsoleType] =
+        static TYPES: &'static [${item.name}] =
             &[
-            % for field in enums.get("ConsoleType").fields:
-                ConsoleType::${field.name},
+            % for field in enums.get(item.name).fields:
+                ${item.name}::${field.name},
             % endfor
             ];
         TYPES
     }
 }
+% endfor
