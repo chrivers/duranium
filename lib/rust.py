@@ -41,11 +41,11 @@ def declare_type(tp):
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
-def update_type(tp):
+def declare_update_type(tp):
     if not tp:
         raise ValueError("Empty type")
     elif tp.name == "sizedarray":
-        type = update_type(tp[0])
+        type = declare_update_type(tp[0])
         return "[%s; %d]" % (type, int(tp[1].name))
     elif tp.name == "map" and tp.arg == "ShipSystem":
         return "[Option<%s>; 8]" % tp[0].name

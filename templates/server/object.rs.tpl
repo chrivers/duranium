@@ -81,9 +81,9 @@ pub struct ${object.name}Update {
     object_id: u32,
 % for field in object.fields:
     % if object.name == "PlayerShipUpgrade":
-    pub ${"{:30}".format(field.name+":")} ${rust.update_type(field.type)},
+    pub ${"{:30}".format(field.name+":")} ${rust.declare_update_type(field.type)},
     % else:
-    pub ${field.name}: ${rust.update_type(field.type)},
+    pub ${field.name}: ${rust.declare_update_type(field.type)},
     % endif
 % endfor
 }
