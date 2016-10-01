@@ -156,7 +156,7 @@ def read_update_field(rdr, mask, object, field, type):
         return "try_update_parse!(%s, %s.read_item())" % (mask, rdr)
     elif type.name == "sizedarray":
         rep = int(type[1].name)
-        return "[%s, ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
+        return "[ %s ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
     else:
         return "try_update_parse!(%s, %s.%s())" % (mask, rdr, reader_function(type))
 
