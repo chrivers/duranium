@@ -1,4 +1,4 @@
-<% import rust as lang %>\
+<% import rust %>\
 #![allow(unused_variables)]
 use std::io;
 use std::io::Result;
@@ -22,7 +22,7 @@ pub struct ${object.name} {
     object_id: u32,
 % for field in object.fields:
     % if object.name == "PlayerShipUpgrade":
-    ${"{:30}".format(field.name+":")} ${lang.rust_type(field.type)}, // ${"".join(field.comment)}
+    ${"{:30}".format(field.name+":")} ${rust.declare_type(field.type)}, // ${"".join(field.comment)}
     % else:
     % if not loop.first:
 
@@ -30,15 +30,17 @@ pub struct ${object.name} {
     % for line in util.format_comment(field.comment, indent="// ", width=74):
     ${line}
     % endfor
-    pub ${field.name}: ${lang.rust_type(field.type)},
+    pub ${field.name}: ${rust.declare_type(field.type)},
     % endif
 % endfor
 }
 <%def name="read_update_field(rdr, mask, object, field, type)">\
 % if type.name == "enum" and type[1].name == "OrdnanceType":
 try_update_parse_opt!(${mask}, ${rdr}, OrdnanceType)\
-% elif lang.is_primitive(type):
+% elif rust.is_primitive(type):
 try_update_parse!(${mask}, ${rdr}.read_${type.name}())\
+% elif type.name in ("string", "ascii_string"):
+try_update_parse!(${mask}, ${rdr}.read_string())\
 % elif type.name == "bitflags":
 try_update_parse!(${mask}, ${rdr}.read_item())\
 % elif type.name == "enum":
@@ -66,7 +68,7 @@ write_single_field!(${fieldname}.map(|v| v.bits()), ${wtr}, ${mask}, write_u32)\
 ##${write_update_field(wtr, mask, field, type.target)}; \
 ##% endfor
 for _elem in ${fieldname}.iter() { ${write_update_field(wtr, mask, "*_elem", type[0])} }\
-% elif lang.is_primitive(type):
+% elif rust.is_primitive(type):
 write_single_field!(${fieldname}, ${wtr}, ${mask}, write_${type.name})\
 % elif type.name == "enum":
 write_single_field!(${fieldname}, ${wtr}, ${mask}, write_enum${type[0].name[1:]})\
@@ -79,9 +81,9 @@ pub struct ${object.name}Update {
     object_id: u32,
 % for field in object.fields:
     % if object.name == "PlayerShipUpgrade":
-    pub ${"{:30}".format(field.name+":")} ${lang.update_type(field.type)},
+    pub ${"{:30}".format(field.name+":")} ${rust.update_type(field.type)},
     % else:
-    pub ${field.name}: ${lang.update_type(field.type)},
+    pub ${field.name}: ${rust.update_type(field.type)},
     % endif
 % endfor
 }

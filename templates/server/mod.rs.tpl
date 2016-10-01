@@ -1,4 +1,4 @@
-<% import rust as lang %>\
+<% import rust %>\
 pub mod reader;
 pub mod writer;
 pub mod object;
@@ -24,7 +24,7 @@ pub enum ${packet.name}
         % for line in util.format_comment(field.comment, indent="/// ", width=74):
         ${line}
         % endfor
-        ${field.name}: ${lang.rust_type(field.type)},
+        ${field.name}: ${rust.declare_type(field.type)},
         % endfor
     },
 

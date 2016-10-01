@@ -1,4 +1,4 @@
-<% import rust as lang %>\
+<% import rust %>\
 use std::io;
 
 use ::packet::enums::*;
@@ -33,7 +33,7 @@ pub struct ${struct.name}
     % for line in util.format_comment(field.comment, indent="/// ", width=74):
     ${line}
     % endfor
-    pub ${field.name}: ${lang.rust_type(field.type)},
+    pub ${field.name}: ${rust.declare_type(field.type)},
     % endfor
 }
 
