@@ -30,7 +30,7 @@ impl CanEncode for ${struct.name}
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
     {
         % for field in struct.fields:
-        ${rust.write_struct_field("self.%s" % field.name, field.type)};
+        ${rust.write_field(None, "self.%s" % field.name, field.type)};
         % endfor
         Ok(())
     }

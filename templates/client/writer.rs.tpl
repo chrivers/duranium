@@ -86,7 +86,7 @@ impl FrameWriter for ClientPacketWriter
                 packet_type!(wtr, frametype::${info[1]});
             % endif
             % for fld in get_packet(info[0]).fields:
-                ${rust.write_field(name, fld, fld.type)};
+                ${rust.write_field(name, fld.name, fld.type)};
             % endfor
             % for x in range(get_padding(info)):
                 % if loop.first:
