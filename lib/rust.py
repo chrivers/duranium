@@ -38,7 +38,7 @@ def declare_type(tp):
         return tp[1].name
     elif tp.name == "object":
         return "Object"
-    elif is_primitive(tp):
+    elif tp.name in primitive_map:
         return primitive_map[tp.name]
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
@@ -51,11 +51,8 @@ def declare_update_type(tp):
     else:
         return "Option<%s>" % declare_type(tp)
 
-def is_primitive(tp):
-    return tp.name in primitive_map
-
 def reader_function(tp):
-    if is_primitive(tp):
+    if tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
     elif tp.name in "string":
         return "read_string"
@@ -69,7 +66,7 @@ def reader_function(tp):
         raise TypeError("No reader function for [%r]" % tp)
 
 def writer_function(tp):
-    if is_primitive(tp):
+    if tp.name in primitive_map:
         return "write_%s" % primitive_map[tp.name]
     elif tp.name == "string":
         return "write_string"
