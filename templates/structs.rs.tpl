@@ -22,9 +22,9 @@ pub struct ${struct.name}
 }
 
 % endfor
-
 % for struct in structs:
 <% if struct.name == "Update": continue %>\
+
 impl CanEncode for ${struct.name}
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
@@ -49,5 +49,4 @@ impl CanDecode<${struct.name}> for ${struct.name}
         )
     }
 }
-
 % endfor

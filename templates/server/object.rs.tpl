@@ -15,8 +15,8 @@ use ::stream::FrameReadAttempt;
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
 }
-
 % for object in objects:
+
 #[derive(Debug)]
 pub struct ${object.name} {
     object_id: u32,
@@ -119,5 +119,4 @@ impl fmt::Debug for ${object.name}Update {
         Ok(())
     }
 }
-
 % endfor
