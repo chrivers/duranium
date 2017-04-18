@@ -45,7 +45,7 @@ impl Ship
     {
         try!(wtr.write_enum32(self.drive_type));
         try!(wtr.write_u32(self.ship_type));
-        try!(wtr.write_u32(self.accent_color));
+        try!(wtr.write_f32(self.accent_hue));
         try!(wtr.write_u32(self.__unknown_1));
         try!(wtr.write_string(&self.name));
         Ok(())
