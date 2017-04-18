@@ -59,7 +59,12 @@ impl FrameReader for ClientPacketReader
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
+                        ${fld.name}: {
+                            trace!("Reading field ${field.name}::${fld.name}");
+                            let f = ${rust.read_struct_field_parse(fld.type)};
+                            trace!("  -> {:?}", f);
+                            f
+                        },
                         % endfor
                     },
                     % endfor
