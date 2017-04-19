@@ -3,7 +3,7 @@
 use std::io;
 use std::io::Result;
 use std::fmt;
-use enum_primitive::FromPrimitive;
+use num::{ToPrimitive, FromPrimitive};
 
 use ::packet::enums::*;
 use ::packet::server::update::ObjectUpdate;
@@ -97,7 +97,7 @@ impl ${object.name}Update {
         ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
         % endfor
         let mut res = ArtemisEncoder::new();
-        try!(res.write_u8(object_type as u8));
+        try!(res.write_u8(object_type.to_u8().unwrap()));
         try!(res.write_u32(self.object_id));
         try!(res.write_bytes(&mask.into_inner()));
         try!(res.write_bytes(&wtr.into_inner()));

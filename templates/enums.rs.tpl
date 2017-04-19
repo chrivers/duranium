@@ -1,54 +1,56 @@
 #![allow(dead_code)]
 
+use std::io::Result;
+use wire::ArtemisDecoder;
+use wire::traits::CanEncode;
+use wire::traits::CanDecode;
 use num::ToPrimitive;
-
-macro_rules! enum_to_primitive {
-    ($name:ident) => {
-        impl ToPrimitive for $name {
-            fn to_i64(&self) -> Option<i64> {
-                return Some(*self as i64);
-            }
-
-            fn to_u64(&self) -> Option<u64> {
-                return Some(*self as u64);
-            }
-        }
-    }
-}
-
-macro_rules! enum_primitive {
-    (
-        $(#[$mt:meta])*
-        pub enum $name:ident {
-            $($field:tt)*
-        }
-    ) =>
-    {
-        enum_from_primitive! {
-            $(#[$mt])*
-            #[derive(Debug,Clone,Copy)]
-            pub enum $name {
-                $($field)*
-            }
-        }
-        enum_to_primitive!($name);
-    }
-}
+use num::FromPrimitive;
 
 % for enum in enums:
 <% if enum.name == "FrameType": continue %>\
-enum_primitive! {
-    %if enum.name in ("AudioMode", "ConsoleType"):
-    #[derive(Eq,PartialEq,Hash)]
-    %endif
-    %if enum.name == "ObjectType":
-    #[allow(non_camel_case_types)]
-    %endif
-    pub enum ${enum.name}
-    {
-        % for case in enum.fields:
-        ${case.aligned_name} = ${case.aligned_hex_value},
-        % endfor
+%if enum.name in ("AudioMode", "ConsoleType"):
+#[derive(Eq,PartialEq,Hash)]
+%endif
+%if enum.name == "ObjectType":
+#[allow(non_camel_case_types)]
+%endif
+#[derive(Debug,Copy,Clone)]
+pub enum ${enum.name}
+{
+    % for case in enum.fields:
+    ${case.name},
+    % endfor
+    __unknown(u32),
+}
+
+impl FromPrimitive for ${enum.name} {
+    fn from_i64(n: i64) -> Option<${enum.name}> {
+        return Self::from_u64((n & 0xFFFFFFFFi64) as u64);
+    }
+
+    fn from_u64(n: u64) -> Option<${enum.name}> {
+        match n {
+            % for case in enum.fields:
+            ${case.aligned_hex_value} => Some(${enum.name}::${case.name}),
+            % endfor
+            val => Some(${enum.name}::__unknown(val as u32))
+        }
+    }
+}
+
+impl ToPrimitive for ${enum.name} {
+    fn to_i64(&self) -> Option<i64> {
+        Self::to_u64(self).map(|x| x as i64)
+    }
+
+    fn to_u64(&self) -> Option<u64> {
+        match self {
+            % for case in enum.fields:
+            &${enum.name}::${case.name} => Some(${case.aligned_hex_value}),
+            % endfor
+            &${enum.name}::__unknown(val) => Some(val as u64)
+        }
     }
 }
 

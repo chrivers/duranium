@@ -47,6 +47,7 @@ impl FrameReader for ObjectUpdateReader
 <% if type.name == "END_MARKER": continue %>\
             ObjectType::${type.name.ljust(18)} => ${type.name}Update::read(&mut rdr, ${objects.get(type.name)._match}),
             % endfor
+            ObjectType::__unknown(x)       => FrameReadAttempt::Error(make_error("unknown object update type")),
         }
     }
 }

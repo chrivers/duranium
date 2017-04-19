@@ -86,7 +86,7 @@ def read_struct_field(type):
 
 def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
-        return "try_parse!(rdr.read_item())"
+        return "try_parse!(rdr.read())"
     elif type.name == "array" and type[0] and type[0].name == "struct" and type[0][0].name == "ObjectUpdate":
         return "try_subparse!(read_frame_stream(buffer, &mut rdr))"
     elif type.name == "array":
@@ -114,7 +114,7 @@ def write_field(objname, fieldname, type):
     if objname == "ServerPacket::ConsoleStatus" and fieldname == "console_status":
         return "for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }"
     elif objname == "ClientPacket::GameMasterMessage" and fieldname == "console_type":
-        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct as u32 + 1)))"
+        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct.to_u32().unwrap_or(0) + 1)))"
     ## ordinary cases
     elif type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
         return "try!(wtr.write_array(%s))" % fieldname
@@ -141,7 +141,7 @@ def read_update_field(rdr, mask, object, field, type):
     if type.name == "enum" and type[1].name == "OrdnanceType":
         return "try_update_parse_opt!(%s, %s, OrdnanceType)" % (mask, rdr)
     elif type.name == "bitflags":
-        return "try_update_parse!(%s, %s.read_item())" % (mask, rdr)
+        return "try_update_parse!(%s, %s.read())" % (mask, rdr)
     elif type.name == "sizedarray":
         rep = int(type[1].name)
         return "[ %s ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)

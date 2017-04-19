@@ -3,6 +3,7 @@
 
 use std::io;
 use std::io::Result;
+use num::ToPrimitive;
 
 use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
