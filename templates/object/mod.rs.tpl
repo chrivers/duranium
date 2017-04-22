@@ -7,7 +7,7 @@ use std::fmt;
 use num::{ToPrimitive, FromPrimitive};
 
 use ::packet::enums::*;
-use ::packet::server::update::ObjectUpdate;
+use ::packet::update::ObjectUpdate;
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::wire::bitwriter::BitWriter;
 use ::wire::bitreader::BitIterator;

@@ -2,12 +2,10 @@
 ${rust.header()}
 pub mod reader;
 pub mod writer;
-pub mod object;
-pub mod update;
 
 use ::packet::enums::*;
 use ::packet::structs::*;
-use ::packet::server::update::ObjectUpdate;
+use ::packet::update::ObjectUpdate;
 
 use std::collections::HashMap;
 <% packet = packets.get("ServerPacket") %>\
