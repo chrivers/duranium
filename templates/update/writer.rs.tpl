@@ -2,12 +2,12 @@
 ${rust.header()}
 use std::io;
 use std::io::Result;
+use num::ToPrimitive;
 
-use ::packet::enums::*;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
 use ::stream::FrameWriter;
-use ::packet::update::ObjectUpdate;
+use ::packet::update::*;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
@@ -45,3 +45,25 @@ impl FrameWriter for ObjectUpdateWriter
         }
     }
 }
+
+% for object in objects:
+impl ${object.name}Update {
+
+    #[allow(unused_mut)]
+    pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
+    {
+        let mut wtr = ArtemisEncoder::new();
+        let mut mask = BitWriter::fixed_size(mask_byte_size, 0);
+        % for field in object.fields:
+        trace!("Writing field ${object.name}::${field.name}");
+        ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
+        % endfor
+        let mut res = ArtemisEncoder::new();
+        res.write_u8(object_type.to_u8().unwrap())?;
+        res.write_u32(self.object_id)?;
+        res.write_bytes(&mask.into_inner())?;
+        res.write_bytes(&wtr.into_inner())?;
+        Ok(res.into_inner())
+    }
+}
+% endfor
