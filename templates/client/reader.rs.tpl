@@ -2,7 +2,7 @@
 #![allow(dead_code)]
 
 use std::io;
-use enum_primitive::FromPrimitive;
+use num::FromPrimitive;
 
 use ::packet::enums::{ConsoleType, frametype};
 use ::frame::{ArtemisPayload};
