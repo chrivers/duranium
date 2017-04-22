@@ -1,9 +1,5 @@
 #![allow(dead_code)]
 
-use std::io::Result;
-use wire::ArtemisDecoder;
-use wire::traits::CanEncode;
-use wire::traits::CanDecode;
 use num::ToPrimitive;
 use num::FromPrimitive;
 
