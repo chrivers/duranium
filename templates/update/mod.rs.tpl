@@ -1,8 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io;
-
 use ::packet::enums::*;
 use ::wire::bitwriter::BitWriter;
 use ::wire::bitreader::BitIterator;
