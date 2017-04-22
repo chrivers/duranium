@@ -2,11 +2,9 @@
 ${rust.header()}
 use std::io;
 
-use ::packet::enums::*;
-use ::packet::object::*;
 use ::wire::ArtemisDecoder;
 use ::stream::{FrameReader, FrameReadAttempt};
-use ::packet::update::ObjectUpdate;
+use ::packet::update::*;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)

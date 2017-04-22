@@ -2,31 +2,21 @@
 ${rust.header()}
 #![allow(unused_variables)]
 use std::io;
+use std::io::Result;
+use std::fmt;
+use num::{ToPrimitive, FromPrimitive};
 
 use ::packet::enums::*;
-use ::packet::update::*;
-use ::wire::ArtemisDecoder;
+use ::packet::update::ObjectUpdate;
+use ::wire::{ArtemisDecoder, ArtemisEncoder};
+use ::wire::bitwriter::BitWriter;
+use ::wire::bitreader::BitIterator;
 use ::stream::FrameReadAttempt;
 
-% for object in objects:
-
-#[derive(Debug)]
-pub struct ${object.name} {
-    object_id: u32,
-% for field in object.fields:
-    % if object.name == "PlayerShipUpgrade":
-    ${"{:30}".format(field.name+":")} ${rust.declare_type(field.type)}, // ${"".join(field.comment)}
-    % else:
-    % if not loop.first:
-
-    % endif
-    % for line in util.format_comment(field.comment, indent="// ", width=74):
-    ${line}
-    % endfor
-    pub ${field.name}: ${rust.declare_type(field.type)},
-    % endif
-% endfor
+fn make_error(desc: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::Other, desc)
 }
+% for object in objects:
 
 impl ${object.name} {
     pub fn read(rdr: &mut ArtemisDecoder, header_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
@@ -45,4 +35,5 @@ impl ${object.name} {
         FrameReadAttempt::Closed
     }
 }
+
 % endfor
