@@ -1,4 +1,5 @@
 <% import rust %>\
+${rust.header()}
 use std::io;
 
 use ::wire::{ArtemisDecoder};

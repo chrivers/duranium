@@ -1,4 +1,5 @@
 <% import rust %>\
+${rust.header()}
 #![allow(dead_code)]
 
 use std::io;

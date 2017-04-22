@@ -1,3 +1,5 @@
+<% import rust %>\
+${rust.header()}
 use std::io;
 use std::collections::HashMap;
 use ::packet::enums::*;

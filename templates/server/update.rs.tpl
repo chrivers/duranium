@@ -1,3 +1,5 @@
+<% import rust %>\
+${rust.header()}
 use std::io;
 use std::io::Result;
 

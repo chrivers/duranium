@@ -1,4 +1,5 @@
 <% import rust %>\
+${rust.header()}
 pub mod reader;
 pub mod writer;
 pub mod object;
