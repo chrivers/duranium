@@ -27,11 +27,11 @@ fn make_error(desc: &str) -> io::Error {
 
 macro_rules! packet_type {
     ($wtr:ident, $major:expr) => {
-        try!($wtr.write_u32($major));
+        $wtr.write_u32($major)?;
     };
     ($wtr:ident, $major:expr, $minor:expr) => {
-        try!($wtr.write_u32($major));
-        try!($wtr.write_u32($minor));
+        $wtr.write_u32($major)?;
+        $wtr.write_u32($minor)?;
     };
 }
 <%
@@ -94,7 +94,7 @@ impl FrameWriter for ClientPacketWriter
                 % if loop.first:
                 // padding
                 % endif
-                try!(wtr.write_u32(0));
+                wtr.write_u32(0)?;
             % endfor
             },
 

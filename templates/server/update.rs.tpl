@@ -21,7 +21,7 @@ impl CanEncode for ObjectUpdate {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         let mut upwtr = ObjectUpdateWriter::new();
-        try!(wtr.write_bytes(&try!(upwtr.write_frame(self))));
+        wtr.write_bytes(&upwtr.write_frame(self)?)?;
         Ok(())
     }
 }
@@ -76,7 +76,7 @@ impl FrameWriter for ObjectUpdateWriter
         match frame {
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
-            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => Ok(try!(data.write(ObjectType::${type.name}, ${objects.get(type.name)._match}))),
+            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => Ok(data.write(ObjectType::${type.name}, ${objects.get(type.name)._match})?),
             % endfor
             &ObjectUpdate::Whale(_)              => Err(make_error("unsupported protocol version")),
         }

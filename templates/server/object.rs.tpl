@@ -98,10 +98,10 @@ impl ${object.name}Update {
         ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
         % endfor
         let mut res = ArtemisEncoder::new();
-        try!(res.write_u8(object_type.to_u8().unwrap()));
-        try!(res.write_u32(self.object_id));
-        try!(res.write_bytes(&mask.into_inner()));
-        try!(res.write_bytes(&wtr.into_inner()));
+        res.write_u8(object_type.to_u8().unwrap())?;
+        res.write_u32(self.object_id)?;
+        res.write_bytes(&mask.into_inner())?;
+        res.write_bytes(&wtr.into_inner())?;
         Ok(res.into_inner())
     }
 }
@@ -109,7 +109,7 @@ impl ${object.name}Update {
 impl fmt::Debug for ${object.name}Update {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
-        try!(write!(f, "[{}]\n", self.object_id));
+        write!(f, "[{}]\n", self.object_id)?;
         % for field in object.fields:
         % if field.type.name in ("array", "sizedarray"):
         debug_opt_array!(self, f, &self.${field.name});

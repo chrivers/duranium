@@ -27,15 +27,15 @@ fn make_error(desc: &str) -> io::Error {
 
 macro_rules! packet_type {
     ($wtr:ident, $major:expr) => {
-        try!($wtr.write_u32($major));
+        $wtr.write_u32($major)?;
     };
     ($wtr:ident, $major:expr, $minor:expr => u8) => {
-        try!($wtr.write_u32($major));
-        try!($wtr.write_u8($minor));
+        $wtr.write_u32($major)?;
+        $wtr.write_u8($minor)?;
     };
     ($wtr:ident, $major:expr, $minor:expr) => {
-        try!($wtr.write_u32($major));
-        try!($wtr.write_u32($minor));
+        $wtr.write_u32($major)?;
+        $wtr.write_u32($minor)?;
     };
 }
 
@@ -44,11 +44,11 @@ impl Ship
 {
     pub fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        try!(wtr.write_enum32(self.drive_type));
-        try!(wtr.write_u32(self.ship_type));
-        try!(wtr.write_f32(self.accent_hue));
-        try!(wtr.write_u32(self.__unknown_1));
-        try!(wtr.write_string(&self.name));
+        wtr.write_enum32(self.drive_type)?;
+        wtr.write_u32(self.ship_type)?;
+        wtr.write_f32(self.accent_hue)?;
+        wtr.write_u32(self.__unknown_1)?;
+        wtr.write_string(&self.name)?;
         Ok(())
     }
 }
@@ -115,7 +115,7 @@ impl FrameWriter for ServerPacketWriter
                 % if loop.first:
                 // padding
                 % endif
-                try!(wtr.write_u32(0));
+                wtr.write_u32(0)?;
             % endfor
             },
 

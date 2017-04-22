@@ -82,7 +82,7 @@ def writer_function(tp):
         raise TypeError("No writer function for [%r]" % tp)
 
 def read_struct_field(type):
-    return "try!(rdr.%s())" % reader_function(type)
+    return "rdr.%s()?" % reader_function(type)
 
 def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
@@ -112,30 +112,30 @@ def read_struct_field_parse(type):
 def write_field(objname, fieldname, type):
     ## special cases
     if objname == "ServerPacket::ConsoleStatus" and fieldname == "console_status":
-        return "for console in ConsoleType::iter_enum() { try!(wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))); }"
+        return "for console in ConsoleType::iter_enum() { wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))?; }"
     elif objname == "ClientPacket::GameMasterMessage" and fieldname == "console_type":
-        return "try!(wtr.write_u32(console_type.map_or(0, |ct| ct.to_u32().unwrap_or(0) + 1)))"
+        return "wtr.write_u32(console_type.map_or(0, |ct| ct.to_u32().unwrap_or(0) + 1))?"
     ## ordinary cases
     elif type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
-        return "try!(wtr.write_array(%s))" % fieldname
+        return "wtr.write_array(%s)?" % fieldname
     elif type.name == "string" and objname == None:
         return write_field(True, "&" + fieldname, type)
     elif type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
-            return "try!(wtr.write_array_u8(%s, %s))" % (fieldname, type[1].name)
+            return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
-            return "try!(wtr.write_array_u32(%s, %s))" % (fieldname, type[1].name)
+            return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
     elif type.name == "option":
-        return "try!(wtr.write_option(%s))" % fieldname
+        return "wtr.write_option(%s)?" % fieldname
     elif type.name in ("struct", "map"):
-        return "try!(%s.write(&mut wtr))" % (fieldname)
+        return "%s.write(&mut wtr)?" % (fieldname)
     elif type.name == "enum":
         if type[0].name == "u8":
-            return "try!(wtr.write_enum8(%s))" % (fieldname)
+            return "wtr.write_enum8(%s)?" % (fieldname)
         elif type[0].name == "u32":
-            return "try!(wtr.write_enum32(%s))" % (fieldname)
+            return "wtr.write_enum32(%s)?" % (fieldname)
     else:
-        return "try!(wtr.%s(%s))" % (writer_function(type), fieldname)
+        return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
 def read_update_field(rdr, mask, object, field, type):
     if type.name == "enum" and type[1].name == "OrdnanceType":

@@ -13,7 +13,7 @@ impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, Con
     {
         let mut map = HashMap::new();
         % for case in constype.fields:
-        map.insert(ConsoleType::${"%-15s" % (case.name + ",")} try!(rdr.read_enum8()));
+        map.insert(ConsoleType::${"%-15s" % (case.name + ",")} rdr.read_enum8()?);
         % endfor
         Ok(map)
     }
@@ -28,7 +28,7 @@ impl CanDecode<${flag.name}> for ${flag.name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<${flag.name}, io::Error>
     {
-        ${flag.name}::from_bits(try!(rdr.read_u32())).ok_or(make_error("could not parse ${flag.name} bitflags"))
+        ${flag.name}::from_bits(rdr.read_u32()?).ok_or(make_error("could not parse ${flag.name} bitflags"))
     }
 }
 % endfor
