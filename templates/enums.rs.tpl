@@ -21,7 +21,7 @@ pub enum ${enum.name}
     % for case in enum.fields:
     ${case.name},
     % endfor
-    __unknown(u32),
+    __Unknown(u32),
 }
 
 impl FromPrimitive for ${enum.name} {
@@ -34,7 +34,7 @@ impl FromPrimitive for ${enum.name} {
             % for case in enum.fields:
             ${case.aligned_hex_value} => Some(${enum.name}::${case.name}),
             % endfor
-            val => Some(${enum.name}::__unknown(val as u32))
+            val => Some(${enum.name}::__Unknown(val as u32))
         }
     }
 }
@@ -49,7 +49,7 @@ impl ToPrimitive for ${enum.name} {
             % for case in enum.fields:
             &${enum.name}::${case.name} => Some(${case.aligned_hex_value}),
             % endfor
-            &${enum.name}::__unknown(val) => Some(val as u64)
+            &${enum.name}::__Unknown(val) => Some(val as u64)
         }
     }
 }
