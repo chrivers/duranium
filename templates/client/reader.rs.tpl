@@ -24,16 +24,6 @@ fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
 }
 
-macro_rules! try_enum {
-    ($t:tt, $n:expr) => {
-        match $t::from_u32($n) {
-            None => return Err(
-                make_error(&format!("unknown {} 0x{:02x}", stringify!($t), $n))
-            ),
-            Some(x) => x,
-        }
-    }
-}
 <% parser = parsers.get("ClientParser") %>
 impl FrameReader for ClientPacketReader
 {
