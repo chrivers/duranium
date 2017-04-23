@@ -43,7 +43,7 @@ impl FrameReader for ClientPacketReader
     fn read_frame(&mut self, buffer: &[u8]) -> FrameReadAttempt<Self::Frame, Self::Error>
     {
         let mut rdr = ArtemisDecoder::new(buffer);
-        return Ok(FramePoll::Ready(0, ArtemisPayload::ClientPacket(match try!(rdr.read_u32()) {
+        return Ok(FramePoll::Ready(0, ArtemisPayload::ClientPacket(match rdr.read_u32()? {
 
             % for parser in [parser]:
             % for field in parser.fields:
@@ -55,7 +55,7 @@ impl FrameReader for ClientPacketReader
             },
             % else:
             supertype @ frametype::${field.name} => {
-                match try!(rdr.read_${parser.arg}()) {
+                match rdr.read_${parser.arg}()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
