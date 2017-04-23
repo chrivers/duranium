@@ -19,15 +19,6 @@ impl ClientPacketWriter
     pub fn new() -> Self { ClientPacketWriter { } }
 }
 
-macro_rules! packet_type {
-    ($wtr:ident, $major:expr) => {
-        $wtr.write_u32($major)?;
-    };
-    ($wtr:ident, $major:expr, $minor:expr) => {
-        $wtr.write_u32($major)?;
-        $wtr.write_u32($minor)?;
-    };
-}
 <%
 def visit(parser, res):
     for field in parser.fields:
@@ -76,10 +67,9 @@ impl FrameWriter for ClientPacketWriter
             % endif
             % endfor
             } => {
+                wtr.write_u32(frametype::${info[1]})?;
             % if info[2]:
-                packet_type!(wtr, frametype::${info[1]}, ${info[2]});
-            % else:
-                packet_type!(wtr, frametype::${info[1]});
+                wtr.write_u32(${info[2]})?;
             % endif
             % for fld in get_packet(info[0]).fields:
                 ${rust.write_field(name, fld.name, fld.type)};
