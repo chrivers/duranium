@@ -6,7 +6,6 @@ use ::stream::FrameWriter;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::IterEnum;
 use ::packet::enums::*;
-use ::packet::structs::*;
 use ::packet::server::ServerPacket;
 
 pub struct ServerPacketWriter
@@ -16,19 +15,6 @@ pub struct ServerPacketWriter
 impl ServerPacketWriter
 {
     pub fn new() -> Self { ServerPacketWriter { } }
-}
-
-impl Ship
-{
-    pub fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        wtr.write_enum32(self.drive_type)?;
-        wtr.write_u32(self.ship_type)?;
-        wtr.write_f32(self.accent_hue)?;
-        wtr.write_u32(self.__unknown_1)?;
-        wtr.write_string(&self.name)?;
-        Ok(())
-    }
 }
 <%
 def visit(parser, res):
