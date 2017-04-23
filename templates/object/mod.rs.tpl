@@ -10,7 +10,7 @@ use ::packet::enums::*;
 pub struct ${object.name} {
     object_id: u32,
 % for field in object.fields:
-    % if object.name == "PlayerShipUpgrade":
+    % if object.name == "PlayerShipUpgrades":
     ${"{:30}".format(field.name+":")} ${rust.declare_type(field.type)}, // ${"".join(field.comment)}
     % else:
     % if not loop.first:
