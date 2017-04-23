@@ -1,24 +1,17 @@
 <% import rust %>\
 ${rust.header()}
-#![allow(unused_variables)]
+//#![allow(unused_variables)]
 use std::io;
-use std::io::Result;
-use std::fmt;
-use num::{ToPrimitive, FromPrimitive};
 
-use ::packet::enums::*;
+use ::packet::object::*;
 use ::packet::update::ObjectUpdate;
-use ::wire::{ArtemisDecoder, ArtemisEncoder};
-use ::wire::bitwriter::BitWriter;
-use ::wire::bitreader::BitIterator;
+use ::wire::ArtemisDecoder;
 use ::stream::FrameReadAttempt;
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
 % for object in objects:
 
 impl ${object.name} {
+    #[allow(unused_variables)]
     pub fn read(rdr: &mut ArtemisDecoder, header_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
     {
         ## let a = rdr.position();
