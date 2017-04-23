@@ -86,28 +86,28 @@ def read_struct_field(type):
 
 def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
-        return "try_parse!(rdr.read())"
+        return "try!(rdr.read())"
     elif type.name == "array" and type[0] and type[0].name == "struct" and type[0][0].name == "ObjectUpdate":
         return "try_subparse!(read_frame_stream(buffer, &mut rdr))"
     elif type.name == "array":
         if type[1]:
             if len(type[1].name) <= 4:
-                return "try_parse!(rdr.read_array_u8(%s))" % (type[1].name)
+                return "try!(rdr.read_array_u8(%s))" % (type[1].name)
             else:
-                return "try_parse!(rdr.read_array_u32(%s))" % (type[1].name)
+                return "try!(rdr.read_array_u32(%s))" % (type[1].name)
         else:
-            return "try_parse!(rdr.read_array())"
+            return "try!(rdr.read_array())"
     elif type.name in ("bool8", "bool16", "bool32"):
-        return "try_parse!(rdr.read_%s())" % type.name
+        return "try!(rdr.read_%s())" % type.name
     elif type.name == "option":
         if type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
-            return "{ match try_parse!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }"
+            return "{ match try!(rdr.read_u32()) { 0 => None, n => Some(try_enum!(ConsoleType, n - 1)) } }"
         elif type[0] and type[0].name == "string":
             return "rdr.read_string().ok()"
     elif type.name == "sizedarray":
         return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
     else:
-        return "try_parse!(rdr.%s())" % reader_function(type)
+        return "try!(rdr.%s())" % reader_function(type)
 
 def write_field(objname, fieldname, type):
     ## special cases

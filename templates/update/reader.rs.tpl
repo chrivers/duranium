@@ -5,7 +5,7 @@ use std::io;
 use num::FromPrimitive;
 
 use ::wire::ArtemisDecoder;
-use ::stream::{FrameReader, FrameReadAttempt};
+use ::stream::{FrameReader, FrameReadAttempt, FramePoll};
 use ::packet::update;
 use ::packet::update::ObjectUpdate;
 use ::packet::enums::ObjectType;
@@ -33,13 +33,13 @@ impl FrameReader for ObjectUpdateReader
     {
         let mut rdr = ArtemisDecoder::new(buffer);
         let typeid = rdr.read_enum8();
-        match try_parse!(typeid) {
-            ObjectType::END_MARKER         => return FrameReadAttempt::Closed,
+        match try!(typeid) {
+            ObjectType::END_MARKER         => return Ok(FramePoll::Closed),
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
             ObjectType::${type.name.ljust(18)} => update::${type.name}Update::read(&mut rdr, ${objects.get(type.name)._match}),
             % endfor
-            ObjectType::__Unknown(_)       => FrameReadAttempt::Error(make_error("unknown object update type")),
+            ObjectType::__Unknown(_)       => Err(make_error("unknown object update type")),
         }
     }
 }
@@ -50,8 +50,8 @@ impl update::${object.name}Update {
     {
         const HEADER_SIZE: u32 = 1;
         let a = rdr.position();
-        let object_id = try_parse!(rdr.read_u32());
-        let mask_bytes = try_parse!(rdr.read_bytes(mask_byte_size));
+        let object_id = try!(rdr.read_u32());
+        let mask_bytes = try!(rdr.read_bytes(mask_byte_size));
         let mut mask = BitIterator::new(mask_bytes, 0);
         let parse = update::${object.name}Update {
             object_id: object_id,
@@ -63,7 +63,7 @@ impl update::${object.name}Update {
             % endfor
         };
         let b = rdr.position();
-        FrameReadAttempt::Ok((b - a + HEADER_SIZE as u64) as usize, ObjectUpdate::${object.name}(parse))
+        Ok(FramePoll::Ready((b - a + HEADER_SIZE as u64) as usize, ObjectUpdate::${object.name}(parse)))
     }
 }
 % endfor

@@ -5,7 +5,7 @@ use std::io;
 use ::packet::object;
 use ::packet::update::ObjectUpdate;
 use ::wire::ArtemisDecoder;
-use ::stream::FrameReadAttempt;
+use ::stream::{FrameReadAttempt, FramePoll};
 
 % for object in objects:
 impl object::${object.name} {
@@ -23,7 +23,7 @@ impl object::${object.name} {
         ## };
         ## let b = rdr.position();
         ## FrameReadAttempt::Ok((b - a + header_size as u64) as usize, ObjectUpdate::${object.name}(parse))
-        FrameReadAttempt::Closed
+        Ok(FramePoll::Closed)
     }
 }
 
