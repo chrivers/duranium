@@ -1,8 +1,8 @@
 <% import rust %>\
 ${rust.header()}
 
-use num::ToPrimitive;
-use num::FromPrimitive;
+pub mod reader;
+pub mod writer;
 
 % for enum in enums:
 <% if enum.name == "FrameType": continue %>\
@@ -19,36 +19,6 @@ pub enum ${enum.name}
     ${case.name},
     % endfor
     __Unknown(u32),
-}
-
-impl FromPrimitive for ${enum.name} {
-    fn from_i64(n: i64) -> Option<${enum.name}> {
-        return Self::from_u64((n & 0xFFFFFFFFi64) as u64);
-    }
-
-    fn from_u64(n: u64) -> Option<${enum.name}> {
-        match n {
-            % for case in enum.fields:
-            ${case.aligned_hex_value} => Some(${enum.name}::${case.name}),
-            % endfor
-            val => Some(${enum.name}::__Unknown(val as u32))
-        }
-    }
-}
-
-impl ToPrimitive for ${enum.name} {
-    fn to_i64(&self) -> Option<i64> {
-        Self::to_u64(self).map(|x| x as i64)
-    }
-
-    fn to_u64(&self) -> Option<u64> {
-        match self {
-            % for case in enum.fields:
-            &${enum.name}::${case.aligned_name} => Some(${case.aligned_hex_value}),
-            % endfor
-            &${enum.name}::__Unknown(val) => Some(val as u64)
-        }
-    }
 }
 
 % endfor
