@@ -18,21 +18,6 @@ impl ServerPacketWriter
     pub fn new() -> Self { ServerPacketWriter { } }
 }
 
-macro_rules! packet_type {
-    ($wtr:ident, $major:expr) => {
-        $wtr.write_u32($major)?;
-    };
-    ($wtr:ident, $major:expr, $minor:expr => u8) => {
-        $wtr.write_u32($major)?;
-        $wtr.write_u8($minor)?;
-    };
-    ($wtr:ident, $major:expr, $minor:expr) => {
-        $wtr.write_u32($major)?;
-        $wtr.write_u32($minor)?;
-    };
-}
-
-
 impl Ship
 {
     pub fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
@@ -94,12 +79,11 @@ impl FrameWriter for ServerPacketWriter
             % endif
             % endfor
             } => {
+                wtr.write_u32(frametype::${info[1]})?;
             % if info[2] and info[3] == "u8":
-                packet_type!(wtr, frametype::${info[1]}, ${info[2]}u8 => u8);
+                wtr.write_u8(${info[2]})?;
             % elif info[2]:
-                packet_type!(wtr, frametype::${info[1]}, ${info[2]});
-            % else:
-                packet_type!(wtr, frametype::${info[1]});
+                wtr.write_u32(${info[2]})?;
             % endif
             % for fld in get_packet(info[0]).fields:
                 ${rust.write_field(name, fld.name, fld.type)};
