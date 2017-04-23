@@ -60,7 +60,7 @@ impl FrameWriter for ClientPacketWriter
         % for name, info in sorted(packet_ids.items()):
             &${name} {
             % for fld in get_packet(info[0]).fields:
-            % if fld.type.name in ("string", "struct", "sizedarray"):
+            % if rust.is_ref_type(fld.type):
                 ref ${fld.name},
             % else:
                 ${fld.name},
