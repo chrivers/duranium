@@ -8,7 +8,6 @@ use ::wire::ArtemisDecoder;
 use ::stream::FrameReadAttempt;
 
 % for object in objects:
-
 impl ${object.name} {
     #[allow(unused_variables)]
     pub fn read(rdr: &mut ArtemisDecoder, header_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
