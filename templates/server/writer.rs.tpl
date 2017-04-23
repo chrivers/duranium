@@ -1,8 +1,5 @@
 <% import rust %>\
 ${rust.header()}
-#![allow(dead_code)]
-
-use std::io;
 use std::io::Result;
 
 use ::stream::FrameWriter;
@@ -19,10 +16,6 @@ pub struct ServerPacketWriter
 impl ServerPacketWriter
 {
     pub fn new() -> Self { ServerPacketWriter { } }
-}
-
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
 }
 
 macro_rules! packet_type {
