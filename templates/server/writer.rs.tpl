@@ -87,7 +87,7 @@ impl FrameWriter for ServerPacketWriter
             &${name}
             {
             % for fld in get_packet(info[0]).fields:
-            % if fld.type.name in ("ascii_string", "string", "struct", "option", "array", "sizedarray", "map"):
+            % if rust.is_ref_type(fld.type):
                 ref ${fld.name},
             % else:
                 ${fld.name},

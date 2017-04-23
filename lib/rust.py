@@ -170,7 +170,7 @@ def get_parser(name):
     return context["parsers"].get(name)
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "sizedarray")
+    return typ.name in ("string", "struct", "sizedarray", "ascii_string", "array", "map", "option")
 
 def header():
     return \
