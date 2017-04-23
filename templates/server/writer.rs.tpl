@@ -40,25 +40,9 @@ def visit(parser, res):
             for fld in prs.fields:
                 res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg)
 
-def get_packet(type):
-    if "::" in name:
-        packetname, casename = name.split("::",1)
-        return packets.get(packetname).fields.get(casename)
-    else:
-        return packets.get(name)
-
 packet_ids = dict()
 parser = parsers.get("ServerParser")
 visit(parser, packet_ids)
-
-def get_padding(info):
-    packet = get_packet(info[0])
-    if info[1] == "valueInt":
-        return 1 - len(packet.fields)
-    elif info[1] == "valueFourInts":
-        return 4 - len(packet.fields)
-    else:
-        return 0
 %>
 impl FrameWriter for ServerPacketWriter
 {
@@ -71,7 +55,7 @@ impl FrameWriter for ServerPacketWriter
         % for name, info in sorted(packet_ids.items()):
             &${name}
             {
-            % for fld in get_packet(info[0]).fields:
+            % for fld in rust.get_packet(name).fields:
             % if rust.is_ref_type(fld.type):
                 ref ${fld.name},
             % else:
@@ -85,10 +69,10 @@ impl FrameWriter for ServerPacketWriter
             % elif info[2]:
                 wtr.write_u32(${info[2]})?;
             % endif
-            % for fld in get_packet(info[0]).fields:
+            % for fld in rust.get_packet(name).fields:
                 ${rust.write_field(name, fld.name, fld.type)};
             % endfor
-            % for x in range(get_padding(info)):
+            % for x in range(rust.sp_get_padding(name)):
                 % if loop.first:
                 // padding
                 % endif
