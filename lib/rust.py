@@ -138,9 +138,7 @@ def write_field(objname, fieldname, type):
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
 def read_update_field(rdr, mask, object, field, type):
-    if type.name == "enum" and type[1].name == "OrdnanceType":
-        return "try_update_parse_opt!(%s, %s, OrdnanceType)" % (mask, rdr)
-    elif type.name == "bitflags":
+    if type.name == "bitflags":
         return "try_update_parse!(%s, %s.read())" % (mask, rdr)
     elif type.name == "sizedarray":
         rep = int(type[1].name)

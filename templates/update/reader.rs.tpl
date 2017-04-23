@@ -2,15 +2,12 @@
 ${rust.header()}
 use std::io;
 
-use num::FromPrimitive;
-
 use ::wire::ArtemisDecoder;
 use ::stream::{FrameReader, FrameReadAttempt, FramePoll};
 use ::packet::update;
 use ::packet::update::ObjectUpdate;
 use ::packet::enums::ObjectType;
 use ::wire::bitreader::BitIterator;
-use ::packet::enums::*;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
