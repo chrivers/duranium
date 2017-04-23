@@ -49,7 +49,6 @@ impl FrameWriter for ObjectUpdateWriter
 % for object in objects:
 impl ${object.name}Update {
 
-    #[allow(unused_mut)]
     pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
     {
         let mut wtr = ArtemisEncoder::new();

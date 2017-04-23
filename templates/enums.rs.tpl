@@ -1,6 +1,5 @@
 <% import rust %>\
 ${rust.header()}
-#![allow(dead_code)]
 
 use num::ToPrimitive;
 use num::FromPrimitive;

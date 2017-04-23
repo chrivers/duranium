@@ -1,8 +1,6 @@
 <% import rust %>\
 ${rust.header()}
-#![allow(dead_code)]
 
-use std::io;
 use std::io::Result;
 use num::ToPrimitive;
 
@@ -19,10 +17,6 @@ pub struct ClientPacketWriter
 impl ClientPacketWriter
 {
     pub fn new() -> Self { ClientPacketWriter { } }
-}
-
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
 }
 
 macro_rules! packet_type {

@@ -1,6 +1,5 @@
 <% import rust %>\
 ${rust.header()}
-//#![allow(unused_variables)]
 use std::io;
 
 use ::packet::object::*;
