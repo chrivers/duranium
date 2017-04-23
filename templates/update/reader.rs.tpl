@@ -42,7 +42,6 @@ impl FrameReader for ObjectUpdateReader
 
 % for object in objects:
 impl ${object.name}Update {
-    #[allow(unused_mut)]
     pub fn read(rdr: &mut ArtemisDecoder, mask_byte_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
     {
         const HEADER_SIZE: u32 = 1;
