@@ -34,7 +34,7 @@ fn read_frame_stream(buffer: &[u8], rdr: &mut ArtemisDecoder) -> FrameReadAttemp
         // } else if pos >= buffer.len() {
         //     return FrameReadAttempt::Error(make_error("tried to read past end of array"));
         // }
-        match try!(uprdr.read_frame(&buffer[pos..])) {
+        match uprdr.read_frame(&buffer[pos..])? {
             FramePoll::Closed => break,
             FramePoll::NotReady(bytes) => return Ok(FramePoll::NotReady(bytes)),
             FramePoll::Ready(size, upd) => {
@@ -56,7 +56,7 @@ impl FrameReader for ServerPacketReader
     {
         let mut rdr = ArtemisDecoder::new(buffer);
 
-        return Ok(FramePoll::Ready(0, ArtemisPayload::ServerPacket(match try!(rdr.read_u32()) {
+        return Ok(FramePoll::Ready(0, ArtemisPayload::ServerPacket(match rdr.read_u32()? {
 
             % for parser in [parser]:
             % for field in parser.fields:
@@ -73,7 +73,7 @@ impl FrameReader for ServerPacketReader
             },
             % else:
             supertype @ frametype::${field.name} => {
-                match try!(rdr.read_${rust.get_parser(field.type[0].name).arg}()) {
+                match rdr.read_${rust.get_parser(field.type[0].name).arg}()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:

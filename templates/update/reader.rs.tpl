@@ -33,7 +33,7 @@ impl FrameReader for ObjectUpdateReader
     {
         let mut rdr = ArtemisDecoder::new(buffer);
         let typeid = rdr.read_enum8();
-        match try!(typeid) {
+        match typeid? {
             ObjectType::END_MARKER         => return Ok(FramePoll::Closed),
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
@@ -50,8 +50,8 @@ impl update::${object.name}Update {
     {
         const HEADER_SIZE: u32 = 1;
         let a = rdr.position();
-        let object_id = try!(rdr.read_u32());
-        let mask_bytes = try!(rdr.read_bytes(mask_byte_size));
+        let object_id = rdr.read_u32()?;
+        let mask_bytes = rdr.read_bytes(mask_byte_size)?;
         let mut mask = BitIterator::new(mask_bytes, 0);
         let parse = update::${object.name}Update {
             object_id: object_id,
