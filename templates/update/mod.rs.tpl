@@ -2,8 +2,6 @@
 ${rust.header()}
 
 use ::packet::enums::*;
-use ::wire::bitwriter::BitWriter;
-use ::wire::bitreader::BitIterator;
 
 pub mod reader;
 pub mod writer;

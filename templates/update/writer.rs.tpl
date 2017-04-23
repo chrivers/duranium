@@ -6,8 +6,11 @@ use num::ToPrimitive;
 
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
+use ::wire::bitwriter::BitWriter;
 use ::stream::FrameWriter;
-use ::packet::update::*;
+use ::packet::update::ObjectUpdate;
+use ::packet::update;
+use ::packet::enums::*;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
@@ -47,7 +50,7 @@ impl FrameWriter for ObjectUpdateWriter
 }
 
 % for object in objects:
-impl ${object.name}Update {
+impl update::${object.name}Update {
 
     pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
     {
