@@ -44,7 +44,7 @@ impl ToPrimitive for ${enum.name} {
     fn to_u64(&self) -> Option<u64> {
         match self {
             % for case in enum.fields:
-            &${enum.name}::${case.name} => Some(${case.aligned_hex_value}),
+            &${enum.name}::${case.aligned_name} => Some(${case.aligned_hex_value}),
             % endfor
             &${enum.name}::__Unknown(val) => Some(val as u64)
         }
