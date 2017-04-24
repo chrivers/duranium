@@ -4,7 +4,7 @@ ${rust.header()}
 use std::io;
 use std::io::Result;
 
-use ::packet::enums::{ConsoleType, frametype};
+use ::packet::enums::frametype;
 use ::packet::client::*;
 use ::wire::{ArtemisDecoder};
 use ::wire::traits::{CanDecode};
