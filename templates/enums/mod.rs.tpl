@@ -4,8 +4,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-% for enum in enums:
-<% if enum.name == "FrameType": continue %>\
+% for enum in enums.without("FrameType"):
 %if enum.name in ("AudioMode", "ConsoleType"):
 #[derive(Eq,PartialEq,Hash)]
 %endif

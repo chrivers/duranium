@@ -5,8 +5,7 @@ pub mod writer;
 
 use ::packet::enums::*;
 
-% for struct in structs:
-<% if struct.name == "Update": continue %>\
+% for struct in structs.without("Update"):
 #[derive(Debug)]
 pub struct ${struct.name}
 {

@@ -6,8 +6,7 @@ use ::packet::structs::*;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
 
-% for struct in structs:
-<% if struct.name == "Update": continue %>\
+% for struct in structs.without("Update"):
 
 impl CanEncode for ${struct.name}
 {

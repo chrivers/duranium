@@ -4,8 +4,7 @@ ${rust.header()}
 use num::ToPrimitive;
 use ::packet::enums::*;
 
-% for enum in enums:
-<% if enum.name == "FrameType": continue %>\
+% for enum in enums.without("FrameType"):
 impl ToPrimitive for ${enum.name} {
     fn to_i64(&self) -> Option<i64> {
         Self::to_u64(self).map(|x| x as i64)

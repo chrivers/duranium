@@ -3,8 +3,7 @@ ${rust.header()}
 
 use ::packet::enums::*;
 
-% for enum in enums:
-<% if enum.name == "FrameType": continue %>\
+% for enum in enums.without("FrameType"):
 impl From<u32> for ${enum.name} {
     fn from(n: u32) -> ${enum.name} {
         match n {
