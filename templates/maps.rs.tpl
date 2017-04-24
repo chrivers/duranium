@@ -1,6 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 use std::io;
+use std::mem;
 use std::collections::HashMap;
 use ::packet::enums::*;
 use ::wire::traits::{CanDecode, IterEnum};
@@ -61,5 +62,15 @@ pub fn classify(sig: u32) -> PacketType
         ${types.fields.get(x.name).aligned_hex_value} => PacketType::Server, // ${x.name}
         % endfor
         _ => PacketType::Unknown,
+    }
+}
+
+pub fn classify_mem(sig: &[u8]) -> PacketType
+{
+    if sig.len() >= 4 {
+        let id = unsafe { mem::transmute::${'<'}&[u8], &[u32]>(&sig)[0] };
+        classify(id)
+    } else {
+        PacketType::Unknown
     }
 }
