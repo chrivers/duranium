@@ -55,7 +55,7 @@ impl update::${object.name}Update {
     pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
     {
         let mut wtr = ArtemisEncoder::new();
-        let mut mask = BitWriter::fixed_size(mask_byte_size, 0);
+        let mut mask = BitWriter::fixed_size(mask_byte_size);
         % for field in object.fields:
         trace!("Writing field ${object.name}::${field.name}");
         ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
