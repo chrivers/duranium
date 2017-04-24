@@ -49,7 +49,7 @@ impl update::${object.name}Update {
         let a = rdr.position();
         let object_id = rdr.read_u32()?;
         let mask_bytes = rdr.read_bytes(mask_byte_size)?;
-        let mut mask = BitIterator::new(mask_bytes);
+        let mut mask = BitIterator::new(&mask_bytes);
         let parsed = ObjectUpdate::${object.name}(update::${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
