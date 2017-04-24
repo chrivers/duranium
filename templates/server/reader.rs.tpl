@@ -1,38 +1,25 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
 
-use ::wire::{ArtemisDecoder};
-use ::frame::{ArtemisPayload};
-use ::stream::{FrameReader, FrameReadAttempt, FramePoll};
-use ::packet::enums::*;
+use std::io;
+use std::io::Result;
+
+use ::packet::enums::frametype;
+use ::wire::ArtemisDecoder;
+use ::wire::traits::CanDecode;
 use ::packet::server::ServerPacket;
 
-#[derive(Debug)]
-pub struct ServerPacketReader
-{
-}
-
-impl ServerPacketReader
-{
-    pub fn new() -> Self { ServerPacketReader { } }
-}
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
 }
 
 <% parser = parsers.get("ServerParser") %>\
-impl FrameReader for ServerPacketReader
+impl CanDecode<ServerPacket> for ServerPacket
 {
-    type Frame = ArtemisPayload;
-    type Error = io::Error;
-
-    fn read_frame(&mut self, buffer: &[u8]) -> FrameReadAttempt<Self::Frame, Self::Error>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<ServerPacket>
     {
-        let mut rdr = ArtemisDecoder::new(buffer);
-
-        return Ok(FramePoll::Ready(0, ArtemisPayload::ServerPacket(match rdr.read_u32()? {
+        return Ok(match rdr.read_u32()? {
 
             % for field in parser.fields:
             % if field.type.name == "struct":
@@ -51,13 +38,13 @@ impl FrameReader for ServerPacketReader
                         % endfor
                     },
                     % endfor
-                    subtype => return Err(make_error(&format!("Server frame 0x{:08x} unknown subtype: 0x{:02x} (length {})", supertype, subtype, buffer.len())))
+                    subtype => return Err(make_error(&format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
                 }
             },
             % endif
 
             % endfor
-            supertype => return Err(make_error(&format!("Unknown server frame type 0x{:08x} (length {})", supertype, buffer.len()))),
-        }))
-    )}
+            supertype => return Err(make_error(&format!("Unknown server frame type 0x{:08x}", supertype))),
+        })
+    }
 }
