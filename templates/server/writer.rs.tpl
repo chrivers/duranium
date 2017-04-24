@@ -16,20 +16,7 @@ impl ServerPacketWriter
 {
     pub fn new() -> Self { ServerPacketWriter { } }
 }
-<%
-def visit(parser, res):
-    for field in parser.fields:
-        if field.type.name == "struct":
-            res[field.type[0].name] = (field.type, field.name, None, None)
-        elif field.type.name == "parser":
-            prs = parsers.get(field.type[0].name)
-            for fld in prs.fields:
-                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg)
 
-packet_ids = dict()
-parser = parsers.get("ServerParser")
-visit(parser, packet_ids)
-%>
 impl FrameWriter for ServerPacketWriter
 {
     type Frame = ServerPacket;
@@ -38,7 +25,7 @@ impl FrameWriter for ServerPacketWriter
         let mut wtr = ArtemisEncoder::new();
         match frame
         {
-        % for name, info in sorted(packet_ids.items()):
+        % for name, info in sorted(rust.generate_packet_ids("ServerParser").items()):
             &${name}
             {
             % for fld in rust.get_packet(name).fields:

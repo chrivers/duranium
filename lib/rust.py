@@ -185,3 +185,14 @@ def sp_get_padding(name):
         return 4 - len(packet.fields)
     else:
         return 0
+
+def generate_packet_ids(parsername):
+    res = {}
+    for field in get_parser(parsername).fields:
+        if field.type.name == "struct":
+            res[field.type[0].name] = (field.type, field.name, None, None)
+        elif field.type.name == "parser":
+            prs = get_parser(field.type[0].name)
+            for fld in prs.fields:
+                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg)
+    return res
