@@ -21,6 +21,28 @@ impl ObjectUpdateReader
     pub fn new() -> Self { ObjectUpdateReader { } }
 }
 
+pub fn read_frame_stream(buffer: &[u8], rdr: &mut ArtemisDecoder) -> FrameReadAttempt<Vec<ObjectUpdate>, io::Error> {
+    let mut updates = vec![];
+    let mut uprdr = ObjectUpdateReader::new();
+    let mut pos = rdr.position() as usize;
+    loop {
+        // if pos == buffer.len()-1 {
+        //     return FrameReadAttempt::Closed
+        // } else if pos >= buffer.len() {
+        //     return FrameReadAttempt::Error(make_error("tried to read past end of array"));
+        // }
+        match uprdr.read_frame(&buffer[pos..])? {
+            FramePoll::Closed => break,
+            FramePoll::NotReady(bytes) => return Ok(FramePoll::NotReady(bytes)),
+            FramePoll::Ready(size, upd) => {
+                pos += size;
+                updates.push(upd);
+            }
+        }
+    }
+    Ok(FramePoll::Ready(pos, updates))
+}
+
 impl FrameReader for ObjectUpdateReader
 {
     type Frame = ObjectUpdate;
