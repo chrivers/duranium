@@ -7,7 +7,6 @@ use ::frame::{ArtemisPayload};
 use ::stream::{FrameReader, FrameReadAttempt, FramePoll};
 use ::packet::enums::*;
 use ::packet::server::ServerPacket;
-use ::packet::update::reader::read_frame_stream;
 
 #[derive(Debug)]
 pub struct ServerPacketReader

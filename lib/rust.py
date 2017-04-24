@@ -87,8 +87,6 @@ def read_struct_field(type):
 def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
         return "rdr.read()?"
-    elif type.name == "array" and type[0] and type[0].name == "struct" and type[0][0].name == "ObjectUpdate":
-        return "try_subparse!(read_frame_stream(buffer, &mut rdr))"
     elif type.name == "array":
         if type[1]:
             if len(type[1].name) <= 4:
