@@ -97,7 +97,7 @@ def read_struct_field_parse(type):
             return "rdr.read_array()?"
     elif type.name == "option":
         if type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
-            return "{ match rdr.read_u32()? { 0 => None, n => Some(ConsoleType::from_u32(n - 1).unwrap()) } }"
+            return "{ match rdr.read_u32()? { 0 => None, n => Some(ConsoleType::from(n - 1)) } }"
         elif type[0] and type[0].name == "string":
             return "rdr.read_string().ok()"
     elif type.name == "sizedarray":

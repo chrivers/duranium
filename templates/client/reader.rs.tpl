@@ -2,7 +2,6 @@
 ${rust.header()}
 
 use std::io;
-use num::FromPrimitive;
 
 use ::packet::enums::{ConsoleType, frametype};
 use ::frame::{ArtemisPayload};
