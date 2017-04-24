@@ -16,7 +16,7 @@ impl CanDecode<${struct.name}> for ${struct.name}
         Ok(
             ${struct.name} {
                 % for field in struct.fields:
-                ${field.name}: ${rust.read_struct_field(field.type)},
+                ${field.name}: trace_field_read!("${struct.name}", "${field.name}", ${rust.read_struct_field_parse(field.type)}),
                 % endfor
             }
         )
