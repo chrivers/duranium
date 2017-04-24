@@ -6,26 +6,14 @@ use num::ToPrimitive;
 
 use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
-use ::stream::FrameWriter;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
 
-pub struct ClientPacketWriter
+impl CanEncode for ClientPacket
 {
-}
-
-impl ClientPacketWriter
-{
-    pub fn new() -> Self { ClientPacketWriter { } }
-}
-
-impl FrameWriter for ClientPacketWriter
-{
-    type Frame = ClientPacket;
-    fn write_frame(&mut self, frame: &Self::Frame) -> Result<Vec<u8>>
+    fn write(&self, mut wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        let mut wtr = ArtemisEncoder::new();
-        match frame
+        match self
         {
         % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
             &${name} {
@@ -54,6 +42,6 @@ impl FrameWriter for ClientPacketWriter
 
         % endfor
         }
-        Ok(wtr.into_inner())
+        Ok(())
     }
 }
