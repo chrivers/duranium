@@ -54,8 +54,7 @@ impl FrameReader for ObjectUpdateReader
         let typeid = rdr.read_enum8();
         match typeid? {
             ObjectType::END_MARKER         => return Ok(FramePoll::Closed),
-            % for type in enums.get("ObjectType").fields:
-<% if type.name == "END_MARKER": continue %>\
+            % for type in enums.get("ObjectType").fields.without("END_MARKER"):
             ObjectType::${type.name.ljust(18)} => update::${type.name}Update::read(&mut rdr, ${objects.get(type.name)._match}),
             % endfor
             ObjectType::__Unknown(_)       => Err(make_error("unknown object update type")),

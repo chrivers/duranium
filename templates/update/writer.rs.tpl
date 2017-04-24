@@ -19,8 +19,7 @@ impl CanEncode for ObjectUpdate {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         let bytes = match self {
-            % for type in enums.get("ObjectType").fields:
-<% if type.name == "END_MARKER": continue %>\
+            % for type in enums.get("ObjectType").fields.without("END_MARKER"):
             &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => data.write(ObjectType::${type.name}, ${objects.get(type.name)._match}),
             % endfor
             &ObjectUpdate::Whale(_)              => Err(make_error("unsupported protocol version")),
@@ -29,7 +28,7 @@ impl CanEncode for ObjectUpdate {
     }
 }
 
-% for object in objects:
+% for object in objects.without("Whale"):
 impl update::${object.name}Update {
 
     pub fn write(&self, object_type: ObjectType, mask_byte_size: usize) -> Result<Vec<u8>>
