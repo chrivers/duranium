@@ -35,12 +35,11 @@ impl FrameReader for ClientPacketReader
         let mut rdr = ArtemisDecoder::new(buffer);
         return Ok(FramePoll::Ready(0, ArtemisPayload::ClientPacket(match rdr.read_u32()? {
 
-            % for parser in [parser]:
             % for field in parser.fields:
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type[0].name} {
                 % for fld in rust.get_packet(field.type[0].name).fields:
-                ${fld.name}: ${rust.read_struct_field_parse(fld.type)},
+                ${fld.name}: trace_field_read!("${field.type[0].name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                 % endfor
             },
             % else:
@@ -49,7 +48,7 @@ impl FrameReader for ClientPacketReader
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: trace_field_read!("${field.name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                        ${fld.name}: trace_field_read!("${pkt.type[0].name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                         % endfor
                     },
                     % endfor
@@ -58,7 +57,6 @@ impl FrameReader for ClientPacketReader
             },
             % endif
 
-            % endfor
             % endfor
             supertype => return Err(make_error(&format!("Unknown client frame type 0x{:08x} (length {})", supertype, buffer.len())))
         }))

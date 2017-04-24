@@ -62,7 +62,7 @@ impl FrameReader for ServerPacketReader
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type[0].name} {
                 % for fld in rust.get_packet(field.type[0].name).fields:
-                ${fld.name}: trace_field_read!("${field.name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                ${fld.name}: trace_field_read!("${field.type[0].name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                 % endfor
             },
             % else:
@@ -71,7 +71,7 @@ impl FrameReader for ServerPacketReader
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: trace_field_read!("${field.name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                        ${fld.name}: trace_field_read!("${pkt.type[0].name}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                         % endfor
                     },
                     % endfor
