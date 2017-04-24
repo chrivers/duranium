@@ -58,7 +58,6 @@ impl FrameReader for ServerPacketReader
 
         return Ok(FramePoll::Ready(0, ArtemisPayload::ServerPacket(match rdr.read_u32()? {
 
-            % for parser in [parser]:
             % for field in parser.fields:
             % if field.type.name == "struct":
             frametype::${field.name} => ${field.type[0].name} {
@@ -81,7 +80,6 @@ impl FrameReader for ServerPacketReader
             },
             % endif
 
-            % endfor
             % endfor
             supertype => return Err(make_error(&format!("Unknown server frame type 0x{:08x} (length {})", supertype, buffer.len()))),
         }))
