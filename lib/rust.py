@@ -177,11 +177,10 @@ def header():
         "// DO NOT EDIT. ALL CHANGES WILL BE LOST.\n" \
         "// ------------------------------------------"
 
-def sp_get_padding(name):
-    packet = get_packet(name)
-    if packet.name == "valueInt":
+def get_packet_padding(packet, name):
+    if name == "valueInt":
         return 1 - len(packet.fields)
-    elif packet.name == "valueFourInts":
+    elif name == "valueFourInts":
         return 4 - len(packet.fields)
     else:
         return 0
