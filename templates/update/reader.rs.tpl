@@ -53,10 +53,7 @@ impl update::${object.name}Update {
         let parse = update::${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
-                ${field.name}: {
-                    trace!("Reading field ${object.name}::${field.name}");
-                    ${rust.read_update_field("rdr", "mask", object, field, field.type)}
-                },
+                ${field.name}: trace_field_read!("${object.name}", "${field.name}", ${rust.read_update_field("rdr", "mask", object, field, field.type)}),
             % endfor
         };
         let b = rdr.position();
