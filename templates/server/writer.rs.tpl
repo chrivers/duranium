@@ -2,28 +2,19 @@
 ${rust.header()}
 use std::io::Result;
 
-use ::stream::FrameWriter;
+use ::packet::enums::frametype;
 use ::wire::ArtemisEncoder;
+use ::wire::traits::CanEncode;
+
 use ::wire::traits::IterEnum;
 use ::packet::enums::*;
 use ::packet::server::ServerPacket;
 
-pub struct ServerPacketWriter
+impl CanEncode for ServerPacket
 {
-}
-
-impl ServerPacketWriter
-{
-    pub fn new() -> Self { ServerPacketWriter { } }
-}
-
-impl FrameWriter for ServerPacketWriter
-{
-    type Frame = ServerPacket;
-    fn write_frame(&mut self, frame: &Self::Frame) -> Result<Vec<u8>>
+    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        let mut wtr = ArtemisEncoder::new();
-        match frame
+        match self
         {
         % for name, info in sorted(rust.generate_packet_ids("ServerParser").items()):
             &${name}
@@ -49,6 +40,6 @@ impl FrameWriter for ServerPacketWriter
 
         % endfor
         }
-        Ok(wtr.into_inner())
+        Ok(())
     }
 }
