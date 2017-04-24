@@ -50,14 +50,14 @@ impl update::${object.name}Update {
         let object_id = rdr.read_u32()?;
         let mask_bytes = rdr.read_bytes(mask_byte_size)?;
         let mut mask = BitIterator::new(mask_bytes);
-        let parse = update::${object.name}Update {
+        let parsed = ObjectUpdate::${object.name}(update::${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
                 ${field.name}: trace_field_read!("${object.name}", "${field.name}", ${rust.read_update_field("rdr", "mask", object, field, field.type)}),
             % endfor
-        };
+        });
         let b = rdr.position();
-        Ok(FramePoll::Ready((b - a + HEADER_SIZE as u64) as usize, ObjectUpdate::${object.name}(parse)))
+        Ok(FramePoll::Ready((b - a + HEADER_SIZE as u64) as usize, parsed))
     }
 }
 % endfor
