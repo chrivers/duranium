@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use ::packet::enums::*;
 use ::wire::traits::{CanDecode, IterEnum};
 use ::wire::ArtemisDecoder;
+use ::frame::PacketType;
 
 impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, ConsoleStatus>
 {
@@ -46,3 +47,19 @@ impl IterEnum<${item.name}> for ${item.name} {
     }
 }
 % endfor
+
+<% types = enums.get("FrameType") %>\
+pub fn classify(sig: u32) -> PacketType
+{
+    match sig {
+        // Client messages
+        % for x in rust.get_parser("ClientParser").fields:
+        ${types.fields.get(x.name).aligned_hex_value} => PacketType::Client, // ${x.name}
+        % endfor
+        // Server messages
+        % for x in rust.get_parser("ServerParser").fields:
+        ${types.fields.get(x.name).aligned_hex_value} => PacketType::Server, // ${x.name}
+        % endfor
+        _ => PacketType::Unknown,
+    }
+}
