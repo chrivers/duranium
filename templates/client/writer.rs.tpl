@@ -29,19 +29,12 @@ def visit(parser, res):
             for fld in prs.fields:
                 res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg)
 
-def get_packet(type):
-    if "::" in name:
-        packetname, casename = name.split("::",1)
-        return packets.get(packetname).fields.get(casename)
-    else:
-        return packets.get(name)
-
 packet_ids = dict()
 parser = parsers.get("ClientParser")
 visit(parser, packet_ids)
 
-def get_padding(info):
-    packet = get_packet(info[0])
+def get_padding(name):
+    packet = rust.get_packet(name)
     if info[1] == "valueInt":
         return 1 - len(packet.fields)
     elif info[1] == "valueFourInts":
@@ -59,7 +52,7 @@ impl FrameWriter for ClientPacketWriter
         {
         % for name, info in sorted(packet_ids.items()):
             &${name} {
-            % for fld in get_packet(info[0]).fields:
+            % for fld in rust.get_packet(name).fields:
             % if rust.is_ref_type(fld.type):
                 ref ${fld.name},
             % else:
@@ -71,10 +64,10 @@ impl FrameWriter for ClientPacketWriter
             % if info[2]:
                 wtr.write_u32(${info[2]})?;
             % endif
-            % for fld in get_packet(info[0]).fields:
+            % for fld in rust.get_packet(name).fields:
                 ${rust.write_field(name, fld.name, fld.type)};
             % endfor
-            % for x in range(get_padding(info)):
+            % for x in range(get_padding(name)):
                 % if loop.first:
                 // padding
                 % endif
