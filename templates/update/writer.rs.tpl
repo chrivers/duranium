@@ -20,32 +20,32 @@ impl CanEncode for ObjectUpdate {
     {
         match self {
             % for type in enums.get("ObjectType").fields.without("END_MARKER"):
-            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => data.write(wtr),
+            &ObjectUpdate::${type.name}(ref data) => data.write(wtr),
             % endfor
-            &ObjectUpdate::Whale(_)              => Err(make_error("unsupported protocol version")),
+            _ => Err(make_error("unsupported protocol version")),
         }
     }
 }
 
 % for object in objects.without("Whale"):
-impl update::${object.name}Update {
+impl CanEncode for update::${object.name}Update {
 
-    pub fn write(&self, res: &mut ArtemisEncoder) -> Result<()>
+    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         let mask_byte_size = ${object._match};
         let mut mask = BitWriter::fixed_size(mask_byte_size);
-        res.write_u8(ObjectType::${object.name}.to_u8().unwrap())?;
-        res.write_u32(self.object_id)?;
-        let maskpos = res.position();
-        res.skip_bytes(mask_byte_size as i64)?;
+        wtr.write_u8(ObjectType::${object.name}.to_u8().unwrap())?;
+        wtr.write_u32(self.object_id)?;
+        let maskpos = wtr.position();
+        wtr.skip_bytes(mask_byte_size as i64)?;
         % for field in object.fields:
         trace!("Writing field ${object.name}::${field.name}");
-        ${rust.write_update_field("res", "mask", "self."+field.name, field.type)};
+        ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
         % endfor
-        let endpos = res.position();
-        res.seek_bytes(maskpos)?;
-        res.write_bytes(&mask.into_inner())?;
-        res.seek_bytes(endpos)?;
+        let endpos = wtr.position();
+        wtr.seek_bytes(maskpos)?;
+        wtr.write_bytes(&mask.into_inner())?;
+        wtr.seek_bytes(endpos)?;
         Ok(())
     }
 }
