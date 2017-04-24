@@ -45,12 +45,6 @@ impl FrameWriter for ServerPacketWriter
             % for fld in rust.get_packet(name).fields:
                 ${rust.write_field(name, fld.name, fld.type)};
             % endfor
-            % for x in range(rust.sp_get_padding(name)):
-                % if loop.first:
-                // padding
-                % endif
-                wtr.write_u32(0)?;
-            % endfor
             },
 
         % endfor
