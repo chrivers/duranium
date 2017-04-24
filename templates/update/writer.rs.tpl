@@ -7,7 +7,6 @@ use num::ToPrimitive;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
 use ::wire::bitwriter::BitWriter;
-use ::stream::FrameWriter;
 use ::packet::update::ObjectUpdate;
 use ::packet::update;
 use ::packet::enums::*;
@@ -16,36 +15,17 @@ fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
 }
 
-pub struct ObjectUpdateWriter {
-}
-
-impl ObjectUpdateWriter
-{
-    pub fn new() -> Self { ObjectUpdateWriter { } }
-}
-
 impl CanEncode for ObjectUpdate {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        let mut upwtr = ObjectUpdateWriter::new();
-        wtr.write_bytes(&upwtr.write_frame(self)?)?;
-        Ok(())
-    }
-}
-
-impl FrameWriter for ObjectUpdateWriter
-{
-    type Frame = ObjectUpdate;
-
-    fn write_frame(&mut self, frame: &Self::Frame) -> Result<Vec<u8>>
-    {
-        match frame {
+        let bytes = match self {
             % for type in enums.get("ObjectType").fields:
 <% if type.name == "END_MARKER": continue %>\
-            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => Ok(data.write(ObjectType::${type.name}, ${objects.get(type.name)._match})?),
+            &ObjectUpdate::${("%s(ref data)" % type.name).ljust(28)} => data.write(ObjectType::${type.name}, ${objects.get(type.name)._match}),
             % endfor
             &ObjectUpdate::Whale(_)              => Err(make_error("unsupported protocol version")),
-        }
+        }?;
+        wtr.write_bytes(&bytes)
     }
 }
 
