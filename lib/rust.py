@@ -82,7 +82,7 @@ def writer_function(tp):
         raise TypeError("No writer function for [%r]" % tp)
 
 def read_struct_field(type):
-    return "rdr.%s()?" % reader_function(type)
+    return read_struct_field_parse(type)
 
 def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
@@ -102,6 +102,8 @@ def read_struct_field_parse(type):
             return "rdr.read_string().ok()"
     elif type.name == "sizedarray":
         return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
+    elif type.name == "bitflags":
+        return "rdr.read()?"
     else:
         return "rdr.%s()?" % reader_function(type)
 

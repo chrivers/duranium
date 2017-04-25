@@ -1,29 +1,23 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
+use std::io::Result;
 
 use ::packet::object;
-use ::packet::update::ObjectUpdate;
 use ::wire::ArtemisDecoder;
-use ::stream::{FrameReadAttempt, FramePoll};
+use ::wire::traits::CanDecode;
 
 % for object in objects:
-impl object::${object.name} {
-    #[allow(unused_variables)]
-    pub fn read(rdr: &mut ArtemisDecoder, header_size: usize) -> FrameReadAttempt<ObjectUpdate, io::Error>
+<%obj = "object::%s" % object.name %>
+impl CanDecode<${obj}> for ${obj}
+{
+    fn read(rdr: &mut ArtemisDecoder) -> Result<${obj}>
     {
-        ## let a = rdr.position();
-        ## let parse = ${object.name} {
-        ##     % for field in object.fields:
-        ##     ${field.name}: {
-        ##         trace!("Reading field {}::{}", "${object.name}", "${field.name}");
-        ##         ${read_field("rdr", field)}
-        ##     },
-        ##     % endfor
-        ## };
-        ## let b = rdr.position();
-        ## FrameReadAttempt::Ok((b - a + header_size as u64) as usize, ObjectUpdate::${object.name}(parse))
-        Ok(FramePoll::Closed)
+        Ok(${obj} {
+            object_id: trace_field_read!("${obj}", "object_id", rdr.read_u32()?),
+            % for fld in object.fields:
+            ${fld.name}: trace_field_read!("${obj}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+            % endfor
+        })
     }
 }
 
