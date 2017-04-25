@@ -1,7 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 use std::io;
-use std::mem;
 use std::collections::HashMap;
 use ::packet::enums::*;
 use ::wire::traits::{CanDecode, IterEnum};
@@ -67,8 +66,7 @@ pub fn classify(sig: u32) -> PacketType
 
 pub fn classify_mem(sig: &[u8]) -> PacketType
 {
-    if sig.len() >= 4 {
-        let id = unsafe { mem::transmute::${'<'}&[u8], &[u32]>(&sig)[0] };
+    if let Some(id) = ::wire::first_u32(sig) {
         classify(id)
     } else {
         PacketType::Unknown
