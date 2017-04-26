@@ -22,7 +22,7 @@ impl CanEncode for ServerPacket
                 ${rust.ref_struct_field(fld)},
             % endfor
             } => {
-                trace::struct_write("${name}");
+                trace::packet_write("${name}");
                 wtr.write_u32(frametype::${info[1]})?;
             % if info[2] and info[3] == "u8":
                 wtr.write_u8(${info[2]})?;

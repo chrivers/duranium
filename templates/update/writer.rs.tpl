@@ -38,7 +38,7 @@ impl CanEncode for update::${object.name}Update {
         wtr.write_u32(self.object_id)?;
         let maskpos = wtr.position();
         wtr.skip_bytes(mask_byte_size as i64)?;
-        trace::struct_write("${object.name}");
+        trace::packet_write("${object.name}");
         % for field in object.fields:
         ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
         % endfor
