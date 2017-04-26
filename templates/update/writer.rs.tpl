@@ -7,9 +7,9 @@ use num::ToPrimitive;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
 use ::wire::bitwriter::BitWriter;
-use ::packet::update::ObjectUpdate;
-use ::packet::update;
-use ::packet::enums::*;
+
+use ::packet::update::{self, ObjectUpdate};
+use ::packet::enums::ObjectType;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
