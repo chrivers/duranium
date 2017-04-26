@@ -127,13 +127,6 @@ def write_struct_field(fieldname, type):
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
             return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
-    elif type.name == "enum":
-        if type[0].name == "u8":
-            return "wtr.write_enum8(%s)?" % (fieldname)
-        elif type[0].name == "u32":
-            return "wtr.write_enum32(%s)?" % (fieldname)
-        else:
-            assert False
     else:
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
