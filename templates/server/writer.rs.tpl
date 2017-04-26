@@ -5,10 +5,8 @@ use std::io::Result;
 use ::packet::enums::frametype;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
-use ::wire::traits::IterEnum;
 use ::wire::trace;
 
-use ::packet::enums::*;
 use ::packet::server::ServerPacket;
 
 impl CanEncode for ServerPacket
