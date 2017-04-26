@@ -147,9 +147,9 @@ def read_update_field(rdr, mask, object, field, type):
 def write_update_field(wtr, mask, fieldname, type):
     if type.name == "sizedarray":
         return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
-    elif is_ref_type(type):
-        return "write_bitmask_field!(%s.as_ref(), %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
     else:
+        if is_ref_type(type):
+            fieldname = "%s.as_ref()" % fieldname
         return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
 
 def ref_struct_field(fld):
