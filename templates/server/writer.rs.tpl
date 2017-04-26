@@ -30,8 +30,7 @@ impl CanEncode for ServerPacket
                 wtr.write_u32(${info[2]})?;
             % endif
             % for fld in rust.get_packet(name).fields:
-                trace::field_write("${fld.name}", &${fld.name});
-                ${rust.write_struct_field(fld.name, fld.type)};
+                write_field!("${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type)});
             % endfor
             },
 
