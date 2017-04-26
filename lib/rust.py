@@ -70,11 +70,11 @@ def declare_update_type(tp):
 def reader_function(tp):
     if tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
-    elif tp.name in "string":
+    elif tp.name == "string":
         return "read_string"
     elif tp.name in ("bitflags", "struct", "map", "option"):
         return "read"
-    elif tp.name in "ascii_string":
+    elif tp.name == "ascii_string":
         return "read_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "read_enum8"
