@@ -8,6 +8,7 @@ use ::packet::enums::frametype;
 use ::packet::client::*;
 use ::wire::{ArtemisDecoder};
 use ::wire::traits::{CanDecode};
+use ::wire::trace::trace_field_read;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)

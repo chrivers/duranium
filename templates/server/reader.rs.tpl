@@ -7,8 +7,8 @@ use std::io::Result;
 use ::packet::enums::frametype;
 use ::wire::ArtemisDecoder;
 use ::wire::traits::CanDecode;
+use ::wire::trace::trace_field_read;
 use ::packet::server::ServerPacket;
-
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
