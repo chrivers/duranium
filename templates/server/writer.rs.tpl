@@ -34,7 +34,7 @@ impl CanEncode for ServerPacket
                 wtr.write_u32(${info[2]})?;
             % endif
             % for fld in rust.get_packet(name).fields:
-                ${rust.write_field(name, fld.name, fld.type)};
+                ${rust.write_struct_field(name, fld.name, fld.type)};
             % endfor
             },
 

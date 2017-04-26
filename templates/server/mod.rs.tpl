@@ -23,7 +23,7 @@ pub enum ${packet.name}
         % for line in util.format_comment(field.comment, indent="/// ", width=74):
         ${line}
         % endfor
-        ${field.name}: ${rust.declare_type(field.type)},
+        ${field.name}: ${rust.declare_struct_type(field.type)},
         % endfor
     },
 

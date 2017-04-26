@@ -33,7 +33,7 @@ primitive_map = {
     "bool32": "bool32",
 }
 
-def declare_type(tp):
+def declare_struct_type(tp):
     if not tp:
         raise ValueError("Empty type")
     elif tp.name in ("bool8", "bool16", "bool32"):
@@ -41,17 +41,17 @@ def declare_type(tp):
     elif tp.name in ("string", "ascii_string"):
         return "String"
     elif tp.name == "sizedarray":
-        return "[%s; %d]" % (declare_type(tp[0]), int(tp[1].name))
+        return "[%s; %d]" % (declare_struct_type(tp[0]), int(tp[1].name))
     elif tp.name == "array":
-        return "Vec<%s>" % declare_type(tp[0])
+        return "Vec<%s>" % declare_struct_type(tp[0])
     elif tp.name == "struct":
         return tp[0].name
     elif tp.name == "enum":
         return tp[1].name
     elif tp.name == "map":
-        return "HashMap<%s, %s>" % (tp[0].name, declare_type(tp[1]))
+        return "HashMap<%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
     elif tp.name == "option":
-        return "Option<%s>" % declare_type(tp[0])
+        return "Option<%s>" % declare_struct_type(tp[0])
     elif tp.name == "bitflags":
         return tp[1].name
     elif tp.name == "object":
@@ -67,7 +67,7 @@ def declare_update_type(tp):
     elif tp.name == "sizedarray":
         return "[%s; %d]" % (declare_update_type(tp[0]), int(tp[1].name))
     else:
-        return "Option<%s>" % declare_type(tp)
+        return "Option<%s>" % declare_struct_type(tp)
 
 def reader_function(tp):
     if tp.name in primitive_map:
@@ -102,9 +102,6 @@ def writer_function(tp):
         raise TypeError("No writer function for [%r]" % tp)
 
 def read_struct_field(type):
-    return read_struct_field_parse(type)
-
-def read_struct_field_parse(type):
     if type.name in ("struct", "map"):
         return "rdr.read()?"
     elif type.name == "array":
@@ -120,13 +117,13 @@ def read_struct_field_parse(type):
     elif type.name == "option" and type[0] and type[0].name == "string":
         return "rdr.read_string().ok()"
     elif type.name == "sizedarray":
-        return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
+        return "[ %s ]" % (", ".join([(read_struct_field(type[0]))] * int(type[1].name)))
     elif type.name == "bitflags":
         return "rdr.read()?"
     else:
         return "rdr.%s()?" % reader_function(type)
 
-def write_field(objname, fieldname, type):
+def write_struct_field(objname, fieldname, type):
     ## special cases
     if objname == "ServerPacket::ConsoleStatus" and fieldname == "console_status":
         return "for console in ConsoleType::iter_enum() { wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))?; }"
@@ -136,7 +133,7 @@ def write_field(objname, fieldname, type):
     elif type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
         return "wtr.write_array(%s)?" % fieldname
     elif type.name == "string" and objname == None:
-        return write_field(True, "&" + fieldname, type)
+        return write_struct_field(True, "&" + fieldname, type)
     elif type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)

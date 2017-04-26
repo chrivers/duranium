@@ -25,7 +25,7 @@ impl CanDecode<ClientPacket> for ClientPacket
             % if field.type.name == "struct":
             frametype::${field.name} => { trace::struct_read("${field.type[0].name}"); ${field.type[0].name} {
                 % for fld in rust.get_packet(field.type[0].name).fields:
-                ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field(fld.type)}),
                 % endfor
             } },
             % else:
@@ -34,7 +34,7 @@ impl CanDecode<ClientPacket> for ClientPacket
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => { trace::struct_read("${pkt.type[0].name}"); ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                        ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field(fld.type)}),
                         % endfor
                     } },
                     % endfor

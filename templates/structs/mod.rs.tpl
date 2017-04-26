@@ -16,7 +16,7 @@ pub struct ${struct.name}
     % for line in util.format_comment(field.comment, indent="/// ", width=74):
     ${line}
     % endfor
-    pub ${field.name}: ${rust.declare_type(field.type)},
+    pub ${field.name}: ${rust.declare_struct_type(field.type)},
     % endfor
 }
 
