@@ -66,8 +66,6 @@ def declare_struct_type(tp):
         return "Option<%s>" % declare_struct_type(tp[0])
     elif tp.name == "bitflags":
         return tp[1].name
-    elif tp.name == "object":
-        return "Object"
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
