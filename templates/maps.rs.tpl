@@ -3,8 +3,8 @@ ${rust.header()}
 use std::io;
 use std::collections::HashMap;
 use ::packet::enums::*;
-use ::wire::traits::{CanDecode, IterEnum};
-use ::wire::ArtemisDecoder;
+use ::wire::traits::{CanDecode, CanEncode, IterEnum};
+use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::frame::PacketType;
 
 impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, ConsoleStatus>
@@ -16,6 +16,18 @@ impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, Con
         map.insert(ConsoleType::${"%-15s" % (case.name + ",")} rdr.read_enum8()?);
         % endfor
         Ok(map)
+    }
+}
+
+impl CanEncode for HashMap<ConsoleType, ConsoleStatus>
+{
+    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
+    {
+        for console in ConsoleType::iter_enum() {
+            wtr.write_enum8(*self.get(&console).unwrap_or(&ConsoleStatus::Available)
+            )?;
+        }
+        Ok(())
     }
 }
 
