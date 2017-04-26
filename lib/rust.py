@@ -145,13 +145,13 @@ def read_update_field(rdr, mask, object, field, type):
 
 def write_update_field(wtr, mask, fieldname, type):
     if type.name == "string":
-        return "write_single_field!(%s.as_ref(), %s, %s, write_string)" % (fieldname, wtr, mask)
+        return "write_bitmask_field!(%s.as_ref(), %s, %s, write_string)" % (fieldname, wtr, mask)
     elif type.name == "bitflags":
-        return "write_single_field!(%s.map(|v| v.bits()), %s, %s, write_u32)" % (fieldname, wtr, mask)
+        return "write_bitmask_field!(%s.map(|v| v.bits()), %s, %s, write_u32)" % (fieldname, wtr, mask)
     elif type.name == "sizedarray":
         return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
     else:
-        return "write_single_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
+        return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
 
 def get_packet(name):
     packets = context["packets"]
