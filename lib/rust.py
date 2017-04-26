@@ -168,6 +168,12 @@ def write_update_field(wtr, mask, fieldname, type):
     else:
         return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
 
+def ref_struct_field(fld):
+    if is_ref_type(fld.type):
+        return "ref %s" % fld.name
+    else:
+        return fld.name
+
 ##### packets #####
 
 def get_packet(name):

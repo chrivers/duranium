@@ -20,11 +20,7 @@ impl CanEncode for ServerPacket
             &${name}
             {
             % for fld in rust.get_packet(name).fields:
-            % if rust.is_ref_type(fld.type):
-                ref ${fld.name},
-            % else:
-                ${fld.name},
-            % endif
+                ${rust.ref_struct_field(fld)},
             % endfor
             } => {
                 wtr.write_u32(frametype::${info[1]})?;
