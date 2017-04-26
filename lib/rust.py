@@ -133,6 +133,8 @@ def write_field(objname, fieldname, type):
             return "wtr.write_enum8(%s)?" % (fieldname)
         elif type[0].name == "u32":
             return "wtr.write_enum32(%s)?" % (fieldname)
+        else:
+            assert False
     else:
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
