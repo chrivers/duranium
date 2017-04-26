@@ -2,7 +2,6 @@
 ${rust.header()}
 use std::io;
 use std::io::Result;
-use num::ToPrimitive;
 
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
@@ -35,7 +34,7 @@ impl CanEncode for update::${object.name}Update {
     {
         let mask_byte_size = ${object._match};
         let mut mask = BitWriter::fixed_size(mask_byte_size);
-        wtr.write_u8(ObjectType::${object.name}.to_u8().unwrap())?;
+        wtr.write_enum8(ObjectType::${object.name})?;
         wtr.write_u32(self.object_id)?;
         let maskpos = wtr.position();
         wtr.skip_bytes(mask_byte_size as i64)?;

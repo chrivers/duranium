@@ -128,7 +128,7 @@ def write_struct_field(objname, fieldname, type):
     if objname == "ServerPacket::ConsoleStatus" and fieldname == "console_status":
         return "for console in ConsoleType::iter_enum() { wtr.write_enum8(*console_status.get(&console).unwrap_or(&ConsoleStatus::Available))?; }"
     elif objname == "ClientPacket::GameMasterMessage" and fieldname == "console_type":
-        return "wtr.write_u32(console_type.map_or(0, |ct| ct.to_u32().unwrap_or(0) + 1))?"
+        return "wtr.write_u32(console_type.map_or(0, |ct| u32::from(ct) + 1))?"
     ## ordinary cases
     elif type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
         return "wtr.write_array(%s)?" % fieldname
