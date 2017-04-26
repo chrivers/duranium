@@ -30,3 +30,11 @@ impl CanEncode for ${flag.name}
     }
 }
 % endfor
+
+impl CanEncode for Option<ConsoleType>
+{
+    fn write(&self, wtr: &mut ArtemisEncoder) -> io::Result<()>
+    {
+        wtr.write_u32(self.map_or(0, |ct| u32::from(ct) + 1))
+    }
+}

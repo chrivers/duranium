@@ -30,3 +30,11 @@ impl CanDecode<${flag.name}> for ${flag.name}
     }
 }
 % endfor
+
+impl CanDecode<Option<ConsoleType>> for Option<ConsoleType>
+{
+    fn read(rdr: &mut ArtemisDecoder) -> io::Result<Option<ConsoleType>>
+    {
+        rdr.read_u32().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) })
+    }
+}
