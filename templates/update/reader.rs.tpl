@@ -9,7 +9,7 @@ use ::packet::update::ObjectUpdate;
 use ::packet::enums::ObjectType;
 use ::wire::bitreader::BitIterator;
 use ::wire::traits::CanDecode;
-use ::wire::trace::trace_field_read;
+use ::wire::trace;
 
 fn make_error(desc: &str) -> io::Error {
     io::Error::new(io::ErrorKind::Other, desc)
@@ -36,11 +36,11 @@ impl CanDecode<ObjectUpdate> for update::${object.name}Update  {
         let object_id = rdr.read_u32()?;
         let mask_bytes = rdr.read_bytes(mask_byte_size)?;
         let mut mask = BitIterator::new(&mask_bytes);
-        trace_struct_read!("${object.name}");
+        trace::struct_read("${object.name}");
         let parsed = ObjectUpdate::${object.name}(update::${object.name}Update {
             object_id: object_id,
             % for field in object.fields:
-                ${field.name}: parse_field!(trace_field_read, "${field.name}", ${rust.read_update_field("rdr", "mask", object, field, field.type)}),
+                ${field.name}: parse_field!("${field.name}", ${rust.read_update_field("rdr", "mask", object, field, field.type)}),
             % endfor
         });
         Ok(parsed)

@@ -7,7 +7,7 @@ use std::io::Result;
 use ::packet::enums::frametype;
 use ::wire::ArtemisDecoder;
 use ::wire::traits::CanDecode;
-use ::wire::trace::trace_field_read;
+use ::wire::trace;
 use ::packet::server::ServerPacket;
 
 fn make_error(desc: &str) -> io::Error {
@@ -23,18 +23,18 @@ impl CanDecode<ServerPacket> for ServerPacket
 
             % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.name} => { trace_struct_read!("${field.type[0].name}"); ${field.type[0].name} {
+            frametype::${field.name} => { trace::struct_read("${field.type[0].name}"); ${field.type[0].name} {
                 % for fld in rust.get_packet(field.type[0].name).fields:
-                ${fld.name}: parse_field!(trace_field_read, "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                 % endfor
             } },
             % else:
             supertype @ frametype::${field.name} => {
                 match rdr.read_${rust.get_parser(field.type[0].name).arg}()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
-                    ${pkt.name} => { trace_struct_read!("${pkt.type[0].name}"); ${pkt.type[0].name} {
+                    ${pkt.name} => { trace::struct_read("${pkt.type[0].name}"); ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: parse_field!(trace_field_read, "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+                        ${fld.name}: parse_field!("${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
                         % endfor
                     } },
                     % endfor
