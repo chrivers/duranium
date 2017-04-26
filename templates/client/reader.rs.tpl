@@ -10,10 +10,6 @@ use ::wire::{ArtemisDecoder};
 use ::wire::traits::{CanDecode};
 use ::wire::trace;
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
-
 <% parser = parsers.get("ClientParser") %>
 impl CanDecode<ClientPacket> for ClientPacket
 {
@@ -38,13 +34,13 @@ impl CanDecode<ClientPacket> for ClientPacket
                         % endfor
                     } },
                     % endfor
-                    subtype => return Err(make_error(&format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
+                    subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
                 }
             },
             % endif
 
             % endfor
-            supertype => return Err(make_error(&format!("Unknown client frame type 0x{:08x}", supertype)))
+            supertype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Unknown client frame type 0x{:08x}", supertype)))
         })
     }
 }

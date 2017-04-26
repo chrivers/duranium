@@ -10,10 +10,6 @@ use ::wire::traits::CanDecode;
 use ::wire::trace;
 use ::packet::server::ServerPacket;
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
-
 <% parser = parsers.get("ServerParser") %>\
 impl CanDecode<ServerPacket> for ServerPacket
 {
@@ -38,13 +34,13 @@ impl CanDecode<ServerPacket> for ServerPacket
                         % endfor
                     } },
                     % endfor
-                    subtype => return Err(make_error(&format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
+                    subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
                 }
             },
             % endif
 
             % endfor
-            supertype => return Err(make_error(&format!("Unknown server frame type 0x{:08x}", supertype))),
+            supertype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
         })
     }
 }

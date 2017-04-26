@@ -11,10 +11,6 @@ use ::wire::bitreader::BitIterator;
 use ::wire::traits::CanDecode;
 use ::wire::trace;
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
-
 impl CanDecode<ObjectUpdate> for ObjectUpdate
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<ObjectUpdate>
@@ -23,7 +19,7 @@ impl CanDecode<ObjectUpdate> for ObjectUpdate
             % for type in enums.get("ObjectType").fields.without("END_MARKER"):
             ObjectType::${type.name} => update::${type.name}Update::read(rdr),
             % endfor
-            _ => Err(make_error("unknown object update type")),
+            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unknown object update type")),
         }
     }
 }

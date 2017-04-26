@@ -11,10 +11,6 @@ use ::wire::trace;
 use ::packet::update::{self, ObjectUpdate};
 use ::packet::enums::ObjectType;
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
-
 impl CanEncode for ObjectUpdate {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
@@ -22,7 +18,7 @@ impl CanEncode for ObjectUpdate {
             % for type in enums.get("ObjectType").fields.without("END_MARKER"):
             &ObjectUpdate::${type.name}(ref data) => data.write(wtr),
             % endfor
-            _ => Err(make_error("unsupported protocol version")),
+            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }
