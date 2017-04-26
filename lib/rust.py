@@ -27,19 +27,31 @@ primitive_map = {
     "i32": "i32",
 
     "f32": "f32",
+}
 
+declare_map = {
+    "bool8": "bool",
+    "bool16": "bool",
+    "bool32": "bool",
+    "string": "String",
+    "ascii_string": "String",
+}
+
+convert_map = {
     "bool8": "bool8",
     "bool16": "bool16",
     "bool32": "bool32",
+    "string": "string",
+    "ascii_string": "ascii_string",
 }
 
 def declare_struct_type(tp):
     if not tp:
         raise ValueError("Empty type")
-    elif tp.name in ("bool8", "bool16", "bool32"):
-        return "bool"
-    elif tp.name in ("string", "ascii_string"):
-        return "String"
+    elif tp.name in declare_map:
+        return declare_map[tp.name]
+    elif tp.name in primitive_map:
+        return primitive_map[tp.name]
     elif tp.name == "sizedarray":
         return "[%s; %d]" % (declare_struct_type(tp[0]), int(tp[1].name))
     elif tp.name == "array":
@@ -56,8 +68,6 @@ def declare_struct_type(tp):
         return tp[1].name
     elif tp.name == "object":
         return "Object"
-    elif tp.name in primitive_map:
-        return primitive_map[tp.name]
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
@@ -70,12 +80,10 @@ def declare_update_type(tp):
 def reader_function(tp):
     if tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
-    elif tp.name == "string":
-        return "read_string"
+    elif tp.name in convert_map:
+        return "read_%s" % convert_map[tp.name]
     elif tp.name in ("bitflags", "struct", "map", "option"):
         return "read"
-    elif tp.name == "ascii_string":
-        return "read_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "read_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -86,10 +94,8 @@ def reader_function(tp):
 def writer_function(tp):
     if tp.name in primitive_map:
         return "write_%s" % primitive_map[tp.name]
-    elif tp.name == "string":
-        return "write_string"
-    elif tp.name == "ascii_string":
-        return "write_ascii_string"
+    elif tp.name in convert_map:
+        return "write_%s" % convert_map[tp.name]
     elif tp.name in ("bitflags", "struct", "map", "option"):
         return "write"
     elif tp.name == "enum" and tp[0].name == "u8":
