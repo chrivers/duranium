@@ -15,9 +15,9 @@ impl CanDecode<${obj}> for ${obj}
     {
         trace_struct_read!("${obj}");
         Ok(${obj} {
-            object_id: trace_field_read!("${obj}", "object_id", rdr.read_u32()?),
+            object_id: parse_field!(trace_field_read, "object_id", rdr.read_u32()?),
             % for fld in object.fields:
-            ${fld.name}: trace_field_read!("${obj}", "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
+            ${fld.name}: parse_field!(trace_field_read, "${fld.name}", ${rust.read_struct_field_parse(fld.type)}),
             % endfor
         })
     }

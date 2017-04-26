@@ -97,11 +97,10 @@ def read_struct_field_parse(type):
                 return "rdr.read_array_u32(%s)?" % (type[1].name)
         else:
             return "rdr.read_array()?"
-    elif type.name == "option":
-        if type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
-            return "{ match rdr.read_u32()? { 0 => None, n => Some(ConsoleType::from(n - 1)) } }"
-        elif type[0] and type[0].name == "string":
-            return "rdr.read_string().ok()"
+    elif type.name == "option" and type[0] and type[0].name == "enum" and type[0][1].name == "ConsoleType":
+        return "{ rdr.read_u32().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) }) }?"
+    elif type.name == "option" and type[0] and type[0].name == "string":
+        return "rdr.read_string().ok()"
     elif type.name == "sizedarray":
         return "[ %s ]" % (", ".join([(read_struct_field_parse(type[0]))] * int(type[1].name)))
     elif type.name == "bitflags":
@@ -142,7 +141,7 @@ def read_update_field(rdr, mask, object, field, type):
         rep = int(type[1].name)
         return "[ %s ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
     else:
-        return "try_update_parse!(%s, %s.%s())" % (mask, rdr, reader_function(type))
+        return "parse_bitmask_field!(%s, %s.%s()?)" % (mask, rdr, reader_function(type))
 
 def write_update_field(wtr, mask, fieldname, type):
     if type.name == "string":
