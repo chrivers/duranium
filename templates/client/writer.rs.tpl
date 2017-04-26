@@ -8,6 +8,7 @@ use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
 use ::wire::ArtemisEncoder;
 use ::wire::traits::CanEncode;
+use ::wire::trace;
 
 impl CanEncode for ClientPacket
 {
@@ -21,11 +22,13 @@ impl CanEncode for ClientPacket
                 ${rust.ref_struct_field(fld)},
             % endfor
             } => {
+                trace::struct_write("${name}");
                 wtr.write_u32(frametype::${info[1]})?;
             % if info[2]:
                 wtr.write_u32(${info[2]})?;
             % endif
             % for fld in rust.get_packet(name).fields:
+                trace::field_write("${fld.name}", &${fld.name});
                 ${rust.write_struct_field(name, fld.name, fld.type)};
             % endfor
             % for x in range(rust.get_packet_padding(rust.get_packet(name), info[1])):
