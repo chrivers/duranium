@@ -119,11 +119,11 @@ def read_struct_field(type):
     else:
         return "rdr.%s()?" % reader_function(type)
 
-def write_struct_field(objname, fieldname, type):
+def write_struct_field(fieldname, type):
     if type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
         return "wtr.write_array(%s)?" % fieldname
-    elif type.name == "string" and objname == None:
-        return write_struct_field(True, "&" + fieldname, type)
+    elif type.name == "string":
+        return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
     elif type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)

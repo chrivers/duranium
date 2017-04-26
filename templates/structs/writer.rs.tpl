@@ -16,7 +16,7 @@ impl CanEncode for ${struct.name}
         trace::struct_write("${struct.name}");
         % for field in struct.fields:
         trace::field_write("${field.name}", &self.${field.name});
-        ${rust.write_struct_field(None, "self.%s" % field.name, field.type)};
+        ${rust.write_struct_field("self.%s" % field.name, field.type)};
         % endfor
         Ok(())
     }
