@@ -103,6 +103,8 @@ def writer_function(tp):
     else:
         raise TypeError("No writer function for [%r]" % tp)
 
+##### struct fields #####
+
 def read_struct_field(type):
     if type.name == "array":
         if type[1]:
@@ -130,6 +132,8 @@ def write_struct_field(fieldname, type):
     else:
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
+##### updates fields #####
+
 def read_update_field(rdr, mask, object, field, type):
     if type.name == "sizedarray":
         rep = int(type[1].name)
@@ -144,6 +148,8 @@ def write_update_field(wtr, mask, fieldname, type):
         if is_ref_type(type):
             fieldname = "%s.as_ref()" % fieldname
         return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
+
+##### field refs #####
 
 def ref_struct_field(fld):
     if is_ref_type(fld.type):
