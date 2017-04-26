@@ -58,6 +58,8 @@ def reader_function(tp):
         return "read_%s" % primitive_map[tp.name]
     elif tp.name in "string":
         return "read_string"
+    elif tp.name in "bitflags":
+        return "read"
     elif tp.name in "ascii_string":
         return "read_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
@@ -136,9 +138,7 @@ def write_field(objname, fieldname, type):
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
 def read_update_field(rdr, mask, object, field, type):
-    if type.name == "bitflags":
-        return "try_update_parse!(%s, %s.read())" % (mask, rdr)
-    elif type.name == "sizedarray":
+    if type.name == "sizedarray":
         rep = int(type[1].name)
         return "[ %s ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
     else:
