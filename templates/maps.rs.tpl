@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use ::packet::enums::*;
 use ::wire::traits::{CanDecode, CanEncode, IterEnum};
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
-use ::frame::PacketType;
+use ::packet::enums::ConnectionType;
 
 impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, ConsoleStatus>
 {
@@ -47,26 +47,26 @@ impl IterEnum<${item.name}> for ${item.name} {
 % endfor
 
 <% types = enums.get("FrameType") %>\
-pub fn classify(sig: u32) -> PacketType
+pub fn classify(sig: u32) -> ConnectionType
 {
     match sig {
         // Client messages
         % for x in rust.get_parser("ClientParser").fields:
-        ${types.fields.get(x.name).aligned_hex_value} => PacketType::Client, // ${x.name}
+        ${types.fields.get(x.name).aligned_hex_value} => ConnectionType::Client, // ${x.name}
         % endfor
         // Server messages
         % for x in rust.get_parser("ServerParser").fields:
-        ${types.fields.get(x.name).aligned_hex_value} => PacketType::Server, // ${x.name}
+        ${types.fields.get(x.name).aligned_hex_value} => ConnectionType::Server, // ${x.name}
         % endfor
-        _ => PacketType::Unknown,
+        _ => ConnectionType::__Unknown(0),
     }
 }
 
-pub fn classify_mem(sig: &[u8]) -> PacketType
+pub fn classify_mem(sig: &[u8]) -> ConnectionType
 {
     if let Some(id) = ::wire::first_u32(sig) {
         classify(id)
     } else {
-        PacketType::Unknown
+        ConnectionType::__Unknown(0)
     }
 }
