@@ -1,7 +1,11 @@
 <% import rust %>\
 ${rust.header()}
 
+use std::io;
 use num::ToPrimitive;
+
+use ::wire::ArtemisEncoder;
+use ::wire::traits::CanEncode;
 use ::packet::enums::*;
 
 % for enum in enums.without("FrameType"):
@@ -20,4 +24,14 @@ impl ToPrimitive for ${enum.name} {
     }
 }
 
+% endfor
+
+% for flag in flags:
+impl CanEncode for ${flag.name}
+{
+    fn write(&self, mut wtr: &mut ArtemisEncoder) -> io::Result<()>
+    {
+        wtr.write_u32(self.bits())
+    }
+}
 % endfor

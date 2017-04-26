@@ -76,6 +76,8 @@ def writer_function(tp):
         return "write_string"
     elif tp.name == "ascii_string":
         return "write_ascii_string"
+    elif tp.name in "bitflags":
+        return "write"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "write_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -146,12 +148,10 @@ def read_update_field(rdr, mask, object, field, type):
         return "parse_bitmask_field!(%s, %s.%s()?)" % (mask, rdr, reader_function(type))
 
 def write_update_field(wtr, mask, fieldname, type):
-    if type.name == "string":
-        return "write_bitmask_field!(%s.as_ref(), %s, %s, write_string)" % (fieldname, wtr, mask)
-    elif type.name == "bitflags":
-        return "write_bitmask_field!(%s.map(|v| v.bits()), %s, %s, write_u32)" % (fieldname, wtr, mask)
-    elif type.name == "sizedarray":
+    if type.name == "sizedarray":
         return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
+    elif is_ref_type(type):
+        return "write_bitmask_field!(%s.as_ref(), %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
     else:
         return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
 
@@ -167,7 +167,7 @@ def get_parser(name):
     return context["parsers"].get(name)
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "sizedarray", "ascii_string", "array", "map", "option")
+    return typ.name in ("string", "struct", "sizedarray", "ascii_string", "array", "map", "option", "bitflags")
 
 def header():
     return \

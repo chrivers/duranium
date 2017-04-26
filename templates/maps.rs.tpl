@@ -19,20 +19,6 @@ impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, Con
     }
 }
 
-fn make_error(desc: &str) -> io::Error {
-    io::Error::new(io::ErrorKind::Other, desc)
-}
-
-% for flag in flags:
-impl CanDecode<${flag.name}> for ${flag.name}
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<${flag.name}, io::Error>
-    {
-        ${flag.name}::from_bits(rdr.read_u32()?).ok_or(make_error("could not parse ${flag.name} bitflags"))
-    }
-}
-% endfor
-
 % for item in [enums.get("ConsoleType")]:
 impl IterEnum<${item.name}> for ${item.name} {
     fn iter_enum() -> &'static [${item.name}]

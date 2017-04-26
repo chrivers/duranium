@@ -1,6 +1,10 @@
 <% import rust %>\
 ${rust.header()}
 
+use std::io;
+
+use ::wire::ArtemisDecoder;
+use ::wire::traits::CanDecode;
 use ::packet::enums::*;
 
 % for enum in enums.without("FrameType"):
@@ -15,4 +19,14 @@ impl From<u32> for ${enum.name} {
     }
 }
 
+% endfor
+
+% for flag in flags:
+impl CanDecode<${flag.name}> for ${flag.name}
+{
+    fn read(rdr: &mut ArtemisDecoder) -> io::Result<${flag.name}>
+    {
+        ${flag.name}::from_bits(rdr.read_u32()?).ok_or(io::Error::new(io::ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
+    }
+}
 % endfor
