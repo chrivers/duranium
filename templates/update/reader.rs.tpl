@@ -19,7 +19,7 @@ impl CanDecode<ObjectUpdate> for ObjectUpdate
             % for type in enums.get("ObjectType").fields.without("END_MARKER"):
             ObjectType::${type.name} => update::${type.name}Update::read(rdr),
             % endfor
-            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unknown object update type")),
+            ObjectType::__Unknown(x) => Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
         }
     }
 }
