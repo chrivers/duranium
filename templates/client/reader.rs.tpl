@@ -26,7 +26,7 @@ impl CanDecode<ClientPacket> for ClientPacket
             } },
             % else:
             supertype @ frametype::${field.name} => {
-                match rdr.read_${parser.arg}()? {
+                match rdr.read_${rust.get_parser(field.type[0].name).arg}()? {
                     % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); let res = ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
