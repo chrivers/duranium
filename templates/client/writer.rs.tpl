@@ -1,6 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
+use std::io;
 use std::io::Result;
 
 use ::packet::enums::frametype;
@@ -20,7 +21,7 @@ impl CanEncode for ClientPacket
             % for fld in rust.get_packet(name).fields:
                 ${rust.ref_struct_field(fld)},
             % endfor
-            } => {
+            } => Ok({
                 trace::packet_write("${name}");
                 wtr.write_u32(frametype::${info[1]})?;
             % if info[2]:
@@ -35,10 +36,9 @@ impl CanEncode for ClientPacket
                 % endif
                 wtr.write_u32(0)?;
             % endfor
-            },
-
+            }),
         % endfor
+            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
         }
-        Ok(())
     }
 }
