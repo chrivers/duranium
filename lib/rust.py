@@ -120,8 +120,10 @@ def read_struct_field(type):
         return "rdr.%s()?" % reader_function(type)
 
 def write_struct_field(fieldname, type):
-    if type.name == "sizedarray" or (type.name == "array" and len(type._args) == 1):
+    if (type.name == "sizedarray" and type[0].name != "bool8") or (type.name == "array" and len(type._args) == 1):
         return "wtr.write_array(%s)?" % fieldname
+    if type.name == "sizedarray":
+        return "for elm in %s { %s }" % (fieldname, write_struct_field("*elm", type[0]))
     elif type.name == "string":
         return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
     elif type.name == "array" and len(type._args) == 2:
