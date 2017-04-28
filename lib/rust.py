@@ -151,6 +151,31 @@ def write_update_field(wtr, mask, fieldname, type):
             fieldname = "%s.as_ref()" % fieldname
         return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
 
+##### diff fields #####
+
+def diff_update_field(fieldname, fieldtype):
+    if fieldtype and fieldtype.name == "sizedarray":
+        return "[ %s ]" % ",\n".join(["{ %s }" % diff_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    else:
+        return "if self.%s == other.%s { Some(other.%s) } else { None }" % (
+            fieldname,
+            fieldname,
+            fieldname if fieldtype and fieldtype.name != "string" else "%s.to_owned()" % fieldname,
+        )
+
+##### apply fields #####
+
+def apply_update_field(fieldname, fieldtype):
+    if fieldtype and fieldtype.name == "sizedarray":
+        return "%s" % "; ".join(["{ %s }" % apply_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    else:
+        return "if let Some(%s) = update.%s { self.%s = %s; }" % (
+            "ref val" if fieldtype and fieldtype.name == "string" else "val",
+            fieldname,
+            fieldname,
+            "val.to_owned()" if fieldtype and fieldtype.name == "string" else "val",
+        )
+
 ##### field refs #####
 
 def ref_struct_field(fld):
