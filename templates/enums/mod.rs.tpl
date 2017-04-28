@@ -6,12 +6,12 @@ pub mod writer;
 
 % for enum in enums.without("FrameType"):
 %if enum.name in ("AudioMode", "ConsoleType"):
-#[derive(Eq,PartialEq,Hash)]
+#[derive(Eq,Hash)]
 %endif
 %if enum.name == "ObjectType":
 #[allow(non_camel_case_types)]
 %endif
-#[derive(Debug,Copy,Clone)]
+#[derive(PartialEq,Debug,Copy,Clone)]
 pub enum ${enum.name}
 {
     % for case in enum.fields:
