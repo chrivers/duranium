@@ -16,7 +16,7 @@ pub enum ObjectUpdate {
 
 % for object in objects:
 pub struct ${object.name}Update {
-    object_id: u32,
+    pub object_id: u32,
 % for field in object.fields:
     % if object.name == "PlayerShipUpgrade":
     pub ${"{:30}".format(field.name+":")} ${rust.declare_update_type(field.type)},
