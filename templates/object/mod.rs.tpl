@@ -2,6 +2,18 @@
 ${rust.header()}
 
 pub mod reader;
+pub mod apply;
+pub mod diff;
+
+trait Apply<T> {
+    fn apply(&mut self, update: &T);
+}
+
+trait Diff<T, U> where
+    T: Apply<U>
+{
+    fn diff(&self, other: &T) -> U;
+}
 
 use ::packet::enums::*;
 
