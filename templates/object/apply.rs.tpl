@@ -8,7 +8,7 @@ use ::packet::update;
 % for object in objects:
 <%
  T = "object::%s" % object.name
- U = "update::%sUpdate" % object.name
+ U = "update::%s" % object.name
  %>
 impl Apply<${U}> for ${T} {
     fn apply(&mut self, update: &${U}) {
@@ -18,7 +18,6 @@ impl Apply<${U}> for ${T} {
     }
     fn produce(&self, update: &${U}) -> Self {
         ${T} {
-        object_id: self.object_id,
         % for field in object.fields:
             ${field.name}: ${rust.produce_update_field(field.name, field.type)},
         % endfor
