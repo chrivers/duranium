@@ -4,17 +4,7 @@ ${rust.header()}
 pub mod reader;
 pub mod apply;
 pub mod diff;
-
-pub trait Apply<U> {
-    fn apply(&mut self, update: &U);
-    fn produce(&self, update: &U) -> Self;
-}
-
-pub trait Diff<T, U> where
-    T: Apply<U>
-{
-    fn diff(&self, other: &T) -> U;
-}
+pub mod traits;
 
 use ::packet::enums::*;
 

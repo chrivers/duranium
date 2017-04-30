@@ -1,7 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::object::Diff;
+use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
 

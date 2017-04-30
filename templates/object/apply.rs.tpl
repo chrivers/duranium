@@ -1,7 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::object::Apply;
+use ::packet::object::traits::Apply;
 use ::packet::object;
 use ::packet::update;
 
