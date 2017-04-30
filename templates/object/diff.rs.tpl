@@ -5,6 +5,12 @@ use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
 
+macro_rules! diff_field {
+    ( $ours:expr, $theirs:expr ) => {
+        if $ours != $theirs { Some($theirs) } else { None }
+    }
+}
+
 % for object in objects:
 <%
  T = "object::%s" % object.name

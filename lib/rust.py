@@ -156,12 +156,10 @@ def write_update_field(wtr, mask, fieldname, type):
 def diff_update_field(fieldname, fieldtype):
     if fieldtype and fieldtype.name == "sizedarray":
         return "[ %s ]" % ",\n".join(["{ %s }" % diff_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    elif fieldtype and fieldtype.name == "string":
+        return "if self.%s == other.%s { Some(other.%s.to_owned()) } else { None }" % (fieldname, fieldname, fieldname)
     else:
-        return "if self.%s == other.%s { Some(other.%s) } else { None }" % (
-            fieldname,
-            fieldname,
-            fieldname if fieldtype and fieldtype.name != "string" else "%s.to_owned()" % fieldname,
-        )
+        return "diff_field!(self.%s, other.%s)" % (fieldname, fieldname)
 
 ##### apply fields #####
 
