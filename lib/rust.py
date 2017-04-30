@@ -168,24 +168,20 @@ def diff_update_field(fieldname, fieldtype):
 def apply_update_field(fieldname, fieldtype):
     if fieldtype and fieldtype.name == "sizedarray":
         return "%s" % "; ".join(["{ %s }" % apply_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    elif fieldtype and fieldtype.name == "string":
+        return "if let Some(ref val) = update.%s { self.%s = val.to_owned(); }" % (fieldname, fieldname)
     else:
-        return "if let Some(%s) = update.%s { self.%s = %s; }" % (
-            "ref val" if fieldtype and fieldtype.name == "string" else "val",
-            fieldname,
-            fieldname,
-            "val.to_owned()" if fieldtype and fieldtype.name == "string" else "val",
-        )
+        return "if let Some(val) = update.%s { self.%s = val; }" % (fieldname, fieldname)
 
-##### apply fields #####
+##### produce fields #####
 
 def produce_update_field(fieldname, fieldtype):
     if fieldtype and fieldtype.name == "sizedarray":
         return "[ %s ]" % ", ".join(["{ %s }" % produce_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    elif fieldtype and fieldtype.name == "string":
+        return "match update.%s { Some(ref s) => s.clone(), None => self.%s.clone() }" % (fieldname, fieldname)
     else:
-        return "update.%s.unwrap_or(self.%s)" % (
-            fieldname,
-            ("%s.to_owned()" % fieldname) if fieldtype and fieldtype.name == "string" else fieldname,
-        )
+        return "update.%s.unwrap_or(self.%s)" % (fieldname, fieldname)
 
 ##### field refs #####
 
