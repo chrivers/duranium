@@ -2,6 +2,7 @@
 ${rust.header()}
 
 use ::packet::enums::*;
+use ::packet::object::ObjectID;
 
 pub mod reader;
 pub mod writer;

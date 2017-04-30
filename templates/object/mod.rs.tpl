@@ -6,6 +6,8 @@ pub mod apply;
 pub mod diff;
 pub mod traits;
 
+pub type ObjectID = u32;
+
 use ::packet::enums::*;
 
 % for object in objects:
