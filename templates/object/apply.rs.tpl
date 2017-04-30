@@ -16,5 +16,13 @@ impl Apply<${U}> for ${T} {
         ${rust.apply_update_field(field.name, field.type)};
         % endfor
     }
+    fn produce(&self, update: &${U}) -> Self {
+        ${T} {
+        object_id: self.object_id,
+        % for field in object.fields:
+            ${field.name}: ${rust.produce_update_field(field.name, field.type)},
+        % endfor
+        }
+    }
 }
 % endfor

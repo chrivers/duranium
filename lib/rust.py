@@ -176,6 +176,17 @@ def apply_update_field(fieldname, fieldtype):
             "val.to_owned()" if fieldtype and fieldtype.name == "string" else "val",
         )
 
+##### apply fields #####
+
+def produce_update_field(fieldname, fieldtype):
+    if fieldtype and fieldtype.name == "sizedarray":
+        return "[ %s ]" % ", ".join(["{ %s }" % produce_update_field("%s[%s]" % (fieldname, x), None) for x in range(int(fieldtype[1].name))])
+    else:
+        return "update.%s.unwrap_or(self.%s)" % (
+            fieldname,
+            ("%s.to_owned()" % fieldname) if fieldtype and fieldtype.name == "string" else fieldname,
+        )
+
 ##### field refs #####
 
 def ref_struct_field(fld):
