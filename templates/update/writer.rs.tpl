@@ -15,7 +15,7 @@ impl CanEncode for ObjectUpdate {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         match self {
-            % for type in enums.get("ObjectType").fields.without("END_MARKER"):
+            % for type in enums.get("ObjectType").fields:
             &ObjectUpdate::${type.name}(ref data) => data.write(wtr),
             % endfor
             _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),

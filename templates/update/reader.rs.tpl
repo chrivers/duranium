@@ -16,7 +16,7 @@ impl CanDecode<ObjectUpdate> for ObjectUpdate
     fn read(rdr: &mut ArtemisDecoder) -> Result<ObjectUpdate>
     {
         match rdr.read_enum8()? {
-            % for type in enums.get("ObjectType").fields.without("END_MARKER"):
+            % for type in enums.get("ObjectType").fields:
             ObjectType::${type.name} => update::${type.name}Update::read(rdr),
             % endfor
             ObjectType::__Unknown(x) => Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
