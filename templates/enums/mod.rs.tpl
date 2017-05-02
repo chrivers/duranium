@@ -1,6 +1,8 @@
 <% import rust %>\
 ${rust.header()}
 
+use std::default::Default;
+
 pub mod reader;
 pub mod writer;
 
@@ -20,6 +22,9 @@ pub enum ${enum.name}
     __Unknown(u32),
 }
 
+impl Default for ${enum.name} {
+    fn default() -> Self { ${enum.name}::${enum.fields[0].name} }
+}
 % endfor
 pub mod frametype {
     #![allow(non_upper_case_globals)]
@@ -37,5 +42,9 @@ bitflags!
         const ${field.aligned_name} = ${field.aligned_hex_value},
         % endfor
     }
+}
+
+impl Default for ${flag.name} {
+    fn default() -> Self { Self::empty() }
 }
 % endfor

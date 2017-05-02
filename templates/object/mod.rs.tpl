@@ -5,13 +5,14 @@ pub mod reader;
 pub mod apply;
 pub mod diff;
 pub mod traits;
+pub mod new;
 
 pub type ObjectID = u32;
 
 use ::packet::enums::*;
 
 % for object in objects:
-#[derive(Debug)]
+#[derive(Debug,Default)]
 pub struct ${object.name} {
 % for field in object.fields:
     % if object.name == "PlayerShipUpgrades":
