@@ -76,12 +76,12 @@ def declare_update_type(tp):
         return "Option<%s>" % declare_struct_type(tp)
 
 def reader_function(tp):
-    if tp.name in primitive_map:
+    if tp.name in ("bitflags", "struct", "map", "option", "string"):
+        return "read"
+    elif tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
     elif tp.name in convert_map:
         return "read_%s" % convert_map[tp.name]
-    elif tp.name in ("bitflags", "struct", "map", "option"):
-        return "read"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "read_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
