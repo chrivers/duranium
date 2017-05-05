@@ -136,13 +136,6 @@ def write_struct_field(fieldname, type):
 
 ##### updates fields #####
 
-def read_update_field(rdr, mask, object, field, type):
-    if type.name == "sizedarray":
-        rep = int(type[1].name)
-        return "[ %s ]" % ", ".join([read_update_field(rdr, mask, object, field, type[0])] * rep)
-    else:
-        return "parse_bitmask_field!(%s, %s.%s()?)" % (mask, rdr, reader_function(type))
-
 def write_update_field(wtr, mask, fieldname, type):
     if type.name == "sizedarray":
         return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
