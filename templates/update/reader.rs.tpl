@@ -35,9 +35,9 @@ impl CanDecode<Update> for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Update>
     {
         let mask_byte_size = ${object._match};
-        let mask = rdr.read_bytes(mask_byte_size)?;
+        let mask = rdr.read_slice(mask_byte_size)?;
         trace::update_read("${object.name}");
-        let mut rdr = ArtemisUpdateDecoder::new(rdr, &mask);
+        let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
         let parsed = Update::${object.name}(update::${object.name} {
             % for field in object.fields:
                 ${field.name}: parse_field!("packet", "${field.name}", ${rust.read_struct_field(field.type)}),
