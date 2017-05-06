@@ -28,7 +28,7 @@ impl CanEncode for ClientPacket
                 wtr.write_u32(${info[2]})?;
             % endif
             % for fld in rust.get_packet(name).fields:
-                write_field!("packet", "${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type)});
+                write_field!("packet", "${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type, True)});
             % endfor
             % for x in range(rust.get_packet_padding(rust.get_packet(name), info[1])):
                 % if loop.first:

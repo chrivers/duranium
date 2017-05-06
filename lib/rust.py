@@ -94,7 +94,7 @@ def writer_function(tp):
         return "write_%s" % primitive_map[tp.name]
     elif tp.name in convert_map:
         return "write_%s" % convert_map[tp.name]
-    elif tp.name in ("bitflags", "struct", "map", "option"):
+    elif tp.name in ("bitflags", "struct", "map", "option", "array"):
         return "write"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "write_enum8"
@@ -119,30 +119,28 @@ def read_struct_field(type):
     else:
         return "rdr.%s()?" % reader_function(type)
 
-def write_struct_field(fieldname, type):
-    if (type.name == "sizedarray" and type[0].name != "bool8") or (type.name == "array" and len(type._args) == 1):
-        return "wtr.write_array(%s)?" % fieldname
+def write_struct_field(fieldname, type, ref):
     if type.name == "sizedarray":
-        return "for elm in %s { %s }" % (fieldname, write_struct_field("*elm", type[0]))
-    elif type.name == "string":
-        return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
+        return "for x in %s.into_iter() { %s }" % (fieldname, write_struct_field("*x", type[0], False))
     elif type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
-            return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
         else:
-            return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u32(&%s, %s)?" % (fieldname, type[1].name)
     else:
+        if is_ref_type(type) and not ref:
+            fieldname = "&%s" % fieldname
         return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
 ##### updates fields #####
 
-def write_update_field(wtr, mask, fieldname, type):
+def write_update_field(fieldname, type):
     if type.name == "sizedarray":
-        return "for _elem in %s.iter() { %s }" % (fieldname, write_update_field(wtr, mask, "*_elem", type[0]))
+        return "for ufield in %s.into_iter() { %s }" % (fieldname, write_update_field("ufield", type[0]))
+    elif type.name in {"string", "bitflags"}:
+        return "wtr.write(&%s.as_ref())?" % (fieldname)
     else:
-        if is_ref_type(type):
-            fieldname = "%s.as_ref()" % fieldname
-        return "write_bitmask_field!(%s, %s, %s, %s)" % (fieldname, wtr, mask, writer_function(type))
+        return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
 
 ##### diff fields #####
 

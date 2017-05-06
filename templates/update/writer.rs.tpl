@@ -4,8 +4,8 @@ use std::io;
 use std::io::Result;
 
 use ::wire::ArtemisEncoder;
+use ::wire::ArtemisUpdateEncoder;
 use ::wire::CanEncode;
-use ::wire::bitwriter::BitWriter;
 use ::wire::trace;
 
 use ::packet::update::{self, Update, ObjectUpdate};
@@ -40,18 +40,12 @@ impl CanEncode for update::${object.name} {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         let mask_byte_size = ${object._match};
-        let mut mask = BitWriter::fixed_size(mask_byte_size);
-        let maskpos = wtr.position();
-        wtr.skip_bytes(mask_byte_size as i64)?;
+        let mut wtr = ArtemisUpdateEncoder::new(wtr, mask_byte_size)?;
         trace::update_write("${object.name}");
         % for field in object.fields:
-        ${rust.write_update_field("wtr", "mask", "self."+field.name, field.type)};
+        ${rust.write_update_field("self."+field.name, field.type)};
         % endfor
-        let endpos = wtr.position();
-        wtr.seek_bytes(maskpos)?;
-        wtr.write_bytes(&mask.into_inner())?;
-        wtr.seek_bytes(endpos)?;
-        Ok(())
+        wtr.finish()
     }
 }
 % endfor
