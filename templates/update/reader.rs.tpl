@@ -7,7 +7,7 @@ use ::wire::{ArtemisDecoder, ArtemisUpdateDecoder};
 use ::packet::update;
 use ::packet::update::{Update, ObjectUpdate};
 use ::packet::enums::ObjectType;
-use ::wire::traits::CanDecode;
+use ::wire::CanDecode;
 use ::wire::trace;
 
 impl CanDecode<ObjectUpdate> for ObjectUpdate

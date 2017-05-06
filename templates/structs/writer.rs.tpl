@@ -4,7 +4,7 @@ use std::io;
 
 use ::packet::structs::*;
 use ::wire::ArtemisEncoder;
-use ::wire::traits::CanEncode;
+use ::wire::CanEncode;
 use ::wire::trace;
 
 % for struct in structs.without("Update"):

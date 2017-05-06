@@ -7,7 +7,7 @@ use std::io::Result;
 use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
 use ::wire::ArtemisEncoder;
-use ::wire::traits::CanEncode;
+use ::wire::CanEncode;
 use ::wire::trace;
 
 impl CanEncode for ClientPacket

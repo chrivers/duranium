@@ -4,7 +4,7 @@ use std::io::Result;
 
 use ::packet::enums::frametype;
 use ::wire::ArtemisEncoder;
-use ::wire::traits::CanEncode;
+use ::wire::CanEncode;
 use ::wire::trace;
 
 use ::packet::server::ServerPacket;

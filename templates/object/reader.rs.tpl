@@ -4,7 +4,7 @@ use std::io::Result;
 
 use ::packet::object;
 use ::wire::ArtemisDecoder;
-use ::wire::traits::CanDecode;
+use ::wire::CanDecode;
 use ::wire::trace;
 
 % for object in objects:

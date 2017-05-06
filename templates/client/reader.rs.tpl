@@ -6,8 +6,8 @@ use std::io::Result;
 
 use ::packet::enums::frametype;
 use ::packet::client::*;
-use ::wire::{ArtemisDecoder};
-use ::wire::traits::{CanDecode};
+use ::wire::ArtemisDecoder;
+use ::wire::CanDecode;
 use ::wire::trace;
 
 <% parser = parsers.get("ClientParser") %>

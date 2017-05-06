@@ -4,7 +4,7 @@ ${rust.header()}
 use std::io;
 
 use ::wire::ArtemisDecoder;
-use ::wire::traits::CanDecode;
+use ::wire::CanDecode;
 use ::packet::enums::*;
 
 % for enum in enums.without("FrameType"):

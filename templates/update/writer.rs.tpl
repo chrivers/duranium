@@ -4,7 +4,7 @@ use std::io;
 use std::io::Result;
 
 use ::wire::ArtemisEncoder;
-use ::wire::traits::CanEncode;
+use ::wire::CanEncode;
 use ::wire::bitwriter::BitWriter;
 use ::wire::trace;
 

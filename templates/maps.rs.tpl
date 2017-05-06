@@ -3,7 +3,7 @@ ${rust.header()}
 use std::io;
 use std::collections::HashMap;
 use ::packet::enums::*;
-use ::wire::traits::{CanDecode, CanEncode, IterEnum};
+use ::wire::{CanDecode, CanEncode, IterEnum};
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::packet::enums::ConnectionType;
 
