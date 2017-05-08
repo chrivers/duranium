@@ -61,7 +61,7 @@ def declare_struct_type(tp):
     elif tp.name == "enum":
         return tp[1].name
     elif tp.name == "map":
-        return "HashMap<%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
     elif tp.name == "option":
         return "Option<%s>" % declare_struct_type(tp[0])
     elif tp.name == "bitflags":

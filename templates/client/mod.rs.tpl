@@ -5,6 +5,7 @@ pub mod writer;
 
 use ::packet::structs::*;
 use ::packet::enums::*;
+use ::wire::EnumMap;
 
 <% packet = packets.get("ClientPacket") %>\
 #[derive(Debug)]

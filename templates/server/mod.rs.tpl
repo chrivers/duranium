@@ -6,8 +6,8 @@ pub mod writer;
 use ::packet::enums::*;
 use ::packet::structs::*;
 use ::packet::update::ObjectUpdate;
+use ::wire::EnumMap;
 
-use std::collections::HashMap;
 <% packet = packets.get("ServerPacket") %>\
 #[derive(Debug)]
 #[allow(non_camel_case_types)]

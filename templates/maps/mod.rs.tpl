@@ -1,35 +1,10 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
-use std::collections::HashMap;
-use ::packet::enums::*;
-use ::wire::{CanDecode, CanEncode, IterEnum};
-use ::wire::{ArtemisDecoder, ArtemisEncoder};
-use ::packet::enums::ConnectionType;
 
-impl CanDecode<HashMap<ConsoleType, ConsoleStatus>> for HashMap<ConsoleType, ConsoleStatus>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<HashMap<ConsoleType, ConsoleStatus>, io::Error>
-    {
-        let mut map = HashMap::new();
-        % for case in enums.get("ConsoleType").fields:
-        map.insert(ConsoleType::${"%-15s" % (case.name + ",")} rdr.read_enum8()?);
-        % endfor
-        Ok(map)
-    }
-}
-
-impl CanEncode for HashMap<ConsoleType, ConsoleStatus>
-{
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
-    {
-        for console in ConsoleType::iter_enum() {
-            wtr.write_enum8(*self.get(&console).unwrap_or(&ConsoleStatus::Available)
-            )?;
-        }
-        Ok(())
-    }
-}
+pub mod reader;
+pub mod writer;
+use ::packet::enums::{ConsoleType, ConnectionType};
+use ::wire::IterEnum;
 
 % for item in [enums.get("ConsoleType")]:
 impl IterEnum<${item.name}> for ${item.name} {
