@@ -1,7 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::convert::From;
 use std::io::Result;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
@@ -38,7 +37,7 @@ impl CanDecode<EnumMap<UpgradeType, bool>> for EnumMap<UpgradeType, bool> where
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+        for _ in 0..<UpgradeType as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_bool8()?);
         }
         Ok(EnumMap::new(data))
@@ -64,7 +63,7 @@ impl CanDecode<EnumMap<TubeIndex, TubeStatus>> for EnumMap<TubeIndex, TubeStatus
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
+        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
@@ -76,7 +75,7 @@ impl CanDecode<EnumMap<TubeIndex, OrdnanceType>> for EnumMap<TubeIndex, Ordnance
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
+        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
@@ -102,7 +101,7 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<TubeStatus>>> for EnumMap<TubeInd
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
+        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
@@ -114,7 +113,7 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<OrdnanceType>>> for EnumMap<TubeI
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
+        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
@@ -126,7 +125,7 @@ impl CanDecodeUpdate<EnumMap<UpgradeType, Option<bool>>> for EnumMap<UpgradeType
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+        for _ in 0..<UpgradeType as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_bool8()?);
         }
         Ok(EnumMap::new(data))
