@@ -3,6 +3,8 @@ ${rust.header()}
 
 use std::default::Default;
 
+use ::wire::RangeEnum;
+
 pub mod reader;
 pub mod writer;
 
@@ -24,6 +26,10 @@ pub enum ${enum.name}
 
 impl Default for ${enum.name} {
     fn default() -> Self { ${enum.name}::${enum.fields[0].name} }
+}
+
+impl RangeEnum for ${enum.name} {
+    const HIGHEST: usize = ${enum.fields[-1].aligned_hex_value};
 }
 % endfor
 pub mod frametype {

@@ -5,7 +5,7 @@ use ::packet::enums;
 use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
-use ::wire::EnumMap;
+use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
     ( $tp:ty ) => {
@@ -23,7 +23,8 @@ macro_rules! diff_impl {
 }
 
 impl<E, V> Diff<EnumMap<E, V>, EnumMap<E, Option<V>>> for EnumMap<E, V> where
-    V: Diff<V, Option<V>> + Copy
+    V: Diff<V, Option<V>> + Copy,
+    E: RangeEnum,
 {
     fn diff(&self, other: EnumMap<E, V>) -> EnumMap<E, Option<V>> {
         EnumMap::new(self.data.iter().zip(other.data.into_iter()).map(

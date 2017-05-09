@@ -4,16 +4,17 @@ ${rust.header()}
 use std::convert::From;
 use std::io::Result;
 
-use ::wire::{ArtemisDecoder, CanDecode, EnumMap};
+use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
-use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, ShipSystem, BeamFrequency, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
+use ::packet::enums::{ConsoleStatus, ShipIndex, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
 
-impl CanDecode<EnumMap<ConsoleType, ConsoleStatus>> for EnumMap<ConsoleType, ConsoleStatus>
+impl<T> CanDecode<EnumMap<T, ConsoleStatus>> for EnumMap<T, ConsoleStatus> where
+    T: RangeEnum
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(ConsoleType::GameMaster)+1 {
+        for _ in 0..T::HIGHEST+1 {
             data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
@@ -25,7 +26,7 @@ impl CanDecode<EnumMap<ShipIndex, bool>> for EnumMap<ShipIndex, bool>
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(ShipIndex::Player8)+1 {
+        for _ in 0..<ShipIndex as RangeEnum>::HIGHEST+1 {
             data.push(rdr.read_bool8()?);
         }
         Ok(EnumMap::new(data))
@@ -44,65 +45,15 @@ impl CanDecode<EnumMap<UpgradeType, bool>> for EnumMap<UpgradeType, bool> where
     }
 }
 
-impl<T> CanDecode<EnumMap<UpgradeType, T>> for EnumMap<UpgradeType, T> where
-    T: CanDecode<T>
+impl<E, V> CanDecode<EnumMap<E, V>> for EnumMap<E, V> where
+    E: RangeEnum,
+    V: CanDecode<V>,
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
+    default fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+        for _ in 0..E::HIGHEST+1 {
             data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl<T> CanDecode<EnumMap<ShipIndex, T>> for EnumMap<ShipIndex, T>
-    where T: CanDecode<T>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(ShipIndex::Player8)+1 {
-            data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl<T> CanDecode<EnumMap<ShipSystem, T>> for EnumMap<ShipSystem, T>
-    where T: CanDecode<T>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(ShipSystem::AftShields)+1 {
-            data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl<T> CanDecode<EnumMap<BeamFrequency, T>> for EnumMap<BeamFrequency, T>
-    where T: CanDecode<T>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(BeamFrequency::E)+1 {
-            data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl CanDecode<EnumMap<TubeIndex, f32>> for EnumMap<TubeIndex, f32>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
-            data.push(rdr.read_f32()?);
         }
         Ok(EnumMap::new(data))
     }
@@ -132,26 +83,14 @@ impl CanDecode<EnumMap<TubeIndex, OrdnanceType>> for EnumMap<TubeIndex, Ordnance
     }
 }
 
-impl<T> CanDecodeUpdate<EnumMap<ShipSystem, Option<T>>> for EnumMap<ShipSystem, Option<T>>
-    where T: CanDecode<T>
+impl<E, V> CanDecodeUpdate<EnumMap<E, Option<V>>> for EnumMap<E, Option<V>> where
+    E: RangeEnum,
+    V: CanDecode<V>,
 {
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
+    default fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
-        for _ in 0..u32::from(ShipSystem::AftShields)+1 {
-            data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl<T> CanDecodeUpdate<EnumMap<BeamFrequency, Option<T>>> for EnumMap<BeamFrequency, Option<T>>
-    where T: CanDecode<T>
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(BeamFrequency::E)+1 {
+        for _ in 0..E::HIGHEST+1 {
             data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
@@ -165,18 +104,6 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<TubeStatus>>> for EnumMap<TubeInd
         let mut data = vec![];
         for _ in 0..u32::from(TubeIndex::Tube6)+1 {
             data.push(rdr.read_enum8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl CanDecodeUpdate<EnumMap<TubeIndex, Option<f32>>> for EnumMap<TubeIndex, Option<f32>>
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(TubeIndex::Tube6)+1 {
-            data.push(rdr.read_f32()?);
         }
         Ok(EnumMap::new(data))
     }
@@ -201,19 +128,6 @@ impl CanDecodeUpdate<EnumMap<UpgradeType, Option<bool>>> for EnumMap<UpgradeType
         let mut data = vec![];
         for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
             data.push(rdr.read_bool8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl<T> CanDecodeUpdate<EnumMap<UpgradeType, Option<T>>> for EnumMap<UpgradeType, Option<T>> where
-    T: CanDecode<T>
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
-            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }

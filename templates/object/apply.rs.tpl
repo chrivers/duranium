@@ -5,7 +5,7 @@ use ::packet::object::traits::Apply;
 use ::packet::enums;
 use ::packet::object;
 use ::packet::update;
-use ::wire::EnumMap;
+use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! apply_impl {
     ($tp:ty) => {
@@ -39,7 +39,8 @@ impl<'a> Apply< &'a Option<String>> for String
 }
 
 impl<'a, E, V> Apply< &'a EnumMap<E, Option<V>>> for EnumMap<E, V> where
-    V: Apply< & 'a Option<V>>
+    V: Apply< & 'a Option<V>>,
+    E: RangeEnum,
 {
     fn apply(&mut self, update: & 'a EnumMap<E, Option<V>>) {
         self.data.iter_mut().zip(update.data.iter()).map(
