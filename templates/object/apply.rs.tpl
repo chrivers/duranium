@@ -9,28 +9,30 @@ use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! apply_impl {
     ($tp:ty) => {
-        impl<'a> Apply< &'a Option<$tp>> for $tp
+        impl Apply for $tp
         {
-            fn apply(&mut self, update: &'a Option<$tp>) {
+            type Update = Option<$tp>;
+            fn apply(&mut self, update: &Option<$tp>) {
                 if let &Some(x) = update {
                     *self = x
                 }
             }
-            fn produce(&self, update: &'a Option<$tp>) -> Self {
+            fn produce(&self, update: &Option<$tp>) -> Self {
                 update.unwrap_or(*self)
             }
         }
     }
 }
 
-impl<'a> Apply< &'a Option<String>> for String
+impl Apply for String
 {
-    fn apply(&mut self, update: & 'a Option<String>) {
+    type Update = Option<String>;
+    fn apply(&mut self, update: &Option<String>) {
         if let &Some(ref x) = update {
             *self = x.to_string()
         }
     }
-    fn produce(&self, update: & 'a Option<String>) -> Self {
+    fn produce(&self, update: &Option<String>) -> Self {
         match update {
             &Some(ref s) => s.clone(),
             &None => self.clone()
@@ -38,16 +40,18 @@ impl<'a> Apply< &'a Option<String>> for String
     }
 }
 
-impl<'a, E, V> Apply< &'a EnumMap<E, Option<V>>> for EnumMap<E, V> where
-    V: Apply< & 'a Option<V>>,
+impl<E, V> Apply for EnumMap<E, V> where
+    V: Apply<Update=Option<V>>,
     E: RangeEnum,
 {
-    fn apply(&mut self, update: & 'a EnumMap<E, Option<V>>) {
+    type Update = EnumMap<E, Option<V>>;
+
+    fn apply(&mut self, update: &EnumMap<E, Option<V>>) {
         self.data.iter_mut().zip(update.data.iter()).map(
             |(s, o)| s.apply(o)
         ).last();
     }
-    fn produce(&self, update: & 'a EnumMap<E, Option<V>>) -> Self {
+    fn produce(&self, update: &EnumMap<E, Option<V>>) -> Self {
         EnumMap::new(self.data.iter().zip(update.data.iter()).map(
             |(s, o)| s.produce(o)).collect()
         )
@@ -74,7 +78,9 @@ apply_impl!(enums::${en.name});
  T = "object::%s" % object.name
  U = "update::%s" % object.name
  %>
-impl<'a> Apply${'<'}&'a ${U}> for ${T} {
+impl Apply for ${T} where
+{
+    type Update = ${U};
     fn apply(&mut self, update: &${U}) {
         % for field in object.fields:
         self.${field.name}.apply(&update.${field.name});

@@ -1,9 +1,10 @@
 <% import rust %>\
 ${rust.header()}
 
-pub trait Apply<U> {
-    fn apply(&mut self, update: U);
-    fn produce(&self, update: U) -> Self;
+pub trait Apply {
+    type Update;
+    fn apply(&mut self, update: &Self::Update);
+    fn produce(&self, update: &Self::Update) -> Self;
 }
 
 pub trait Diff
