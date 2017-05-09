@@ -14,7 +14,7 @@ def header():
 ##### type handling #####
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "sizedarray", "ascii_string", "array", "map", "option", "bitflags")
+    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option", "bitflags")
 
 primitive_map = {
     "u8": "u8",
@@ -52,8 +52,6 @@ def declare_struct_type(tp):
         return declare_map[tp.name]
     elif tp.name in primitive_map:
         return primitive_map[tp.name]
-    elif tp.name == "sizedarray":
-        return "[%s; %d]" % (declare_struct_type(tp[0]), int(tp[1].name))
     elif tp.name == "array":
         return "Vec<%s>" % declare_struct_type(tp[0])
     elif tp.name == "struct":
@@ -70,9 +68,7 @@ def declare_struct_type(tp):
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
 def declare_update_type(tp):
-    if tp.name == "sizedarray":
-        return "[%s; %d]" % (declare_update_type(tp[0]), int(tp[1].name))
-    elif tp.name == "map":
+    if tp.name == "map":
         return "EnumMap<%s, Option<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
     else:
         return "Option<%s>" % declare_struct_type(tp)
@@ -116,15 +112,11 @@ def read_struct_field(type):
                 return "rdr.read_array_u32(%s)?" % (type[1].name)
         else:
             return "rdr.read_array()?"
-    elif type.name == "sizedarray":
-        return "[ %s ]" % (", ".join([(read_struct_field(type[0]))] * int(type[1].name)))
     else:
         return "rdr.%s()?" % reader_function(type)
 
 def write_struct_field(fieldname, type, ref):
-    if type.name == "sizedarray":
-        return "for x in %s.into_iter() { %s }" % (fieldname, write_struct_field("*x", type[0], False))
-    elif type.name == "array" and len(type._args) == 2:
+    if type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
             return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
         else:
@@ -143,9 +135,7 @@ def read_update_field(type):
         return read_struct_field(type)
 
 def write_update_field(fieldname, type):
-    if type.name == "sizedarray":
-        return "for ufield in %s.into_iter() { %s }" % (fieldname, write_update_field("ufield", type[0]))
-    elif type.name in {"string", "bitflags"}:
+    if type.name in {"string", "bitflags"}:
         return "wtr.write(&%s.as_ref())?" % (fieldname)
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % (fieldname)
