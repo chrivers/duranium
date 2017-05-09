@@ -23,10 +23,12 @@ macro_rules! diff_impl {
 }
 
 impl<E, V> Diff<EnumMap<E, V>, EnumMap<E, Option<V>>> for EnumMap<E, V> where
-    V: Diff<V, Option<V>>
+    V: Diff<V, Option<V>> + Copy
 {
-    fn diff(&self, _other: EnumMap<E, V>) -> EnumMap<E, Option<V>> {
-        EnumMap::new(vec![])
+    fn diff(&self, other: EnumMap<E, V>) -> EnumMap<E, Option<V>> {
+        EnumMap::new(self.data.iter().zip(other.data.into_iter()).map(
+            |(s, o)| s.diff(o)).collect()
+        )
     }
 }
 

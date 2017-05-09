@@ -42,10 +42,14 @@ impl<'a, E, V> Apply< &'a EnumMap<E, Option<V>>> for EnumMap<E, V> where
     V: Apply< & 'a Option<V>>
 {
     fn apply(&mut self, update: & 'a EnumMap<E, Option<V>>) {
-
+        self.data.iter_mut().zip(update.data.iter()).map(
+            |(s, o)| s.apply(o)
+        ).last();
     }
     fn produce(&self, update: & 'a EnumMap<E, Option<V>>) -> Self {
-        EnumMap::new(vec![])
+        EnumMap::new(self.data.iter().zip(update.data.iter()).map(
+            |(s, o)| s.produce(o)).collect()
+        )
     }
 }
 
