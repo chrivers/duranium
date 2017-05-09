@@ -4,7 +4,7 @@ ${rust.header()}
 use std::io::Result;
 
 use ::wire::{ArtemisEncoder, CanEncode, EnumMap};
-use ::packet::enums::{ConsoleType, ConsoleStatus, GameShip};
+use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex};
 
 impl CanEncode for EnumMap<ConsoleType, ConsoleStatus> where
 {
@@ -17,7 +17,7 @@ impl CanEncode for EnumMap<ConsoleType, ConsoleStatus> where
     }
 }
 
-impl CanEncode for EnumMap<GameShip, bool> where
+impl CanEncode for EnumMap<ShipIndex, bool> where
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
