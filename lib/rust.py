@@ -72,6 +72,8 @@ def declare_struct_type(tp):
 def declare_update_type(tp):
     if tp.name == "sizedarray":
         return "[%s; %d]" % (declare_update_type(tp[0]), int(tp[1].name))
+    elif tp.name == "map":
+        return "EnumMap<%s, Option<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
     else:
         return "Option<%s>" % declare_struct_type(tp)
 
@@ -134,11 +136,19 @@ def write_struct_field(fieldname, type, ref):
 
 ##### updates fields #####
 
+def read_update_field(type):
+    if type.name == "map":
+        return "rdr.read_struct()?"
+    else:
+        return read_struct_field(type)
+
 def write_update_field(fieldname, type):
     if type.name == "sizedarray":
         return "for ufield in %s.into_iter() { %s }" % (fieldname, write_update_field("ufield", type[0]))
     elif type.name in {"string", "bitflags"}:
         return "wtr.write(&%s.as_ref())?" % (fieldname)
+    elif type.name == "map":
+        return "wtr.write_struct(&%s)?" % (fieldname)
     else:
         return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
 

@@ -1,6 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
+use ::wire::EnumMap;
 use ::packet::enums::*;
 use ::packet::object::ObjectID;
 
