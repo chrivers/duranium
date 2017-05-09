@@ -27,3 +27,15 @@ impl CanEncode for EnumMap<ShipIndex, bool> where
         Ok(())
     }
 }
+
+impl<T> CanEncode for EnumMap<ShipIndex, T> where
+    T: CanEncode
+{
+    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
+    {
+        for elm in self.get_ref() {
+            wtr.write(elm)?;
+        }
+        Ok(())
+    }
+}
