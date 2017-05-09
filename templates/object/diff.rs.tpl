@@ -1,6 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
+use std::iter::FromIterator;
 use ::packet::enums;
 use ::packet::object::traits::Diff;
 use ::packet::object;
@@ -9,9 +10,11 @@ use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
     ( $tp:ty ) => {
-        impl Diff<$tp, Option<$tp>> for $tp
+        impl Diff for $tp
         {
-            fn diff(&self, other: $tp) -> Option<$tp> {
+            type Other = $tp;
+            type Update = Option<$tp>;
+            fn diff(&self, other: $tp) -> Self::Update {
                 if *self == other {
                     None
                 } else {
@@ -22,11 +25,14 @@ macro_rules! diff_impl {
     }
 }
 
-impl<E, V> Diff<EnumMap<E, V>, EnumMap<E, Option<V>>> for EnumMap<E, V> where
-    V: Diff<V, Option<V>> + Copy,
+impl<E, V> Diff for EnumMap<E, V> where
+    V: Diff<Other=V> + Copy,
     E: RangeEnum,
+    Vec<Option<V>>: FromIterator<V::Update>
 {
-    fn diff(&self, other: EnumMap<E, V>) -> EnumMap<E, Option<V>> {
+    type Other = EnumMap<E, V>;
+    type Update = EnumMap<E, Option<V>>;
+    fn diff(&self, other: EnumMap<E, V>) -> Self::Update {
         EnumMap::new(self.data.iter().zip(other.data.into_iter()).map(
             |(s, o)| s.diff(o)).collect()
         )
@@ -56,8 +62,10 @@ diff_impl!(enums::${en.name});
  T = "object::%s" % object.name
  U = "update::%s" % object.name
  %>
-impl<'a, 'b> Diff<${T}, ${U}> for &'a ${T} where
+impl<'a, 'b> Diff for &'a ${T} where
 {
+    type Other = ${T};
+    type Update = ${U};
     fn diff(&self, other: ${T}) -> ${U} {
         ${U} {
             % for field in object.fields:

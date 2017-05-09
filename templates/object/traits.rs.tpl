@@ -6,7 +6,9 @@ pub trait Apply<U> {
     fn produce(&self, update: U) -> Self;
 }
 
-pub trait Diff<T, U>
+pub trait Diff
 {
-    fn diff(&self, other: T) -> U;
+    type Other;
+    type Update = Option<Self::Other>;
+    fn diff(&self, other: Self::Other) -> Self::Update;
 }
