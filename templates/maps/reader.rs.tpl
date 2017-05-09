@@ -6,7 +6,7 @@ use std::io::Result;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
-use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, ShipSystem, BeamFrequency, TubeIndex, TubeStatus, OrdnanceType};
+use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, ShipSystem, BeamFrequency, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
 
 impl CanDecode<EnumMap<ConsoleType, ConsoleStatus>> for EnumMap<ConsoleType, ConsoleStatus>
 {
@@ -27,6 +27,31 @@ impl CanDecode<EnumMap<ShipIndex, bool>> for EnumMap<ShipIndex, bool>
         let mut data = vec![];
         for _ in 0..u32::from(ShipIndex::Player8)+1 {
             data.push(rdr.read_bool8()?);
+        }
+        Ok(EnumMap::new(data))
+    }
+}
+
+impl CanDecode<EnumMap<UpgradeType, bool>> for EnumMap<UpgradeType, bool> where
+{
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
+    {
+        let mut data = vec![];
+        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+            data.push(rdr.read_bool8()?);
+        }
+        Ok(EnumMap::new(data))
+    }
+}
+
+impl<T> CanDecode<EnumMap<UpgradeType, T>> for EnumMap<UpgradeType, T> where
+    T: CanDecode<T>
+{
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
+    {
+        let mut data = vec![];
+        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }
@@ -164,6 +189,31 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<OrdnanceType>>> for EnumMap<TubeI
         let mut data = vec![];
         for _ in 0..u32::from(TubeIndex::Tube6)+1 {
             data.push(rdr.read_enum8()?);
+        }
+        Ok(EnumMap::new(data))
+    }
+}
+
+impl CanDecodeUpdate<EnumMap<UpgradeType, Option<bool>>> for EnumMap<UpgradeType, Option<bool>> where
+{
+    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
+    {
+        let mut data = vec![];
+        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+            data.push(rdr.read_bool8()?);
+        }
+        Ok(EnumMap::new(data))
+    }
+}
+
+impl<T> CanDecodeUpdate<EnumMap<UpgradeType, Option<T>>> for EnumMap<UpgradeType, Option<T>> where
+    T: CanDecode<T>
+{
+    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
+    {
+        let mut data = vec![];
+        for _ in 0..u32::from(UpgradeType::VanguardRefitSystems)+1 {
+            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }

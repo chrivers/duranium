@@ -5,7 +5,7 @@ use std::io::Result;
 
 use ::wire::{ArtemisEncoder, CanEncode, EnumMap};
 use ::wire::{ArtemisUpdateEncoder, CanEncodeUpdate};
-use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, ShipSystem, BeamFrequency, TubeIndex, TubeStatus, OrdnanceType};
+use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, ShipSystem, BeamFrequency, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
 
 impl CanEncode for EnumMap<ConsoleType, ConsoleStatus> where
 {
@@ -93,6 +93,29 @@ impl CanEncodeUpdate for EnumMap<TubeIndex, Option<f32>> where
     {
         for elm in self.get_ref() {
             wtr.write_f32(&elm)?;
+        }
+        Ok(())
+    }
+}
+
+impl CanEncodeUpdate for EnumMap<UpgradeType, Option<bool>> where
+{
+    fn write(&self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
+    {
+        for elm in self.get_ref() {
+            wtr.write_bool8(elm)?;
+        }
+        Ok(())
+    }
+}
+
+impl<T> CanEncodeUpdate for EnumMap<UpgradeType, Option<T>> where
+    T: CanEncode
+{
+    fn write(&self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
+    {
+        for elm in self.get_ref() {
+            wtr.write(&elm.as_ref())?;
         }
         Ok(())
     }
