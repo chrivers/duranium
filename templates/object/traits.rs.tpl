@@ -2,12 +2,11 @@
 ${rust.header()}
 
 pub trait Apply<U> {
-    fn apply(&mut self, update: &U);
-    fn produce(&self, update: &U) -> Self;
+    fn apply(&mut self, update: U);
+    fn produce(&self, update: U) -> Self;
 }
 
-pub trait Diff<T, U> where
-    T: Apply<U>
+pub trait Diff<T, U>
 {
-    fn diff(&self, other: &T) -> U;
+    fn diff(&self, other: T) -> U;
 }
