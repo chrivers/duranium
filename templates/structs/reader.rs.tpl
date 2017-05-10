@@ -1,6 +1,6 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
+use std::io::Result;
 
 use ::packet::structs::*;
 use ::wire::ArtemisDecoder;
@@ -11,7 +11,7 @@ use ::wire::trace;
 
 impl CanDecode for ${struct.name} where
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self, io::Error>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         trace::struct_read("${struct.name}");
         Ok(
