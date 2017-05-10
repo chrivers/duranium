@@ -39,10 +39,6 @@ declare_map = {
     "ascii_string": "String",
 }
 
-convert_map = {
-    "ascii_string": "ascii_string",
-}
-
 def declare_struct_type(tp):
     if not tp:
         raise ValueError("Empty type")
@@ -76,8 +72,8 @@ def reader_function(tp):
         return "read"
     elif tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
-    elif tp.name in convert_map:
-        return "read_%s" % convert_map[tp.name]
+    elif tp.name == "ascii_string":
+        return "read_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "read_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -90,8 +86,8 @@ def writer_function(tp):
         return "write"
     elif tp.name in primitive_map:
         return "write_%s" % primitive_map[tp.name]
-    elif tp.name in convert_map:
-        return "write_%s" % convert_map[tp.name]
+    elif tp.name == "ascii_string":
+        return "write_ascii_string"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "write_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
