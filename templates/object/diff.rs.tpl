@@ -6,7 +6,6 @@ use ::packet::enums;
 use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
-use ::wire::types::*;
 use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
