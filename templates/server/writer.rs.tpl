@@ -13,10 +13,10 @@ impl CanEncode for ServerPacket
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        match self
+        match *self
         {
         % for name, info in sorted(rust.generate_packet_ids("ServerParser").items()):
-            &${name}
+            ${name}
             {
             % for fld in rust.get_packet(name).fields:
                 ${rust.ref_struct_field(fld)},

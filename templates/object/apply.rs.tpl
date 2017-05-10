@@ -13,7 +13,7 @@ macro_rules! apply_impl {
         {
             type Update = Option<$tp>;
             fn apply(&mut self, update: &Option<$tp>) {
-                if let &Some(x) = update {
+                if let Some(x) = *update {
                     *self = x
                 }
             }

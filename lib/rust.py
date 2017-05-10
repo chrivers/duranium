@@ -118,9 +118,9 @@ def read_struct_field(type):
 def write_struct_field(fieldname, type, ref):
     if type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
-            return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
-            return "wtr.write_array_u32(&%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
     else:
         if is_ref_type(type) and not ref:
             fieldname = "&%s" % fieldname
