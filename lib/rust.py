@@ -14,9 +14,13 @@ def header():
 ##### type handling #####
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option")
+    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option", "bool8", "bool16", "bool32")
 
 primitive_map = {
+    "bool8": "bool8",
+    "bool16": "bool16",
+    "bool32": "bool32",
+
     "u8": "u8",
     "u16": "u16",
     "u32": "u32",
@@ -31,17 +35,11 @@ primitive_map = {
 }
 
 declare_map = {
-    "bool8": "bool",
-    "bool16": "bool",
-    "bool32": "bool",
     "string": "String",
     "ascii_string": "String",
 }
 
 convert_map = {
-    "bool8": "bool8",
-    "bool16": "bool16",
-    "bool32": "bool32",
     "ascii_string": "ascii_string",
 }
 
@@ -74,7 +72,7 @@ def declare_update_type(tp):
         return "Option<%s>" % declare_struct_type(tp)
 
 def reader_function(tp):
-    if tp.name in ("bitflags", "struct", "map", "option", "string"):
+    if tp.name in ("bitflags", "struct", "map", "option", "string", "bool8", "bool16", "bool32"):
         return "read"
     elif tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
@@ -88,12 +86,12 @@ def reader_function(tp):
         raise TypeError("No reader function for [%r]" % tp)
 
 def writer_function(tp):
-    if tp.name in primitive_map:
+    if tp.name in ("bitflags", "struct", "map", "option", "array", "bool8", "bool16", "bool32"):
+        return "write"
+    elif tp.name in primitive_map:
         return "write_%s" % primitive_map[tp.name]
     elif tp.name in convert_map:
         return "write_%s" % convert_map[tp.name]
-    elif tp.name in ("bitflags", "struct", "map", "option", "array"):
-        return "write"
     elif tp.name == "enum" and tp[0].name == "u8":
         return "write_enum8"
     elif tp.name == "enum" and tp[0].name == "u32":
@@ -135,7 +133,7 @@ def read_update_field(type):
         return read_struct_field(type)
 
 def write_update_field(fieldname, type):
-    if type.name in {"string", "bitflags"}:
+    if type.name in {"string", "bitflags", "bool8", "bool16", "bool32"}:
         return "wtr.write(&%s.as_ref())?" % (fieldname)
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % (fieldname)
