@@ -26,7 +26,7 @@ impl CanDecode for ${flag.name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        ${flag.name}::from_bits(rdr.read_u32()?).ok_or_else(|| Error::new(ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
+        ${flag.name}::from_bits(rdr.read()?).ok_or_else(|| Error::new(ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
     }
 }
 % endfor
@@ -35,6 +35,6 @@ impl CanDecode for Option<ConsoleType>
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        rdr.read_u32().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) })
+        rdr.read::<u32>().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) })
     }
 }

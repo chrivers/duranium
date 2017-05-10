@@ -15,7 +15,7 @@ impl CanDecode for ObjectUpdate
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let object_type = rdr.read_enum8()?;
-        let object_id   = rdr.read_u32()?;
+        let object_id   = rdr.read()?;
         Ok(
             ObjectUpdate {
                 object_id: object_id,

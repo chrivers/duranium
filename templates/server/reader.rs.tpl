@@ -15,7 +15,7 @@ impl CanDecode for ServerPacket
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        Ok(match rdr.read_u32()? {
+        Ok(match rdr.read::<u32>()? {
 
             % for field in parser.fields:
             % if field.type.name == "struct":
@@ -26,7 +26,7 @@ impl CanDecode for ServerPacket
             } },
             % else:
             supertype @ frametype::${field.name} => {
-                match rdr.read_${rust.get_parser(field.type[0].name).arg}()? {
+                match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); ${pkt.type[0].name} {
                         % for fld in rust.get_packet(pkt.type[0].name).fields:
