@@ -15,7 +15,7 @@ impl CanDecode for ClientPacket
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        return Ok(match rdr.read_u32()? {
+        Ok(match rdr.read_u32()? {
 
             % for field in parser.fields:
             % if field.type.name == "struct":
