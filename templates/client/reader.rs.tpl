@@ -11,9 +11,9 @@ use ::wire::CanDecode;
 use ::wire::trace;
 
 <% parser = parsers.get("ClientParser") %>
-impl CanDecode<ClientPacket> for ClientPacket
+impl CanDecode for ClientPacket
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<ClientPacket>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         return Ok(match rdr.read_u32()? {
 

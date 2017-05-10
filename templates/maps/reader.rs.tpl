@@ -7,7 +7,7 @@ use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
 use ::packet::enums::{ConsoleStatus, ShipIndex, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
 
-impl<T> CanDecode<EnumMap<T, ConsoleStatus>> for EnumMap<T, ConsoleStatus> where
+impl<T> CanDecode for EnumMap<T, ConsoleStatus> where
     T: RangeEnum
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
@@ -20,7 +20,7 @@ impl<T> CanDecode<EnumMap<T, ConsoleStatus>> for EnumMap<T, ConsoleStatus> where
     }
 }
 
-impl CanDecode<EnumMap<ShipIndex, bool>> for EnumMap<ShipIndex, bool>
+impl CanDecode for EnumMap<ShipIndex, bool>
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
@@ -32,7 +32,7 @@ impl CanDecode<EnumMap<ShipIndex, bool>> for EnumMap<ShipIndex, bool>
     }
 }
 
-impl CanDecode<EnumMap<UpgradeType, bool>> for EnumMap<UpgradeType, bool> where
+impl CanDecode for EnumMap<UpgradeType, bool> where
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
@@ -44,21 +44,21 @@ impl CanDecode<EnumMap<UpgradeType, bool>> for EnumMap<UpgradeType, bool> where
     }
 }
 
-impl<E, V> CanDecode<EnumMap<E, V>> for EnumMap<E, V> where
+impl<E, V> CanDecode for EnumMap<E, V> where
     E: RangeEnum,
-    V: CanDecode<V>,
+    V: CanDecode,
 {
     default fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
         for _ in 0..E::HIGHEST+1 {
-            data.push(rdr.read()?);
+            data.push(rdr.read::<V>()?);
         }
         Ok(EnumMap::new(data))
     }
 }
 
-impl CanDecode<EnumMap<TubeIndex, TubeStatus>> for EnumMap<TubeIndex, TubeStatus>
+impl CanDecode for EnumMap<TubeIndex, TubeStatus>
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
@@ -70,7 +70,7 @@ impl CanDecode<EnumMap<TubeIndex, TubeStatus>> for EnumMap<TubeIndex, TubeStatus
     }
 }
 
-impl CanDecode<EnumMap<TubeIndex, OrdnanceType>> for EnumMap<TubeIndex, OrdnanceType>
+impl CanDecode for EnumMap<TubeIndex, OrdnanceType>
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
@@ -82,9 +82,9 @@ impl CanDecode<EnumMap<TubeIndex, OrdnanceType>> for EnumMap<TubeIndex, Ordnance
     }
 }
 
-impl<E, V> CanDecodeUpdate<EnumMap<E, Option<V>>> for EnumMap<E, Option<V>> where
+impl<E, V> CanDecodeUpdate for EnumMap<E, Option<V>> where
     E: RangeEnum,
-    V: CanDecode<V>,
+    V: CanDecode,
 {
     default fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
@@ -96,7 +96,7 @@ impl<E, V> CanDecodeUpdate<EnumMap<E, Option<V>>> for EnumMap<E, Option<V>> wher
     }
 }
 
-impl CanDecodeUpdate<EnumMap<TubeIndex, Option<TubeStatus>>> for EnumMap<TubeIndex, Option<TubeStatus>>
+impl CanDecodeUpdate for EnumMap<TubeIndex, Option<TubeStatus>>
 {
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
@@ -108,7 +108,7 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<TubeStatus>>> for EnumMap<TubeInd
     }
 }
 
-impl CanDecodeUpdate<EnumMap<TubeIndex, Option<OrdnanceType>>> for EnumMap<TubeIndex, Option<OrdnanceType>>
+impl CanDecodeUpdate for EnumMap<TubeIndex, Option<OrdnanceType>>
 {
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
@@ -120,7 +120,7 @@ impl CanDecodeUpdate<EnumMap<TubeIndex, Option<OrdnanceType>>> for EnumMap<TubeI
     }
 }
 
-impl CanDecodeUpdate<EnumMap<UpgradeType, Option<bool>>> for EnumMap<UpgradeType, Option<bool>> where
+impl CanDecodeUpdate for EnumMap<UpgradeType, Option<bool>> where
 {
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {

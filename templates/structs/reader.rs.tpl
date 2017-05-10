@@ -9,9 +9,9 @@ use ::wire::trace;
 
 % for struct in structs.without("Update"):
 
-impl CanDecode<${struct.name}> for ${struct.name}
+impl CanDecode for ${struct.name} where
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<${struct.name}, io::Error>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self, io::Error>
     {
         trace::struct_read("${struct.name}");
         Ok(

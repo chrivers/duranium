@@ -10,9 +10,9 @@ use ::packet::enums::ObjectType;
 use ::wire::CanDecode;
 use ::wire::trace;
 
-impl CanDecode<ObjectUpdate> for ObjectUpdate
+impl CanDecode for ObjectUpdate
 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<ObjectUpdate>
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let object_type = rdr.read_enum8()?;
         let object_id   = rdr.read_u32()?;

@@ -22,18 +22,18 @@ impl From<u32> for ${enum.name} {
 % endfor
 
 % for flag in flags:
-impl CanDecode<${flag.name}> for ${flag.name}
+impl CanDecode for ${flag.name}
 {
-    fn read(rdr: &mut ArtemisDecoder) -> io::Result<${flag.name}>
+    fn read(rdr: &mut ArtemisDecoder) -> io::Result<Self>
     {
         ${flag.name}::from_bits(rdr.read_u32()?).ok_or(io::Error::new(io::ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
     }
 }
 % endfor
 
-impl CanDecode<Option<ConsoleType>> for Option<ConsoleType>
+impl CanDecode for Option<ConsoleType>
 {
-    fn read(rdr: &mut ArtemisDecoder) -> io::Result<Option<ConsoleType>>
+    fn read(rdr: &mut ArtemisDecoder) -> io::Result<Self>
     {
         rdr.read_u32().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) })
     }
