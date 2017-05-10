@@ -21,7 +21,7 @@ impl CanDecode for ObjectUpdate
                 object_id: object_id,
                 update: match object_type {
                     % for type in enums.get("ObjectType").fields:
-                    ObjectType::${type.name} => update::${type.name}::read(rdr)?,
+                    ObjectType::${type.name} => Update::${type.name}(update::${type.name}::read(rdr)?),
                     % endfor
                     ObjectType::__Unknown(x) => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
                 }
@@ -31,18 +31,18 @@ impl CanDecode for ObjectUpdate
 }
 
 % for object in objects:
-impl CanDecode<Update> for update::${object.name} {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Update>
+impl CanDecode for update::${object.name} {
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mask_byte_size = ${object._match};
         let mask = rdr.read_slice(mask_byte_size)?;
         trace::update_read("${object.name}");
         let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
-        let parsed = Update::${object.name}(update::${object.name} {
+        let parsed = update::${object.name} {
             % for field in object.fields:
                 ${field.name}: parse_field!("packet", "${field.name}", ${rust.read_update_field(field.type)}),
             % endfor
-        });
+        };
         Ok(parsed)
     }
 }
