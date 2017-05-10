@@ -6,6 +6,7 @@ pub mod apply;
 pub mod diff;
 pub mod traits;
 pub mod new;
+use ::wire::types::*;
 
 pub type ObjectID = u32;
 

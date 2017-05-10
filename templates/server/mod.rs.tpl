@@ -7,6 +7,7 @@ use ::packet::enums::*;
 use ::packet::structs::*;
 use ::packet::update::ObjectUpdate;
 use ::wire::EnumMap;
+use ::wire::types::*;
 
 <% packet = packets.get("ServerPacket") %>\
 #[derive(Debug)]

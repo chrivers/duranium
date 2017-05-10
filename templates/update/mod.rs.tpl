@@ -8,6 +8,7 @@ use ::packet::object::ObjectID;
 pub mod reader;
 pub mod writer;
 pub mod debug;
+use ::wire::types::*;
 
 #[derive(Debug)]
 pub struct ObjectUpdate {
