@@ -5,6 +5,7 @@ use std::io::Result;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
+use ::wire::types::*;
 use ::packet::enums::{ConsoleStatus, ShipIndex, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
 
 impl<T> CanDecode for EnumMap<T, ConsoleStatus> where
@@ -20,25 +21,25 @@ impl<T> CanDecode for EnumMap<T, ConsoleStatus> where
     }
 }
 
-impl CanDecode for EnumMap<ShipIndex, bool>
+impl CanDecode for EnumMap<ShipIndex, bool8>
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
         for _ in 0..<ShipIndex as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_bool8()?);
+            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }
 }
 
-impl CanDecode for EnumMap<UpgradeType, bool> where
+impl CanDecode for EnumMap<UpgradeType, bool8> where
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         let mut data = vec![];
         for _ in 0..<UpgradeType as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_bool8()?);
+            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }
@@ -120,13 +121,13 @@ impl CanDecodeUpdate for EnumMap<TubeIndex, Option<OrdnanceType>>
     }
 }
 
-impl CanDecodeUpdate for EnumMap<UpgradeType, Option<bool>> where
+impl CanDecodeUpdate for EnumMap<UpgradeType, Option<bool8>> where
 {
     fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
         for _ in 0..<UpgradeType as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_bool8()?);
+            data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
     }
