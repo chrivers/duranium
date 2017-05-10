@@ -82,6 +82,8 @@ def declare_update_type(tp):
 def reader_function(tp):
     if tp.name in generic_types:
         return "read"
+    elif tp.name in {"f32", "f64"}:
+        return "read"
     elif tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
     elif tp.name == "ascii_string":
