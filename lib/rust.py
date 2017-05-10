@@ -34,6 +34,18 @@ primitive_map = {
     "string": "string",
 }
 
+generic_types = {
+    "bitflags",
+    "struct",
+    "map",
+    "array",
+    "string",
+    "option",
+    "bool8",
+    "bool16",
+    "bool32",
+}
+
 declare_map = {
     "string": "String",
     "ascii_string": "String",
@@ -68,7 +80,7 @@ def declare_update_type(tp):
         return "Option<%s>" % declare_struct_type(tp)
 
 def reader_function(tp):
-    if tp.name in ("bitflags", "struct", "map", "option", "string", "bool8", "bool16", "bool32"):
+    if tp.name in generic_types:
         return "read"
     elif tp.name in primitive_map:
         return "read_%s" % primitive_map[tp.name]
@@ -82,7 +94,7 @@ def reader_function(tp):
         raise TypeError("No reader function for [%r]" % tp)
 
 def writer_function(tp):
-    if tp.name in ("bitflags", "struct", "map", "option", "array", "bool8", "bool16", "bool32"):
+    if tp.name in generic_types:
         return "write"
     elif tp.name in primitive_map:
         return "write_%s" % primitive_map[tp.name]
