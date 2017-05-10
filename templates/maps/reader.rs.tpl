@@ -120,15 +120,3 @@ impl CanDecodeUpdate for EnumMap<TubeIndex, Option<OrdnanceType>>
         Ok(EnumMap::new(data))
     }
 }
-
-impl CanDecodeUpdate for EnumMap<UpgradeType, Option<bool8>> where
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..<UpgradeType as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
