@@ -100,10 +100,6 @@ def writer_function(tp):
         return "write_%s" % primitive_map[tp.name]
     elif tp.name == "ascii_string":
         return "write_ascii_string"
-    elif tp.name == "enum" and tp[0].name == "u8":
-        return "write_enum8"
-    elif tp.name == "enum" and tp[0].name == "u32":
-        return "write_enum32"
     else:
         raise TypeError("No writer function for [%r]" % tp)
 
@@ -127,6 +123,8 @@ def write_struct_field(fieldname, type, ref):
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
             return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
+    elif type.name == "enum":
+        return "wtr.write(&%s)?" % (fieldname)
     else:
         if is_ref_type(type) and not ref:
             fieldname = "&%s" % fieldname
@@ -141,10 +139,12 @@ def read_update_field(type):
         return read_struct_field(type)
 
 def write_update_field(fieldname, type):
-    if type.name in {"string", "bitflags", "bool8", "bool16", "bool32"}:
+    if type.name in {"string", "bitflags", "enum", "bool8", "bool16", "bool32"}:
         return "wtr.write(&%s.as_ref())?" % (fieldname)
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % (fieldname)
+    elif type.name == "enum":
+        return "wtr.write(&%s)?" % (fieldname)
     else:
         return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
 
