@@ -5,20 +5,6 @@ use std::io::Result;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
-use ::packet::enums::{ConsoleStatus, TubeIndex, TubeStatus, OrdnanceType};
-
-impl<T> CanDecode for EnumMap<T, ConsoleStatus> where
-    T: RangeEnum
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..T::HIGHEST+1 {
-            data.push(rdr.read_enum8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
 
 impl<E, V> CanDecode for EnumMap<E, V> where
     E: RangeEnum,
@@ -29,30 +15,6 @@ impl<E, V> CanDecode for EnumMap<E, V> where
         let mut data = vec![];
         for _ in 0..E::HIGHEST+1 {
             data.push(rdr.read()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl CanDecode for EnumMap<TubeIndex, TubeStatus>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_enum8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl CanDecode for EnumMap<TubeIndex, OrdnanceType>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_enum8()?);
         }
         Ok(EnumMap::new(data))
     }
@@ -72,26 +34,3 @@ impl<E, V> CanDecodeUpdate for EnumMap<E, Option<V>> where
     }
 }
 
-impl CanDecodeUpdate for EnumMap<TubeIndex, Option<TubeStatus>>
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_enum8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
-
-impl CanDecodeUpdate for EnumMap<TubeIndex, Option<OrdnanceType>>
-{
-    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
-    {
-        let mut data = vec![];
-        for _ in 0..<TubeIndex as RangeEnum>::HIGHEST+1 {
-            data.push(rdr.read_enum8()?);
-        }
-        Ok(EnumMap::new(data))
-    }
-}
