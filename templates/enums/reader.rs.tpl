@@ -6,7 +6,6 @@ use std::io::{Error, ErrorKind, Result};
 use ::wire::ArtemisDecoder;
 use ::wire::CanDecode;
 use ::packet::enums::*;
-use ::wire::types::*;
 
 % for enum in enums.without("FrameType"):
 impl From<u32> for ${enum.name} {
@@ -31,11 +30,3 @@ impl CanDecode for ${flag.name}
     }
 }
 % endfor
-
-impl CanDecode for Option<ConsoleType>
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        rdr.read::<u32>().map(|x| match x { 0 => None, n => Some(ConsoleType::from(n - 1)) })
-    }
-}
