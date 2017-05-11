@@ -19,22 +19,6 @@ impl CanEncode for EnumMap<ConsoleType, Size<u8, ConsoleStatus>> where
     }
 }
 
-impl CanEncode for Size<u8, TubeStatus> where
-{
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        wtr.write_u8(Repr::encode(*self))
-    }
-}
-
-impl CanEncode for Size<u8, OrdnanceType> where
-{
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        wtr.write_u8(Repr::encode(*self))
-    }
-}
-
 impl CanEncode for EnumMap<ShipIndex, bool> where
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
