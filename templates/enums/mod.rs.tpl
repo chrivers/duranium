@@ -32,6 +32,16 @@ impl Default for ${enum.name} {
 impl RangeEnum for ${enum.name} {
     const HIGHEST: usize = ${enum.fields[-1].aligned_hex_value};
 }
+
+impl Repr<u8> for ${enum.name} {
+    fn decode(x: u8) -> Self { Self::from(x as u32) }
+    fn encode(x: Self) -> u8 { (u32::from(x)) as u8 }
+}
+
+impl Repr<u32> for ${enum.name} {
+    fn decode(x: u32) -> Self { Self::from(x as u32) }
+    fn encode(x: Self) -> u32 { (u32::from(x)) as u32 }
+}
 % endfor
 pub mod frametype {
     #![allow(non_upper_case_globals)]
