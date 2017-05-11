@@ -5,19 +5,8 @@ use std::io::Result;
 
 use ::wire::{ArtemisEncoder, CanEncode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateEncoder, CanEncodeUpdate};
-use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
+use ::packet::enums::ConsoleType;
 use ::wire::types::*;
-
-impl CanEncode for EnumMap<ConsoleType, Size<u8, ConsoleStatus>> where
-{
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        for elm in self.get_ref() {
-            wtr.write_enum8(*elm)?;
-        }
-        Ok(())
-    }
-}
 
 impl<S, T> CanEncode for Size<S, T> where
     Self: Repr<S> + Copy,
@@ -29,57 +18,14 @@ impl<S, T> CanEncode for Size<S, T> where
     }
 }
 
-impl CanEncode for EnumMap<ShipIndex, bool> where
-{
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        for elm in self.get_ref() {
-            wtr.write_bool8(*elm)?;
-        }
-        Ok(())
-    }
-}
-
-impl<T> CanEncode for EnumMap<ShipIndex, T> where
-    T: CanEncode
+impl<E, V> CanEncode for EnumMap<E, V> where
+    E: RangeEnum,
+    V: CanEncode
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         for elm in self.get_ref() {
             wtr.write(elm)?;
-        }
-        Ok(())
-    }
-}
-
-impl CanEncodeUpdate for EnumMap<TubeIndex, Option<TubeStatus>> where
-{
-    fn write(&self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
-    {
-        for elm in self.get_ref() {
-            wtr.write_enum8(elm)?;
-        }
-        Ok(())
-    }
-}
-
-impl CanEncodeUpdate for EnumMap<TubeIndex, Option<OrdnanceType>> where
-{
-    fn write(&self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
-    {
-        for elm in self.get_ref() {
-            wtr.write_enum8(elm)?;
-        }
-        Ok(())
-    }
-}
-
-impl CanEncodeUpdate for EnumMap<UpgradeType, Option<bool>> where
-{
-    fn write(&self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
-    {
-        for elm in self.get_ref() {
-            wtr.write_bool8(elm)?;
         }
         Ok(())
     }
