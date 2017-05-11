@@ -6,8 +6,9 @@ use std::io::Result;
 use ::wire::{ArtemisEncoder, CanEncode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateEncoder, CanEncodeUpdate};
 use ::packet::enums::{ConsoleType, ConsoleStatus, ShipIndex, TubeIndex, TubeStatus, OrdnanceType, UpgradeType};
+use ::wire::types::*;
 
-impl CanEncode for EnumMap<ConsoleType, ConsoleStatus> where
+impl CanEncode for EnumMap<ConsoleType, Size<u8, ConsoleStatus>> where
 {
     fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
     {

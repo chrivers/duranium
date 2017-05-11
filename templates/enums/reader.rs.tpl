@@ -6,6 +6,7 @@ use std::io::{Error, ErrorKind, Result};
 use ::wire::ArtemisDecoder;
 use ::wire::CanDecode;
 use ::packet::enums::*;
+use ::wire::types::*;
 
 % for enum in enums.without("FrameType"):
 impl From<u32> for ${enum.name} {

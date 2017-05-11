@@ -63,7 +63,7 @@ def declare_struct_type(tp):
     elif tp.name == "struct":
         return tp[0].name
     elif tp.name == "enum":
-        return tp[1].name
+        return "Size<%s, %s>" % (tp[0].name, tp[1].name)
     elif tp.name == "map":
         return "EnumMap<%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
     elif tp.name == "option":
@@ -88,10 +88,8 @@ def reader_function(tp):
         return "read_%s" % primitive_map[tp.name]
     elif tp.name == "ascii_string":
         return "read_ascii_string"
-    elif tp.name == "enum" and tp[0].name == "u8":
-        return "read_enum8"
-    elif tp.name == "enum" and tp[0].name == "u32":
-        return "read_enum32"
+    elif tp.name == "enum":
+        return "read"
     else:
         raise TypeError("No reader function for [%r]" % tp)
 

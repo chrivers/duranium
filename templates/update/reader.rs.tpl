@@ -9,17 +9,18 @@ use ::packet::update::{Update, ObjectUpdate};
 use ::packet::enums::ObjectType;
 use ::wire::CanDecode;
 use ::wire::trace;
+use ::wire::types::*;
 
 impl CanDecode for ObjectUpdate
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        let object_type = rdr.read_enum8()?;
+        let object_type: Size<u8, _> = rdr.read()?;
         let object_id   = rdr.read()?;
         Ok(
             ObjectUpdate {
                 object_id: object_id,
-                update: match object_type {
+                update: match *object_type {
                     % for type in enums.get("ObjectType").fields:
                     ObjectType::${type.name} => Update::${type.name}(update::${type.name}::read(rdr)?),
                     % endfor

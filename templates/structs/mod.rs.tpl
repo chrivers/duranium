@@ -3,6 +3,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
+use ::wire::types::*;
 use ::packet::enums::*;
 
 % for struct in structs.without("Update"):
