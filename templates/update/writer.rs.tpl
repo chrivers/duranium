@@ -7,6 +7,7 @@ use ::wire::ArtemisEncoder;
 use ::wire::ArtemisUpdateEncoder;
 use ::wire::CanEncode;
 use ::wire::trace;
+use ::wire::types::*;
 
 use ::packet::update::{self, Update, ObjectUpdate};
 use ::packet::enums::ObjectType;
@@ -15,7 +16,7 @@ macro_rules! write_update
 {
     ( $name:ident, $wtr:ident, $slf:expr, $data:expr ) => (
         {
-            $wtr.write_enum8(ObjectType::$name)?;
+            $wtr.write(&Size::<u8, _>::new(ObjectType::$name))?;
             $wtr.write_u32($slf.object_id)?;
             $wtr.write($data)
         }
