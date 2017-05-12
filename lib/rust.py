@@ -31,7 +31,6 @@ primitive_map = {
     "i32": "i32",
 
     "f32": "f32",
-    "string": "string",
 }
 
 generic_types = {
@@ -97,7 +96,7 @@ def writer_function(tp):
     if tp.name in generic_types:
         return "write"
     elif tp.name in primitive_map:
-        return "write_%s" % primitive_map[tp.name]
+        return "write"
     elif tp.name == "ascii_string":
         return "write_ascii_string"
     else:
@@ -123,7 +122,7 @@ def write_struct_field(fieldname, type, ref):
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
             return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
-    elif type.name == "enum":
+    elif type.name in primitive_map or type.name == "enum":
         return "wtr.write(&%s)?" % (fieldname)
     else:
         if is_ref_type(type) and not ref:
@@ -140,6 +139,8 @@ def read_update_field(type):
 
 def write_update_field(fieldname, type):
     if type.name in {"string", "bitflags", "enum", "bool8", "bool16", "bool32"}:
+        return "wtr.write(&%s.as_ref())?" % (fieldname)
+    elif type.name in primitive_map:
         return "wtr.write(&%s.as_ref())?" % (fieldname)
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % (fieldname)
