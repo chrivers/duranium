@@ -14,7 +14,7 @@ def header():
 ##### type handling #####
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option", "bool8", "bool16", "bool32")
+    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option")
 
 primitive_map = {
     "bool8": "bool8",
