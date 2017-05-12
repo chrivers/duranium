@@ -23,11 +23,9 @@ impl CanEncode for ServerPacket
             % endfor
             } => {
                 trace::packet_write("${name}");
-                wtr.write_u32(frametype::${info[1]})?;
-            % if info[2] and info[3] == "u8":
-                wtr.write_u8(${info[2]})?;
-            % elif info[2]:
-                wtr.write_u32(${info[2]})?;
+                wtr.write::<u32>(&frametype::${info[1]})?;
+            % if info[2]:
+                wtr.write::<${info[3]}>(&${info[2]})?;
             % endif
             % for fld in rust.get_packet(name).fields:
                 write_field!("packet", "${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type, True)});

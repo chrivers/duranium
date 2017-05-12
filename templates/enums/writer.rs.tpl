@@ -26,7 +26,7 @@ impl CanEncode for ${flag.name}
 {
     fn write(&self, mut wtr: &mut ArtemisEncoder) -> io::Result<()>
     {
-        wtr.write_u32(self.bits())
+        wtr.write(&self.bits())
     }
 }
 % endfor
