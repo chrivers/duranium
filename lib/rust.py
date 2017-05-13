@@ -16,21 +16,11 @@ def header():
 def is_ref_type(typ):
     return typ.name in ("string", "struct", "ascii_string", "array", "map", "option")
 
-primitive_map = {
-    "bool8": "bool8",
-    "bool16": "bool16",
-    "bool32": "bool32",
-
-    "u8": "u8",
-    "u16": "u16",
-    "u32": "u32",
-    "u64": "u64",
-
-    "i8": "i8",
-    "i16": "i16",
-    "i32": "i32",
-
-    "f32": "f32",
+primitive_types = {
+    "bool8", "bool16", "bool32",
+    "u8", "u16", "u32", "u64",
+    "i8", "i16", "i32", "i64",
+    "f32", "f64",
 }
 
 generic_types = {
@@ -55,8 +45,8 @@ def declare_struct_type(tp):
         raise ValueError("Empty type")
     elif tp.name in declare_map:
         return declare_map[tp.name]
-    elif tp.name in primitive_map:
-        return primitive_map[tp.name]
+    elif tp.name in primitive_types:
+        return tp.name
     elif tp.name == "array":
         return "Vec<%s>" % declare_struct_type(tp[0])
     elif tp.name == "struct":
