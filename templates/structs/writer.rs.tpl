@@ -9,9 +9,9 @@ use ::wire::trace;
 
 % for struct in structs.without("Update"):
 
-impl CanEncode for ${struct.name}
+impl<'a> CanEncode for &'a ${struct.name}
 {
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
     {
         trace::struct_write("${struct.name}");
         % for field in struct.fields:

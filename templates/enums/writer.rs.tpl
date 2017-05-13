@@ -24,9 +24,9 @@ impl From<${enum.name}> for u32 {
 % for flag in flags:
 impl CanEncode for ${flag.name}
 {
-    fn write(&self, mut wtr: &mut ArtemisEncoder) -> io::Result<()>
+    fn write(self, mut wtr: &mut ArtemisEncoder) -> io::Result<()>
     {
-        wtr.write(&self.bits())
+        wtr.write(self.bits())
     }
 }
 % endfor

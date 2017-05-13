@@ -84,7 +84,7 @@ def reader_function(tp):
     elif tp.name in {"f32", "f64", "u8", "u16", "u32", "u64", "i8", "i16", "i32", "i64"}:
         return "read"
     elif tp.name in primitive_map:
-        return "read_%s" % primitive_map[tp.name]
+        return "read"
     elif tp.name == "ascii_string":
         return "read_ascii_string"
     elif tp.name == "enum":
@@ -119,11 +119,11 @@ def read_struct_field(type):
 def write_struct_field(fieldname, type, ref):
     if type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
-            return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
         else:
-            return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u32(&%s, %s)?" % (fieldname, type[1].name)
     elif type.name in primitive_map or type.name == "enum":
-        return "wtr.write(&%s)?" % (fieldname)
+        return "wtr.write(%s)?" % (fieldname)
     else:
         if is_ref_type(type) and not ref:
             fieldname = "&%s" % fieldname
@@ -138,16 +138,14 @@ def read_update_field(type):
         return read_struct_field(type)
 
 def write_update_field(fieldname, type):
-    if type.name in {"string", "bitflags", "enum", "bool8", "bool16", "bool32"}:
-        return "wtr.write(&%s.as_ref())?" % (fieldname)
-    elif type.name in primitive_map:
-        return "wtr.write(&%s.as_ref())?" % (fieldname)
+    if type.name in {"string"}:
+        return "wtr.write(%s.as_ref())?" % (fieldname)
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % (fieldname)
     elif type.name == "enum":
-        return "wtr.write(&%s)?" % (fieldname)
+        return "wtr.write(%s)?" % (fieldname)
     else:
-        return "wtr.%s(&%s)?" % (writer_function(type), fieldname)
+        return "wtr.%s(%s)?" % (writer_function(type), fieldname)
 
 ##### field refs #####
 

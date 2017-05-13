@@ -16,15 +16,15 @@ macro_rules! write_update
 {
     ( $name:ident, $wtr:ident, $slf:expr, $data:expr ) => (
         {
-            $wtr.write(&Size::<u8, _>::new(ObjectType::$name))?;
-            $wtr.write(&$slf.object_id)?;
+            $wtr.write(Size::<u8, _>::new(ObjectType::$name))?;
+            $wtr.write($slf.object_id)?;
             $wtr.write($data)
         }
     )
 }
 
-impl CanEncode for ObjectUpdate {
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
+impl<'a> CanEncode for &'a ObjectUpdate {
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         match &self.update {
             % for type in enums.get("ObjectType").fields:
@@ -36,9 +36,9 @@ impl CanEncode for ObjectUpdate {
 }
 
 % for object in objects.without("Whale"):
-impl CanEncode for update::${object.name} {
+impl<'a> CanEncode for &'a update::${object.name} {
 
-    fn write(&self, wtr: &mut ArtemisEncoder) -> Result<()>
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         let mask_byte_size = ${object._match};
         let mut wtr = ArtemisUpdateEncoder::new(wtr, mask_byte_size)?;
