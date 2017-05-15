@@ -50,6 +50,13 @@ pub mod frametype {
     % endfor
 }
 
+pub mod mediacommand {
+    #![allow(non_upper_case_globals)]
+    % for case in enums.get("MediaCommand").fields:
+    pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
+    % endfor
+}
+
 % for flag in flags:
 bitflags!
 {

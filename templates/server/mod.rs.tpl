@@ -9,7 +9,7 @@ use ::packet::update::ObjectUpdate;
 use ::wire::EnumMap;
 use ::wire::types::*;
 
-<% packet = packets.get("ServerPacket") %>\
+% for packet in [packets.get("ServerPacket"), packets.get("MediaPacket")]:
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}
@@ -30,3 +30,5 @@ pub enum ${packet.name}
 
     % endfor
 }
+
+% endfor

@@ -2,20 +2,21 @@
 ${rust.header()}
 use std::io::Result;
 
-use ::packet::enums::frametype;
+use ::packet::enums::{frametype, mediacommand};
 use ::wire::ArtemisEncoder;
 use ::wire::CanEncode;
 use ::wire::trace;
 
-use ::packet::server::ServerPacket;
+use ::packet::server::{ServerPacket, MediaPacket};
 
-impl<'a> CanEncode for &'a ServerPacket
+% for name, prefix, parser in [("ServerPacket", "frametype", "ServerParser"), ("MediaPacket", "mediacommand", "MediaParser") ]:
+impl<'a> CanEncode for &'a ${name}
 {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         match self
         {
-        % for name, info in sorted(rust.generate_packet_ids("ServerParser").items()):
+        % for name, info in sorted(rust.generate_packet_ids(parser).items()):
             &${name}
             {
             % for fld in rust.get_packet(name).fields:
@@ -23,7 +24,7 @@ impl<'a> CanEncode for &'a ServerPacket
             % endfor
             } => {
                 trace::packet_write("${name}");
-                wtr.write::<u32>(frametype::${info[1]})?;
+                wtr.write::<u32>(${prefix}::${info[1]})?;
             % if info[2]:
                 wtr.write::<${info[3]}>(${info[2]})?;
             % endif
@@ -37,3 +38,4 @@ impl<'a> CanEncode for &'a ServerPacket
         Ok(())
     }
 }
+% endfor
