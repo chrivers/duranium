@@ -5,8 +5,6 @@ use std::io::Result;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
-use ::wire::types::*;
-use ::packet::enums::*;
 
 impl<E, V> CanDecode for EnumMap<E, V> where
     E: RangeEnum,
@@ -33,15 +31,5 @@ impl<E, V> CanDecodeUpdate for EnumMap<E, Option<V>> where
             data.push(rdr.read()?);
         }
         Ok(EnumMap::new(data))
-    }
-}
-
-
-impl CanDecode for Option<Size<u32, ConsoleType>> where
-    Option<Size<u32, ConsoleType>>: Repr<u32>,
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
-        Ok(Repr::decode(rdr.read::<u32>()?))
     }
 }
