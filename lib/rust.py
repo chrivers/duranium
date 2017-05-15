@@ -14,7 +14,10 @@ def header():
 ##### type handling #####
 
 def is_ref_type(typ):
-    return typ.name in ("string", "struct", "ascii_string", "array", "map", "option")
+    if typ.name == "option":
+        return is_ref_type(typ[0])
+    else:
+        return typ.name in ("string", "struct", "ascii_string", "array", "map")
 
 primitive_types = {
     "bool8", "bool16", "bool32",

@@ -65,19 +65,3 @@ impl Default for ${flag.name} {
     fn default() -> Self { Self::empty() }
 }
 % endfor
-
-
-impl Repr<u32> for Option<Size<u32, ConsoleType>>
-{
-    fn decode(x: u32) -> Self {
-        match x {
-            0 => None,
-            n => Some(Size::new(ConsoleType::from(n - 1))
-            )
-        }
-    }
-
-    fn encode(x: Self) -> u32 {
-        x.map_or(0, |ct| u32::from(ct) + 1)
-    }
-}
