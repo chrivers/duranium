@@ -63,15 +63,6 @@ def declare_update_type(tp):
 
 ##### struct fields #####
 
-def read_struct_field(type):
-    if type.name == "array" and type[1]:
-        if len(type[1].name) <= 4:
-            return "rdr.read_array_u8(%s)?" % (type[1].name)
-        else:
-            return "rdr.read_array_u32(%s)?" % (type[1].name)
-    else:
-        return "rdr.read()?"
-
 def write_struct_field(fieldname, type):
     if type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:

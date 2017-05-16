@@ -16,7 +16,7 @@ impl CanDecode for ${obj}
         trace::struct_read("${obj}");
         Ok(${obj} {
             % for fld in object.fields:
-            ${fld.name}: parse_field!("packet", "${fld.name}", ${rust.read_struct_field(fld.type)}),
+            ${fld.name}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })
     }

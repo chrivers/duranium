@@ -39,7 +39,7 @@ impl CanDecode for super::${name} {
         trace::packet_read("${name}");
         let res = super::${name} {
             % for fld in rust.get_packet("ClientPacket::%s" % name).fields:
-            ${fld.name.ljust(15)}: parse_field!("packet", "${fld.name}", ${rust.read_struct_field(fld.type)}),
+            ${fld.name.ljust(15)}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         };
         % for x in range(rust.get_packet_padding(rust.get_packet(lname), info[1])):

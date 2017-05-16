@@ -43,7 +43,7 @@ impl CanDecode for super::${name} {
     fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {
         Ok(super::${name} {
             % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
-            ${fld.name}: parse_field!("packet", "${fld.name}", _${rust.read_struct_field(fld.type)}),
+            ${fld.name}: parse_field!("packet", "${fld.name}", _rdr.read()?),
             % endfor
         })
     }
