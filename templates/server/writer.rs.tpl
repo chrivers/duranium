@@ -17,25 +17,34 @@ impl<'a> CanEncode for &'a ${name}
         match self
         {
         % for name, info in sorted(rust.generate_packet_ids(parser).items()):
-            &${name}
-            {
-            % for fld in rust.get_packet(name).fields:
-                ${rust.ref_struct_field(fld)},
-            % endfor
-            } => {
+            &${name}(ref pkt) => {
                 trace::packet_write("${name}");
                 wtr.write::<u32>(${prefix}::${info[1]})?;
             % if info[2]:
                 wtr.write::<${info[3]}>(${info[2]})?;
             % endif
-            % for fld in rust.get_packet(name).fields:
-                write_field!("packet", "${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type, True)});
-            % endfor
+                wtr.write(pkt)
             },
 
         % endfor
         }
+    }
+}
+% endfor
+
+% for prefix, parser in [("ServerPacket", "ServerParser"), ("MediaPacket", "MediaParser") ]:
+% for lname, info in sorted(rust.generate_packet_ids(parser).items()):
+<% name = lname.split("::", 1)[-1] %>\
+impl<'a> CanEncode for &'a super::${name}
+{
+    fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()>
+    {
+        % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
+        write_field!("packet", "${fld.name}", self.${fld.name}, _${rust.write_struct_field("self.%s" % fld.name, fld.type, False)});
+        % endfor
         Ok(())
     }
 }
+
+% endfor
 % endfor

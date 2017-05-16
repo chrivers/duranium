@@ -6,6 +6,9 @@ pub mod writer;
 use ::wire::types::*;
 use ::packet::enums;
 
+pub use super::update::ObjectUpdate;
+pub use super::server::MediaPacket;
+
 % for struct in structs.without("Update"):
 #[derive(Debug)]
 pub struct ${struct.name}

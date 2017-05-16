@@ -19,29 +19,36 @@ impl CanDecode for ${name}
 
             % for field in parser.fields:
             % if field.type.name == "struct":
-            ${prefix}::${field.name} => { trace::packet_read("${field.type[0].name}"); ${field.type[0].name} {
-                % for fld in rust.get_packet(field.type[0].name).fields:
-                ${fld.name}: parse_field!("packet", "${fld.name}", ${rust.read_struct_field(fld.type)}),
-                % endfor
-            } },
+            ${prefix}::${field.name.ljust(20)} => { trace::packet_read("${field.type[0].name}"); ${field.type[0].name} ( rdr.read()? ) },
             % else:
-            supertype @ ${prefix}::${field.name} => {
+            ${prefix}::${field.name.ljust(20)} => {
                 match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
-                    ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); ${pkt.type[0].name} {
-                        % for fld in rust.get_packet(pkt.type[0].name).fields:
-                        ${fld.name}: parse_field!("packet", "${fld.name}", ${rust.read_struct_field(fld.type)}),
-                        % endfor
-                    } },
+                    ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); ${pkt.type[0].name} ( rdr.read()? ) },
                     % endfor
-                    subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", supertype, subtype)))
+                    subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
                 }
             },
             % endif
-
             % endfor
             supertype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
         })
     }
 }
+% endfor
+
+% for prefix, parser in [("ServerPacket", "ServerParser"), ("MediaPacket", "MediaParser") ]:
+% for lname, info in sorted(rust.generate_packet_ids(parser).items()):
+<% name = lname.split("::", 1)[-1] %>\
+impl CanDecode for super::${name} {
+    fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {
+        Ok(super::${name} {
+            % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
+            ${fld.name}: parse_field!("packet", "${fld.name}", _${rust.read_struct_field(fld.type)}),
+            % endfor
+        })
+    }
+}
+
+% endfor
 % endfor

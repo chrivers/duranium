@@ -53,9 +53,9 @@ def declare_struct_type(tp):
     elif tp.name == "array":
         return "Vec<%s>" % declare_struct_type(tp[0])
     elif tp.name == "struct":
-        return tp[0].name
+        return "structs::%s" % tp[0].name
     elif tp.name == "enum":
-        return "Size<%s, enums::%s>" % (tp[0].name, tp[1].name)
+        return "Size<%s, enums::%s>" % (declare_struct_type(tp[0]), tp[1].name)
     elif tp.name == "map":
         return "EnumMap<enums::%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
     elif tp.name == "option":
@@ -88,9 +88,9 @@ def read_struct_field(type):
 def write_struct_field(fieldname, type, ref):
     if type.name == "array" and len(type._args) == 2:
         if len(type[1].name) <= 4:
-            return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
         else:
-            return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
+            return "wtr.write_array_u32(&%s, %s)?" % (fieldname, type[1].name)
     elif is_ref_type(type) and not ref:
         return "wtr.write(&%s)?" % fieldname
     else:
