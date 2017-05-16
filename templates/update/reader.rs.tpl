@@ -1,13 +1,11 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
-use std::io::Result;
+use std::io::{Result, Error, ErrorKind};
 
-use ::wire::{ArtemisDecoder, ArtemisUpdateDecoder};
 use ::packet::update;
 use ::packet::update::{Update, ObjectUpdate};
 use ::packet::enums::ObjectType;
-use ::wire::CanDecode;
+use ::wire::{CanDecode, ArtemisDecoder, ArtemisUpdateDecoder};
 use ::wire::trace;
 use ::wire::types::*;
 
@@ -24,7 +22,7 @@ impl CanDecode for ObjectUpdate
                     % for type in enums.get("ObjectType").fields:
                     ObjectType::${type.name.ljust(20)} => Update::${type.name}(rdr.read()?),
                     % endfor
-                    ObjectType::__Unknown(x) => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
+                    ObjectType::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
                 }
             }
         )
@@ -41,7 +39,7 @@ impl CanDecode for update::${object.name} {
         let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
         let parsed = update::${object.name} {
             % for field in object.fields:
-                ${field.name}: parse_field!("packet", "${field.name}", ${rust.read_update_field(field.type)}),
+            ${field.name.ljust(15)}: parse_field!("packet", "${field.name}", ${rust.read_update_field(field.type)}),
             % endfor
         };
         Ok(parsed)
