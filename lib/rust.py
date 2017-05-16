@@ -99,12 +99,10 @@ def read_update_field(type):
         return read_struct_field(type)
 
 def write_update_field(fieldname, type):
-    if type.name in {"string"}:
+    if type.name == "string":
         return "wtr.write(%s.as_ref())?" % fieldname
     elif type.name == "map":
         return "wtr.write_struct(&%s)?" % fieldname
-    elif type.name == "ascii_string":
-        return "wtr.write_ascii_string(%s)" % fieldname
     else:
         return "wtr.write(%s)?" % (fieldname)
 
