@@ -11,7 +11,7 @@ use ::wire::types::*;
 pub type ObjectID = u32;
 
 use ::wire::EnumMap;
-use ::packet::enums::*;
+use ::packet::enums;
 
 % for object in objects:
 #[derive(Debug,Default)]

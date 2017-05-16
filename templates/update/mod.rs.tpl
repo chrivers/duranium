@@ -2,7 +2,7 @@
 ${rust.header()}
 
 use ::wire::EnumMap;
-use ::packet::enums::*;
+use ::packet::enums;
 use ::packet::object::ObjectID;
 
 pub mod reader;

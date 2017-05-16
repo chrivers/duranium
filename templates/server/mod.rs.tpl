@@ -3,7 +3,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-use ::packet::enums::*;
+use ::packet::enums;
 use ::packet::structs::*;
 use ::packet::update::ObjectUpdate;
 use ::wire::EnumMap;

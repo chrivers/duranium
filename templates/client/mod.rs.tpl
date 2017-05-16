@@ -4,7 +4,7 @@ pub mod reader;
 pub mod writer;
 
 use ::packet::structs::*;
-use ::packet::enums::*;
+use ::packet::enums;
 use ::wire::types::*;
 use ::wire::EnumMap;
 

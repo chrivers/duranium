@@ -55,19 +55,19 @@ def declare_struct_type(tp):
     elif tp.name == "struct":
         return tp[0].name
     elif tp.name == "enum":
-        return "Size<%s, %s>" % (tp[0].name, tp[1].name)
+        return "Size<%s, enums::%s>" % (tp[0].name, tp[1].name)
     elif tp.name == "map":
-        return "EnumMap<%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<enums::%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
     elif tp.name == "option":
         return "Option<%s>" % declare_struct_type(tp[0])
     elif tp.name == "bitflags":
-        return tp[1].name
+        return "enums::%s" % tp[1].name
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 
 def declare_update_type(tp):
     if tp.name == "map":
-        return "EnumMap<%s, Option<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<enums::%s, Option<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
     else:
         return "Option<%s>" % declare_struct_type(tp)
 
