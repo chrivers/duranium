@@ -33,9 +33,8 @@ impl CanDecode for ObjectUpdate
 impl CanDecode for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        let mask_byte_size = ${object._match};
-        let mask = rdr.read_slice(mask_byte_size)?;
         trace::update_read("${object.name}");
+        let mask = rdr.read_slice(${object._match})?;
         let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
         Ok(update::${object.name} {
             % for field in object.fields:
