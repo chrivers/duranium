@@ -42,10 +42,7 @@ impl<'a> CanEncode for &'a client::${name}
         write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type, False)});
         % endfor
         % for x in range(rust.get_packet_padding(rust.get_packet(lname), info[1])):
-        % if loop.first:
-        // padding
-        % endif
-            wtr.write::<u32>(0)?;
+        wtr.write::<u32>(0)?; // padding
         % endfor
         Ok(())
     }
