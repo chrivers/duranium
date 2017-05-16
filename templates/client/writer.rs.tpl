@@ -9,6 +9,7 @@ use ::packet::client::ClientPacket;
 use ::wire::ArtemisEncoder;
 use ::wire::CanEncode;
 use ::wire::trace;
+use packet::client;
 
 impl<'a> CanEncode for &'a ClientPacket
 {
@@ -17,28 +18,36 @@ impl<'a> CanEncode for &'a ClientPacket
         match self
         {
         % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
-            &${name} {
-            % for fld in rust.get_packet(name).fields:
-                ${rust.ref_struct_field(fld)},
-            % endfor
-            } => Ok({
+            &${name} (ref pkt) => {
                 trace::packet_write("${name}");
                 wtr.write::<u32>(frametype::${info[1]})?;
             % if info[2]:
                 wtr.write::<u32>(${info[2]})?;
             % endif
-            % for fld in rust.get_packet(name).fields:
-                write_field!("packet", "${fld.name}", &${fld.name}, ${rust.write_struct_field(fld.name, fld.type, True)});
-            % endfor
-            % for x in range(rust.get_packet_padding(rust.get_packet(name), info[1])):
-                % if loop.first:
-                // padding
-                % endif
-                wtr.write::<u32>(0)?;
-            % endfor
-            }),
+                wtr.write(pkt)
+            },
         % endfor
             _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }
+
+% for lname, info in sorted(rust.generate_packet_ids("ClientParser").items()):
+<% name = lname.split("::", 1)[-1] %>\
+impl<'a> CanEncode for &'a client::${name}
+{
+    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()>
+    {
+        % for fld in rust.get_packet(lname).fields:
+        write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type, False)});
+        % endfor
+        % for x in range(rust.get_packet_padding(rust.get_packet(lname), info[1])):
+        % if loop.first:
+        // padding
+        % endif
+            wtr.write::<u32>(0)?;
+        % endfor
+        Ok(())
+    }
+}
+% endfor
