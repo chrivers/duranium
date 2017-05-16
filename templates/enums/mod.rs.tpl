@@ -3,7 +3,6 @@ ${rust.header()}
 
 use std::default::Default;
 
-use ::wire::RangeEnum;
 use ::wire::types::*;
 
 mod repr;
@@ -24,14 +23,6 @@ pub enum ${enum.name}
     ${case.name},
     % endfor
     __Unknown(u32),
-}
-
-impl Default for ${enum.name} {
-    fn default() -> Self { ${enum.name}::${enum.fields[0].name} }
-}
-
-impl RangeEnum for ${enum.name} {
-    const HIGHEST: usize = ${enum.fields[-1].aligned_hex_value};
 }
 
 % endfor
