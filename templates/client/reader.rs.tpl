@@ -1,46 +1,43 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io;
-use std::io::Result;
+use std::io::{Result, Error, ErrorKind};
 
 use ::packet::enums::frametype;
-use ::packet::client;
 use ::wire::ArtemisDecoder;
 use ::wire::CanDecode;
 use ::wire::trace;
+use super::ClientPacket;
 
 <% parser = parsers.get("ClientParser") %>
-impl CanDecode for client::ClientPacket
+impl CanDecode for ClientPacket
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        Ok(match rdr.read::<u32>()? {
+        match rdr.read::<u32>()? {
             % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.name.ljust(15)} => client::ClientPacket::${field.type[0].name.split("::", 1)[-1]}(rdr.read()?),
+            frametype::${field.name.ljust(15)} => Ok(ClientPacket::${field.type[0].name.split("::", 1)[-1]}(rdr.read()?)),
             % else:
             frametype::${field.name.ljust(15)} => match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
-                ${pkt.name} => client::ClientPacket::${pkt.type[0].name.split("::", 1)[-1]}(rdr.read()?),
+                ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name.split("::", 1)[-1]}(rdr.read()?)),
                 % endfor
-                subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", frametype::${field.name}, subtype)))
+                subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", frametype::${field.name}, subtype)))
             },
             % endif
             % endfor
-            supertype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Unknown client frame type 0x{:08x}", supertype)))
-        })
+            supertype => Err(Error::new(ErrorKind::InvalidData, format!("Unknown client frame type 0x{:08x}", supertype)))
+        }
     }
 }
 
 % for lname, info in sorted(rust.generate_packet_ids("ClientParser").items()):
 <% name = lname.split("::", 1)[-1] %>\
-impl CanDecode for client::${name}
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
+impl CanDecode for super::${name} {
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::packet_read("${name}");
-        let res = client::${name} {
+        let res = super::${name} {
             % for fld in rust.get_packet("ClientPacket::%s" % name).fields:
             ${fld.name}: parse_field!("packet", "${fld.name}", ${rust.read_struct_field(fld.type)}),
             % endfor
@@ -51,4 +48,5 @@ impl CanDecode for client::${name}
         Ok(res)
     }
 }
+
 % endfor

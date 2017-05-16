@@ -1,8 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io;
-use std::io::Result;
+use std::io::{Result, Error, ErrorKind};
 
 use ::packet::enums::frametype;
 use ::packet::client::ClientPacket;
@@ -11,14 +10,11 @@ use ::wire::CanEncode;
 use ::wire::trace;
 use packet::client;
 
-impl<'a> CanEncode for &'a ClientPacket
-{
-    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()>
-    {
-        match self
-        {
+impl<'a> CanEncode for &'a ClientPacket {
+    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
+        match self {
         % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
-            &${name} (ref pkt) => {
+            &${name}(ref pkt) => {
                 trace::packet_write("${name}");
                 wtr.write::<u32>(frametype::${info[1]})?;
             % if info[2]:
@@ -27,17 +23,15 @@ impl<'a> CanEncode for &'a ClientPacket
                 wtr.write(pkt)
             },
         % endfor
-            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
+            _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }
 
 % for lname, info in sorted(rust.generate_packet_ids("ClientParser").items()):
 <% name = lname.split("::", 1)[-1] %>\
-impl<'a> CanEncode for &'a client::${name}
-{
-    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()>
-    {
+impl<'a> CanEncode for &'a client::${name} {
+    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in rust.get_packet(lname).fields:
         write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type, False)});
         % endfor
@@ -47,4 +41,5 @@ impl<'a> CanEncode for &'a client::${name}
         Ok(())
     }
 }
+
 % endfor
