@@ -40,7 +40,7 @@ generic_types = {
 
 declare_map = {
     "string": "String",
-    "ascii_string": "String",
+    "ascii_string": "AsciiString",
 }
 
 def declare_struct_type(tp):
@@ -82,8 +82,6 @@ def read_struct_field(type):
                 return "rdr.read_array_u32(%s)?" % (type[1].name)
         else:
             return "rdr.read_array()?"
-    elif type.name == "ascii_string":
-        return "rdr.read_ascii_string()?"
     else:
         return "rdr.read()?"
 
@@ -93,8 +91,6 @@ def write_struct_field(fieldname, type, ref):
             return "wtr.write_array_u8(%s, %s)?" % (fieldname, type[1].name)
         else:
             return "wtr.write_array_u32(%s, %s)?" % (fieldname, type[1].name)
-    elif type.name == "ascii_string":
-        return "wtr.write_ascii_string(%s)?" % fieldname
     elif is_ref_type(type) and not ref:
         return "wtr.write(&%s)?" % fieldname
     else:
