@@ -4,6 +4,20 @@ ${rust.header()}
 use std::fmt;
 use ::packet::update::*;
 
+macro_rules! debug_opt_array {
+    ( $fmt:ident, $slf:ident.$field:ident ) => {
+        write!($fmt, "{}: {:?},\n", stringify!($field), &$slf.$field)?;
+    }
+}
+
+macro_rules! debug_opt_field {
+    ( $fmt:ident, $slf:ident.$field:ident ) => {
+        if let Some(ref value) = $slf.$field {
+            write!($fmt, "{}: {:?},\n", stringify!($field), value)?;
+        }
+    };
+}
+
 % for object in objects:
 impl fmt::Debug for ${object.name} {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
