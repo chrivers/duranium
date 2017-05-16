@@ -13,9 +13,6 @@ def header():
 
 ##### type handling #####
 
-def is_ref_type(typ):
-    return typ.name in ("string", "struct", "ascii_string", "array", "map")
-
 primitive_types = {
     "bool8", "bool16", "bool32",
     "u8", "u16", "u32", "u64",
@@ -23,16 +20,12 @@ primitive_types = {
     "f32", "f64",
 }
 
-generic_types = {
-    "bitflags",
-    "struct",
-    "map",
-    "array",
+ref_types = {
     "string",
-    "option",
-    "bool8",
-    "bool16",
-    "bool32",
+    "struct",
+    "ascii_string",
+    "array",
+    "map"
 }
 
 declare_map = {
@@ -85,7 +78,7 @@ def write_struct_field(fieldname, type):
             return "wtr.write_array_u8(&%s, %s)?" % (fieldname, type[1].name)
         else:
             return "wtr.write_array_u32(&%s, %s)?" % (fieldname, type[1].name)
-    elif is_ref_type(type):
+    elif type.name in ref_types:
         return "wtr.write(&%s)?" % fieldname
     else:
         return "wtr.write(%s)?" % fieldname
@@ -96,7 +89,7 @@ def read_update_field(type):
     if type.name == "map":
         return "rdr.read_struct()?"
     else:
-        return read_struct_field(type)
+        return "rdr.read()?"
 
 def write_update_field(fieldname, type):
     if type.name == "string":
