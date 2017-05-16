@@ -22,7 +22,7 @@ impl CanDecode for ObjectUpdate
                 object_id: object_id,
                 update: match *object_type {
                     % for type in enums.get("ObjectType").fields:
-                    ObjectType::${type.name} => Update::${type.name}(update::${type.name}::read(rdr)?),
+                    ObjectType::${type.name.ljust(20)} => Update::${type.name}(rdr.read()?),
                     % endfor
                     ObjectType::__Unknown(x) => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
                 }
