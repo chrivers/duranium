@@ -14,10 +14,7 @@ def header():
 ##### type handling #####
 
 def is_ref_type(typ):
-    if typ.name == "option":
-        return is_ref_type(typ[0])
-    else:
-        return typ.name in ("string", "struct", "ascii_string", "array", "map")
+    return typ.name in ("string", "struct", "ascii_string", "array", "map")
 
 primitive_types = {
     "bool8", "bool16", "bool32",
@@ -113,14 +110,6 @@ def write_update_field(fieldname, type):
         return "wtr.write_ascii_string(%s)" % fieldname
     else:
         return "wtr.write(%s)?" % (fieldname)
-
-##### field refs #####
-
-def ref_struct_field(fld):
-    if is_ref_type(fld.type):
-        return "ref %s" % fld.name
-    else:
-        return fld.name
 
 ##### packets #####
 
