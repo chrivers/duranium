@@ -1,14 +1,13 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io;
-use std::io::Result;
+use std::io::{Result, Error, ErrorKind};
 
 use ::packet::enums::{frametype, mediacommand};
 use ::wire::ArtemisDecoder;
 use ::wire::CanDecode;
 use ::wire::trace;
-use ::packet::server::{ServerPacket, MediaPacket};
+use super::{ServerPacket, MediaPacket};
 
 % for name, prefix, parser in [("ServerPacket", "frametype", parsers.get("ServerParser")), ("MediaPacket", "mediacommand", parsers.get("MediaParser")) ]:
 impl CanDecode for ${name}
@@ -26,12 +25,12 @@ impl CanDecode for ${name}
                 % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); ${pkt.type[0].name} ( rdr.read()? ) },
                     % endfor
-                    subtype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
+                    subtype => return Err(Error::new(ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
                 }
             },
             % endif
             % endfor
-            supertype => return Err(io::Error::new(io::ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
+            supertype => return Err(Error::new(ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
         })
     }
 }
