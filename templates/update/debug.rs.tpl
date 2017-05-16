@@ -2,7 +2,6 @@
 ${rust.header()}
 
 use std::fmt;
-use ::packet::update::*;
 
 macro_rules! debug_opt_array {
     ( $fmt:ident, $slf:ident.$field:ident ) => {
@@ -19,7 +18,7 @@ macro_rules! debug_opt_field {
 }
 
 % for object in objects:
-impl fmt::Debug for ${object.name} {
+impl fmt::Debug for super::${object.name} {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
     {
         % for field in object.fields:
