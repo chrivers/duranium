@@ -19,8 +19,7 @@ macro_rules! debug_opt_field {
 
 % for object in objects:
 impl fmt::Debug for super::${object.name} {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result
-    {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         % for field in object.fields:
         % if field.type.name in {"array", "sizedarray", "map"}:
         debug_opt_array!(f, self.${field.name});
