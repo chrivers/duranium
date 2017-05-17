@@ -24,8 +24,7 @@ macro_rules! write_update
 }
 
 impl<'a> CanEncode for &'a ObjectUpdate {
-    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         match &self.update {
             % for type in enums.get("ObjectType").fields:
             &Update::${type.name}(ref data) => write_update!(${type.name}, wtr, self, data),
@@ -37,9 +36,7 @@ impl<'a> CanEncode for &'a ObjectUpdate {
 
 % for object in objects.without("Whale"):
 impl<'a> CanEncode for &'a update::${object.name} {
-
-    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
-    {
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::update_write("${object.name}");
         let mut wtr = ArtemisUpdateEncoder::new(wtr, ${object._match})?;
         % for field in object.fields:
@@ -48,4 +45,5 @@ impl<'a> CanEncode for &'a update::${object.name} {
         wtr.finish()
     }
 }
+
 % endfor

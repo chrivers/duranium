@@ -33,4 +33,5 @@ pub struct ${object.name} {
     % endif
 % endfor
 }
+
 % endfor
