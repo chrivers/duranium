@@ -2,6 +2,7 @@
 ${rust.header()}
 
 use std::io::Result;
+use ::wire::types::Field;
 
 use ::wire::{ArtemisDecoder, CanDecode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateDecoder, CanDecodeUpdate};
@@ -20,7 +21,7 @@ impl<E, V> CanDecode for EnumMap<E, V> where
     }
 }
 
-impl<E, V> CanDecodeUpdate for EnumMap<E, Option<V>> where
+impl<E, V> CanDecodeUpdate for EnumMap<E, Field<V>> where
     E: RangeEnum,
     V: CanDecode,
 {

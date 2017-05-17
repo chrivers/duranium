@@ -5,19 +5,20 @@ use ::packet::object::traits::Apply;
 use ::packet::enums;
 use ::packet::object;
 use ::packet::update;
+use ::wire::types::Field;
 use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! apply_impl {
     ($tp:ty) => {
         impl Apply for $tp
         {
-            type Update = Option<$tp>;
-            fn apply(&mut self, update: &Option<$tp>) {
-                if let Some(x) = *update {
+            type Update = Field<$tp>;
+            fn apply(&mut self, update: &Field<$tp>) {
+                if let Field::Val(x) = *update {
                     *self = x
                 }
             }
-            fn produce(&self, update: &Option<$tp>) -> Self {
+            fn produce(&self, update: &Field<$tp>) -> Self {
                 update.unwrap_or(*self)
             }
         }
@@ -25,32 +26,32 @@ macro_rules! apply_impl {
 }
 
 impl Apply for String {
-    type Update = Option<String>;
-    fn apply(&mut self, update: &Option<String>) {
-        if let &Some(ref x) = update {
+    type Update = Field<String>;
+    fn apply(&mut self, update: &Field<String>) {
+        if let &Field::Val(ref x) = update {
             *self = x.to_string()
         }
     }
-    fn produce(&self, update: &Option<String>) -> Self {
+    fn produce(&self, update: &Field<String>) -> Self {
         match update {
-            &Some(ref s) => s.clone(),
-            &None => self.clone()
+            &Field::Val(ref s) => s.clone(),
+            &Field::NA => self.clone()
         }
     }
 }
 
 impl<E, V> Apply for EnumMap<E, V> where
-    V: Apply<Update=Option<V>>,
+    V: Apply<Update=Field<V>>,
     E: RangeEnum,
 {
-    type Update = EnumMap<E, Option<V>>;
+    type Update = EnumMap<E, Field<V>>;
 
-    fn apply(&mut self, update: &EnumMap<E, Option<V>>) {
+    fn apply(&mut self, update: &EnumMap<E, Field<V>>) {
         self.data.iter_mut().zip(update.data.iter()).map(
             |(s, o)| s.apply(o)
         ).last();
     }
-    fn produce(&self, update: &EnumMap<E, Option<V>>) -> Self {
+    fn produce(&self, update: &EnumMap<E, Field<V>>) -> Self {
         EnumMap::new(self.data.iter().zip(update.data.iter()).map(
             |(s, o)| s.produce(o)).collect()
         )

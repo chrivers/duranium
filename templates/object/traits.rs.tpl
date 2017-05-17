@@ -1,5 +1,6 @@
 <% import rust %>\
 ${rust.header()}
+use ::wire::types::Field;
 
 pub trait Apply {
     type Update;
@@ -9,6 +10,6 @@ pub trait Apply {
 
 pub trait Diff {
     type Other;
-    type Update = Option<Self::Other>;
+    type Update = Field<Self::Other>;
     fn diff(&self, other: Self::Other) -> Self::Update;
 }

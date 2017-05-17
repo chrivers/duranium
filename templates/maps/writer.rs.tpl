@@ -2,11 +2,12 @@
 ${rust.header()}
 
 use std::io::Result;
+use ::wire::types::Field;
 
 use ::wire::{CanEncode, EnumMap, RangeEnum};
 use ::wire::{ArtemisUpdateEncoder, CanEncodeUpdate};
 
-impl<'a, E, V> CanEncodeUpdate for &'a EnumMap<E, Option<V>> where
+impl<'a, E, V> CanEncodeUpdate for &'a EnumMap<E, Field<V>> where
     E: RangeEnum,
     V: CanEncode + Copy,
 {

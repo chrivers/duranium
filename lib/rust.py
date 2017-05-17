@@ -57,9 +57,9 @@ def declare_struct_type(tp):
 
 def declare_update_type(tp):
     if tp.name == "map":
-        return "EnumMap<enums::%s, Option<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<enums::%s, Field<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
     else:
-        return "Option<%s>" % declare_struct_type(tp)
+        return "Field<%s>" % declare_struct_type(tp)
 
 ##### struct fields #####
 

@@ -2,6 +2,7 @@
 ${rust.header()}
 
 use std::fmt;
+use wire::types::Field;
 
 macro_rules! debug_opt_array {
     ( $fmt:ident, $slf:ident.$field:ident ) => {
@@ -11,7 +12,7 @@ macro_rules! debug_opt_array {
 
 macro_rules! debug_opt_field {
     ( $fmt:ident, $slf:ident.$field:ident ) => {
-        if let Some(ref value) = $slf.$field {
+        if let Field::Val(ref value) = $slf.$field {
             write!($fmt, "{}: {:?},\n", stringify!($field), value)?;
         }
     };

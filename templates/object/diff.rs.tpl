@@ -6,18 +6,19 @@ use ::packet::enums;
 use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
+use ::wire::types::Field;
 use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
     ( $tp:ty ) => {
         impl Diff for $tp {
             type Other = $tp;
-            type Update = Option<$tp>;
+            type Update = Field<$tp>;
             fn diff(&self, other: $tp) -> Self::Update {
                 if *self == other {
-                    None
+                    Field::NA
                 } else {
-                    Some(other)
+                    Field::Val(other)
                 }
             }
         }
@@ -28,10 +29,10 @@ impl<E, V> Diff for EnumMap<E, V>
 where
     V: Diff<Other=V> + Copy,
     E: RangeEnum,
-    Vec<Option<V>>: FromIterator<V::Update>
+    Vec<Field<V>>: FromIterator<V::Update>
 {
     type Other = EnumMap<E, V>;
-    type Update = EnumMap<E, Option<V>>;
+    type Update = EnumMap<E, Field<V>>;
     fn diff(&self, other: EnumMap<E, V>) -> Self::Update {
         EnumMap::new(self.data.iter().zip(other.data.into_iter()).map(
             |(s, o)| s.diff(o)).collect()
