@@ -24,8 +24,7 @@ macro_rules! apply_impl {
     }
 }
 
-impl Apply for String
-{
+impl Apply for String {
     type Update = Option<String>;
     fn apply(&mut self, update: &Option<String>) {
         if let &Some(ref x) = update {
@@ -87,7 +86,7 @@ impl Apply for ${T} where
         % endfor
     }
     fn produce(&self, update: &${U}) -> Self {
-        ${T} {
+        Self {
         % for field in object.fields:
             ${field.name}: self.${field.name}.produce(&update.${field.name}),
         % endfor

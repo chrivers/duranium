@@ -9,10 +9,8 @@ use ::wire::trace;
 
 % for object in objects:
 <%obj = "object::%s" % object.name %>
-impl CanDecode for ${obj}
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
+impl CanDecode for ${obj} {
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::struct_read("${obj}");
         Ok(${obj} {
             % for fld in object.fields:

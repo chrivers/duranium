@@ -9,10 +9,8 @@ use ::wire::{CanDecode, ArtemisDecoder, ArtemisUpdateDecoder};
 use ::wire::trace;
 use ::wire::types::*;
 
-impl CanDecode for ObjectUpdate
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
-    {
+impl CanDecode for ObjectUpdate {
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         let object_type: Size<u8, _> = rdr.read()?;
         let object_id   = rdr.read()?;
         Ok(ObjectUpdate {
