@@ -10,8 +10,7 @@ use ::wire::{EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
     ( $tp:ty ) => {
-        impl Diff for $tp
-        {
+        impl Diff for $tp {
             type Other = $tp;
             type Update = Option<$tp>;
             fn diff(&self, other: $tp) -> Self::Update {
@@ -25,7 +24,8 @@ macro_rules! diff_impl {
     }
 }
 
-impl<E, V> Diff for EnumMap<E, V> where
+impl<E, V> Diff for EnumMap<E, V>
+where
     V: Diff<Other=V> + Copy,
     E: RangeEnum,
     Vec<Option<V>>: FromIterator<V::Update>
@@ -62,8 +62,7 @@ diff_impl!(enums::${en.name});
  T = "object::%s" % object.name
  U = "update::%s" % object.name
  %>
-impl<'a, 'b> Diff for &'a ${T} where
-{
+impl<'a, 'b> Diff for &'a ${T} {
     type Other = ${T};
     type Update = ${U};
     fn diff(&self, other: ${T}) -> ${U} {

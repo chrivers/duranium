@@ -11,8 +11,7 @@ pub use super::server::MediaPacket;
 
 % for struct in structs.without("Update"):
 #[derive(Debug)]
-pub struct ${struct.name}
-{
+pub struct ${struct.name} {
     % for field in struct.fields:
     % if not loop.first:
 

@@ -1,6 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
+use ::wire::types::*;
 use ::wire::EnumMap;
 use ::packet::enums;
 use ::packet::object::ObjectID;
@@ -8,7 +9,6 @@ use ::packet::object::ObjectID;
 pub mod reader;
 pub mod writer;
 pub mod debug;
-use ::wire::types::*;
 
 #[derive(Debug)]
 pub struct ObjectUpdate {

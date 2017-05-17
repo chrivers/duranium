@@ -8,11 +8,8 @@ use ::wire::CanEncode;
 use ::wire::trace;
 
 % for struct in structs.without("Update"):
-
-impl<'a> CanEncode for &'a ${struct.name}
-{
-    fn write(self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error>
-    {
+impl<'a> CanEncode for &'a ${struct.name} {
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<(), io::Error> {
         trace::struct_write("${struct.name}");
         % for field in struct.fields:
         write_field!("struct", "${field.name}", &self.${field.name}, ${rust.write_struct_field("self.%s" % field.name, field.type)});
