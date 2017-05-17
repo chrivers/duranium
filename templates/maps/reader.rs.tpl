@@ -24,7 +24,7 @@ impl<E, V> CanDecodeUpdate for EnumMap<E, Option<V>> where
     E: RangeEnum,
     V: CanDecode,
 {
-    default fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
+    fn read(rdr: &mut ArtemisUpdateDecoder) -> Result<Self>
     {
         let mut data = vec![];
         for _ in 0..E::HIGHEST+1 {
