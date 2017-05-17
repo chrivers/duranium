@@ -33,7 +33,7 @@ impl CanDecode for update::${object.name} {
         let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
         Ok(update::${object.name} {
             % for field in object.fields:
-            ${field.name.ljust(20)}: parse_field!("packet", "${field.name}", ${rust.read_update_field(field.type)}),
+            ${field.name.ljust(20)}: parse_field!("packet", "${field.name}", rdr.read()?),
             % endfor
         })
     }

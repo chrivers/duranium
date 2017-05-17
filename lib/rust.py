@@ -71,12 +71,6 @@ def write_struct_field(fieldname, type):
 
 ##### updates fields #####
 
-def read_update_field(type):
-    if type.name == "map":
-        return "rdr.read_struct()?"
-    else:
-        return "rdr.read()?"
-
 def write_update_field(fieldname, type):
     if type.name == "string":
         return "wtr.write(%s.as_ref())?" % fieldname
