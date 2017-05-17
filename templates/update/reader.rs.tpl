@@ -5,7 +5,7 @@ use std::io::{Result, Error, ErrorKind};
 use ::packet::update;
 use ::packet::update::{Update, ObjectUpdate};
 use ::packet::enums::ObjectType;
-use ::wire::{CanDecode, ArtemisDecoder, ArtemisUpdateDecoder};
+use ::wire::{CanDecode, ArtemisDecoder};
 use ::wire::trace;
 use ::wire::types::*;
 
@@ -29,8 +29,7 @@ impl CanDecode for ObjectUpdate {
 impl CanDecode for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::update_read("${object.name}");
-        let mask = rdr.read_slice(${object._match})?;
-        let mut rdr = ArtemisUpdateDecoder::new(rdr, mask);
+        rdr.read_mask(${object._match})?;
         Ok(update::${object.name} {
             % for field in object.fields:
             ${field.name.ljust(20)}: parse_field!("packet", "${field.name}", rdr.read()?),
