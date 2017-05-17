@@ -9,6 +9,20 @@ use ::wire::trace;
 
 use ::packet::server::{ServerPacket, MediaPacket};
 
+macro_rules! write_packet {
+    ($name:expr, $major:expr, $tp:ty, None,        $wtr:ident, $pkt:ident) => {{
+        trace::packet_write($name);
+        $wtr.write::<u32>($major)?;
+        $wtr.write($pkt)
+    }};
+    ($name:expr, $major:expr, $tp:ty, $minor:expr, $wtr:ident, $pkt:ident) => {{
+        trace::packet_write($name);
+        $wtr.write::<u32>($major)?;
+        $wtr.write::<$tp>($minor)?;
+        $wtr.write($pkt)
+    }};
+}
+
 % for name, prefix, parser in [("ServerPacket", "frametype", "ServerParser"), ("MediaPacket", "mediacommand", "MediaParser") ]:
 impl<'a> CanEncode for &'a ${name}
 {
@@ -17,15 +31,7 @@ impl<'a> CanEncode for &'a ${name}
         match self
         {
         % for name, info in sorted(rust.generate_packet_ids(parser).items()):
-            &${name}(ref pkt) => {
-                trace::packet_write("${name}");
-                wtr.write::<u32>(${prefix}::${info[1]})?;
-            % if info[2]:
-                wtr.write::<${info[3]}>(${info[2]})?;
-            % endif
-                wtr.write(pkt)
-            },
-
+            &${name}(ref pkt) => write_packet!("${name}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
         % endfor
         }
     }
