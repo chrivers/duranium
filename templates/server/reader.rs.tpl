@@ -14,24 +14,24 @@ impl CanDecode for ${name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
-        Ok(match rdr.read::<u32>()? {
+        match rdr.read::<u32>()? {
 
             % for field in parser.fields:
             % if field.type.name == "struct":
-            ${prefix}::${field.name.ljust(20)} => { trace::packet_read("${field.type[0].name}"); ${field.type[0].name} ( rdr.read()? ) },
+            ${prefix}::${field.name.ljust(20)} => Ok(${field.type[0].name} ( rdr.read()? )),
             % else:
             ${prefix}::${field.name.ljust(20)} => {
                 match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
                 % for pkt in rust.get_parser(field.type[0].name).fields:
-                    ${pkt.name} => { trace::packet_read("${pkt.type[0].name}"); ${pkt.type[0].name} ( rdr.read()? ) },
+                    ${pkt.name} => Ok(${pkt.type[0].name} ( rdr.read()? )),
                     % endfor
-                    subtype => return Err(Error::new(ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
+                    subtype => Err(Error::new(ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
                 }
             },
             % endif
             % endfor
-            supertype => return Err(Error::new(ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
-        })
+            supertype => Err(Error::new(ErrorKind::InvalidData, format!("Unknown server frame type 0x{:08x}", supertype))),
+        }
     }
 }
 % endfor
@@ -41,6 +41,7 @@ impl CanDecode for ${name}
 <% name = lname.split("::", 1)[-1] %>\
 impl CanDecode for super::${name} {
     fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {
+        trace::packet_read("${lname}");
         Ok(super::${name} {
             % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
             ${fld.name}: parse_field!("packet", "${fld.name}", _rdr.read()?),
