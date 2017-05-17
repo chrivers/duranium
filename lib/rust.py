@@ -75,7 +75,7 @@ def write_update_field(fieldname, type):
     if type.name == "string":
         return "wtr.write(%s.as_ref())?" % fieldname
     elif type.name == "map":
-        return "wtr.write_struct(&%s)?" % fieldname
+        return "wtr.write(&%s)?" % fieldname
     else:
         return "wtr.write(%s)?" % (fieldname)
 
