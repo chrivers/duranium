@@ -8,8 +8,7 @@ use ::wire::IterEnum;
 
 % for item in [enums.get("ConsoleType")]:
 impl IterEnum<${item.name}> for ${item.name} {
-    fn iter_enum() -> &'static [${item.name}]
-    {
+    fn iter_enum() -> &'static [${item.name}] {
         static TYPES: &'static [${item.name}] =
             &[
             % for field in enums.get(item.name).fields:
@@ -22,8 +21,7 @@ impl IterEnum<${item.name}> for ${item.name} {
 % endfor
 
 <% types = enums.get("FrameType") %>\
-pub fn classify(sig: u32) -> ConnectionType
-{
+pub fn classify(sig: u32) -> ConnectionType {
     match sig {
         // Client messages
         % for x in rust.get_parser("ClientParser").fields:
@@ -37,8 +35,7 @@ pub fn classify(sig: u32) -> ConnectionType
     }
 }
 
-pub fn classify_mem(sig: &[u8]) -> ConnectionType
-{
+pub fn classify_mem(sig: &[u8]) -> ConnectionType {
     if let Some(id) = ::wire::first_u32(sig) {
         classify(id)
     } else {

@@ -17,8 +17,7 @@ pub mod writer;
 #[allow(non_camel_case_types)]
 %endif
 #[derive(PartialEq,Debug,Copy,Clone)]
-pub enum ${enum.name}
-{
+pub enum ${enum.name} {
     % for case in enum.fields:
     ${case.name},
     % endfor
@@ -41,10 +40,8 @@ pub mod mediacommand {
 }
 
 % for flag in flags:
-bitflags!
-{
-    pub flags ${flag.name}: u32
-    {
+bitflags! {
+    pub flags ${flag.name}: u32 {
         % for field in flag.fields:
         const ${field.aligned_name} = ${field.aligned_hex_value},
         % endfor
@@ -54,4 +51,5 @@ bitflags!
 impl Default for ${flag.name} {
     fn default() -> Self { Self::empty() }
 }
+
 % endfor
