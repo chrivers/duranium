@@ -40,9 +40,8 @@ impl<'a> CanEncode for &'a update::${object.name} {
 
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
-        let mask_byte_size = ${object._match};
-        let mut wtr = ArtemisUpdateEncoder::new(wtr, mask_byte_size)?;
         trace::update_write("${object.name}");
+        let mut wtr = ArtemisUpdateEncoder::new(wtr, ${object._match})?;
         % for field in object.fields:
         ${rust.write_update_field("self."+field.name, field.type)};
         % endfor
