@@ -4,7 +4,6 @@ use std::io;
 use std::io::Result;
 
 use ::wire::ArtemisEncoder;
-use ::wire::ArtemisUpdateEncoder;
 use ::wire::CanEncode;
 use ::wire::trace;
 use ::wire::types::*;
@@ -38,11 +37,11 @@ impl<'a> CanEncode for &'a ObjectUpdate {
 impl<'a> CanEncode for &'a update::${object.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::update_write("${object.name}");
-        let mut wtr = ArtemisUpdateEncoder::new(wtr, ${object._match})?;
+        wtr.begin_mask(${object._match})?;
         % for field in object.fields:
         ${rust.write_update_field("self."+field.name, field.type)};
         % endfor
-        wtr.finish()
+        wtr.end_mask()
     }
 }
 

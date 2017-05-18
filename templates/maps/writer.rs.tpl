@@ -4,14 +4,14 @@ ${rust.header()}
 use std::io::Result;
 use ::wire::types::Field;
 
-use ::wire::{CanEncode, EnumMap, RangeEnum};
-use ::wire::{ArtemisUpdateEncoder, CanEncodeUpdate};
+use ::wire::{EnumMap, RangeEnum};
+use ::wire::{ArtemisEncoder, CanEncode};
 
-impl<'a, E, V> CanEncodeUpdate for &'a EnumMap<E, Field<V>> where
+impl<'a, E, V> CanEncode for &'a EnumMap<E, Field<V>> where
     E: RangeEnum,
     V: CanEncode + Copy,
 {
-    fn write(self, wtr: &mut ArtemisUpdateEncoder) -> Result<()>
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()>
     {
         for elm in self.get_ref() {
             wtr.write(*elm)?;
