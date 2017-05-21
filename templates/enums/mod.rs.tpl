@@ -41,9 +41,9 @@ pub mod mediacommand {
 
 % for flag in flags:
 bitflags! {
-    pub flags ${flag.name}: u32 {
+    pub struct ${flag.name}: u32 {
         % for field in flag.fields:
-        const ${field.aligned_name} = ${field.aligned_hex_value},
+        const ${field.aligned_name} = ${field.aligned_hex_value};
         % endfor
     }
 }
