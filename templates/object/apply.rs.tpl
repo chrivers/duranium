@@ -10,6 +10,7 @@ use packet::update;
 % for en in enums.without("FrameType") + flags:
 apply_impl!(enums::${en.name});
 % endfor
+
 % for object in objects:
 <%
  T = "object::%s" % object.name
