@@ -7,3 +7,4 @@ pub mod server;
 pub mod structs;
 pub mod object;
 pub mod update;
+pub mod flags;

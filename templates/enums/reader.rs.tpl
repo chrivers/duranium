@@ -1,7 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io::{Error, ErrorKind, Result};
+use std::io::Result;
 
 use ::wire::ArtemisDecoder;
 use ::wire::CanDecode;
@@ -19,14 +19,6 @@ impl From<u32> for ${enum.name} {
     }
 }
 
-% endfor
-
-% for flag in flags:
-impl CanDecode for ${flag.name} {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        ${flag.name}::from_bits(rdr.read()?).ok_or_else(|| Error::new(ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
-    }
-}
 % endfor
 
 impl<T> CanDecode for Option<Size<u32, T>> where

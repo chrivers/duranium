@@ -1,10 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io;
-
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
 use ::packet::enums::*;
 
 % for enum in enums.without("FrameType"):
@@ -19,12 +15,4 @@ impl From<${enum.name}> for u32 {
     }
 }
 
-% endfor
-
-% for flag in flags:
-impl CanEncode for ${flag.name} {
-    fn write(self, mut wtr: &mut ArtemisEncoder) -> io::Result<()> {
-        wtr.write(self.bits())
-    }
-}
 % endfor
