@@ -3,8 +3,8 @@ ${rust.header()}
 
 mod repr;
 mod snowflakes;
-pub mod reader;
-pub mod writer;
+mod reader;
+mod writer;
 
 use packet::prelude::*;
 
