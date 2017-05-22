@@ -1,27 +1,11 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::iter::FromIterator;
 use ::packet::enums;
 use ::packet::object;
 use ::packet::update;
 use ::wire::types::Field;
-use ::wire::{Diff, EnumMap, RangeEnum};
-
-impl<E, V> Diff for EnumMap<E, V>
-where
-    V: Diff<Other=V> + Copy,
-    E: RangeEnum,
-    Vec<Field<V>>: FromIterator<V::Update>
-{
-    type Other = EnumMap<E, V>;
-    type Update = EnumMap<E, Field<V>>;
-    fn diff(&self, other: EnumMap<E, V>) -> Self::Update {
-        EnumMap::new(self.data.iter().zip(other.data.into_iter()).map(
-            |(s, o)| s.diff(o)).collect()
-        )
-    }
-}
+use ::wire::Diff;
 
 % for en in enums.without("FrameType") + flags:
 diff_impl!(enums::${en.name});
