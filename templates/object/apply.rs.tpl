@@ -1,12 +1,11 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::object::traits::Apply;
 use ::packet::enums;
 use ::packet::object;
 use ::packet::update;
 use ::wire::types::Field;
-use ::wire::{EnumMap, RangeEnum};
+use ::wire::{Apply, EnumMap, RangeEnum};
 
 macro_rules! apply_impl {
     ($tp:ty) => {

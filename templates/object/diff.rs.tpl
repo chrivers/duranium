@@ -3,11 +3,10 @@ ${rust.header()}
 
 use std::iter::FromIterator;
 use ::packet::enums;
-use ::packet::object::traits::Diff;
 use ::packet::object;
 use ::packet::update;
 use ::wire::types::Field;
-use ::wire::{EnumMap, RangeEnum};
+use ::wire::{Diff, EnumMap, RangeEnum};
 
 macro_rules! diff_impl {
     ( $tp:ty ) => {
