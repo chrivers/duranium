@@ -33,15 +33,11 @@ impl CanDecode for ClientPacket
 impl CanDecode for super::${name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::packet_read("${lname}");
-        let res = super::${name} {
+        Ok(super::${name} {
             % for fld in rust.get_packet(lname).fields:
             ${fld.name.ljust(15)}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
-        };
-        % for x in range(rust.get_packet_padding(rust.get_packet(lname), info[1])):
-        rdr.read::<u32>()?; // padding
-        % endfor
-        Ok(res)
+        })
     }
 }
 

@@ -38,9 +38,6 @@ impl<'a> CanEncode for &'a client::${name} {
         % for fld in rust.get_packet(lname).fields:
         write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type)});
         % endfor
-        % for x in range(rust.get_packet_padding(rust.get_packet(lname), info[1])):
-        wtr.write::<u32>(0)?; // padding
-        % endfor
         Ok(())
     }
 }

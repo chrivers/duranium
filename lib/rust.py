@@ -94,14 +94,6 @@ def get_packet(name):
 def get_parser(name):
     return context["parsers"].get(name)
 
-def get_packet_padding(packet, name):
-    if name == "valueInt":
-        return 1 - len(packet.fields)
-    elif name == "valueFourInts":
-        return 4 - len(packet.fields)
-    else:
-        return 0
-
 def generate_packet_ids(parsername):
     res = {}
     for field in get_parser(parsername).fields:
