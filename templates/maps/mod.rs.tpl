@@ -1,7 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::enums::ConnectionType;
+use packet::enums::ConnectionType;
 
 <% types = enums.get("FrameType") %>\
 pub fn classify(sig: u32) -> ConnectionType {

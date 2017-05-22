@@ -1,12 +1,8 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io::{Result, Error, ErrorKind};
-
-use wire::trace;
-use wire::types::*;
-
-use super::enums::frametype;
+use packet::prelude::*;
+use packet::enums::frametype;
 use super::ClientPacket;
 
 <% parser = parsers.get("ClientParser") %>

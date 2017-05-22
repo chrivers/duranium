@@ -1,11 +1,7 @@
 <% import rust %>\
 ${rust.header()}
-use std::io::Result;
 
-use wire::types::*;
-use wire::trace;
-
-use packet::object;
+use packet::prelude::*;
 
 % for object in objects:
 <%obj = "object::%s" % object.name %>

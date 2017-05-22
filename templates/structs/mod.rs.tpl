@@ -3,8 +3,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-use ::wire::types::*;
-use ::packet::enums;
+use packet::prelude::*;
 
 pub use super::update::ObjectUpdate;
 pub use super::server::MediaPacket;

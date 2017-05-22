@@ -1,8 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::wire::types::*;
-use ::wire::RangeEnum;
+use packet::prelude::*;
 
 macro_rules! repr_impl {
     ($name:ident, $tp:ty) => {

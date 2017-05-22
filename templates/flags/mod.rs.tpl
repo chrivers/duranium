@@ -1,9 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io::{Error, ErrorKind, Result};
-
-use wire::types::*;
+use packet::prelude::*;
 
 % for flag in flags:
 bitflags! {

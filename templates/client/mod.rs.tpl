@@ -3,10 +3,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-use wire::types::*;
-
-use super::structs;
-use super::enums;
+use packet::prelude::*;
 
 <% packet = packets.get("ClientPacket") %>\
 

@@ -1,5 +1,5 @@
-use std::io::Result;
-use wire::types::*;
+use packet::prelude::*;
+
 use super::ConsoleType;
 
 impl Repr<u32> for Option<Size<u32, ConsoleType>> where

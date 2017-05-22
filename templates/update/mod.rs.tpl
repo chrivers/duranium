@@ -5,9 +5,8 @@ pub mod reader;
 pub mod writer;
 pub mod debug;
 
-use wire::types::*;
+use packet::prelude::*;
 
-use super::enums;
 use super::object::ObjectID;
 
 #[derive(Debug)]

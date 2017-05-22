@@ -1,11 +1,7 @@
 <% import rust %>\
 ${rust.header()}
-use std::io::{Result, Error, ErrorKind};
 
-use wire::trace;
-use wire::types::*;
-
-use packet::update;
+use packet::prelude::*;
 use packet::update::{Update, ObjectUpdate};
 use packet::enums::ObjectType;
 

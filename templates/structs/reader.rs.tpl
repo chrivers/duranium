@@ -1,9 +1,8 @@
 <% import rust %>\
 ${rust.header()}
-use std::io::Result;
 
-use ::wire::trace;
-use ::packet::structs::*;
+use packet::prelude::*;
+use super::*;
 
 % for struct in structs.without("Update"):
 impl CanDecode for ${struct.name} {

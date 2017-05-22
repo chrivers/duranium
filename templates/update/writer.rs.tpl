@@ -1,12 +1,8 @@
 <% import rust %>\
 ${rust.header()}
-use std::io;
-use std::io::Result;
 
-use wire::trace;
-use wire::types::*;
-
-use packet::update::{self, Update, ObjectUpdate};
+use packet::prelude::*;
+use packet::update::{Update, ObjectUpdate};
 use packet::enums::ObjectType;
 
 macro_rules! write_update
@@ -26,7 +22,7 @@ impl<'a> CanEncode for &'a ObjectUpdate {
             % for type in enums.get("ObjectType").fields:
             Update::${type.name}(ref data) => write_update!(${type.name}, wtr, self, data),
             % endfor
-            _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
+            _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }

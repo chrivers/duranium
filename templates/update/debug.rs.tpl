@@ -2,7 +2,7 @@
 ${rust.header()}
 
 use std::fmt;
-use wire::types::Field;
+use packet::prelude::*;
 
 macro_rules! debug_opt_array {
     ( $fmt:ident, $slf:ident.$field:ident ) => {

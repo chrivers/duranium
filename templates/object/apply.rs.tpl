@@ -1,11 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use wire::types::*;
-
-use packet::enums;
-use packet::object;
-use packet::update;
+use packet::prelude::*;
 
 % for en in enums.without("FrameType") + flags:
 apply_impl!(enums::${en.name});

@@ -3,7 +3,7 @@ ${rust.header()}
 
 use std::default::Default;
 
-use ::packet::object;
+use packet::object;
 
 % for object in objects:
 impl object::${object.name} {

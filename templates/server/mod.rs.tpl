@@ -3,10 +3,7 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-use super::enums;
-use super::structs;
-
-use ::wire::types::*;
+use packet::prelude::*;
 
 % for packet in [packets.get("ServerPacket"), packets.get("MediaPacket")]:
 #[derive(Debug)]

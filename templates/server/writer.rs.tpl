@@ -1,10 +1,7 @@
 <% import rust %>\
 ${rust.header()}
-use std::io::Result;
 
-use wire::types::*;
-use wire::trace;
-
+use packet::prelude::*;
 use super::enums::{frametype, mediacommand};
 use super::{ServerPacket, MediaPacket};
 

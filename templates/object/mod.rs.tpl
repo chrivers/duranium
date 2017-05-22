@@ -6,9 +6,7 @@ pub mod apply;
 pub mod diff;
 pub mod new;
 
-use wire::types::*;
-
-use super::enums;
+use packet::prelude::*;
 
 pub type ObjectID = u32;
 
