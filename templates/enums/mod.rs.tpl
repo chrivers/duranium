@@ -6,6 +6,7 @@ use std::default::Default;
 use ::wire::types::*;
 
 mod repr;
+mod snowflakes;
 pub mod reader;
 pub mod writer;
 
