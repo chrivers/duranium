@@ -1,10 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::io::Result;
-
-use ::wire::ArtemisDecoder;
-use ::wire::CanDecode;
 use ::packet::enums::*;
 
 % for enum in enums.without("FrameType"):
@@ -20,11 +16,3 @@ impl From<u32> for ${enum.name} {
 }
 
 % endfor
-
-impl<T> CanDecode for Option<Size<u32, T>> where
-    Option<Size<u32, T>>: Repr<u32>,
-{
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        Ok(Repr::decode(rdr.read::<u32>()?))
-    }
-}

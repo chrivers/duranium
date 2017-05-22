@@ -1,8 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::wire::types::*;
-
 mod repr;
 mod snowflakes;
 pub mod reader;

@@ -1,8 +1,9 @@
 use std::io::Result;
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
 use ::wire::types::*;
 use super::ConsoleType;
+
+use ::wire::{ArtemisDecoder, ArtemisEncoder};
+use ::wire::{CanDecode, CanEncode};
 
 impl Repr<u32> for Option<Size<u32, ConsoleType>> where
     Self: Copy
@@ -17,6 +18,14 @@ impl Repr<u32> for Option<Size<u32, ConsoleType>> where
 
     fn encode(self) -> u32 {
         self.map_or(0, |ct| u32::from(ct) + 1)
+    }
+}
+
+impl<T> CanDecode for Option<Size<u32, T>> where
+    Option<Size<u32, T>>: Repr<u32>,
+{
+    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
+        Ok(Repr::decode(rdr.read::<u32>()?))
     }
 }
 
