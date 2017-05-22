@@ -33,7 +33,7 @@ impl<'a> CanEncode for &'a ObjectUpdate {
     }
 }
 
-% for object in objects.without("Whale"):
+% for object in objects:
 impl<'a> CanEncode for &'a update::${object.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::update_write("${object.name}");
