@@ -11,7 +11,6 @@ impl CanDecode for ${name}
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         match rdr.read::<u32>()? {
-
             % for field in parser.fields:
             % if field.type.name == "struct":
             ${prefix}::${field.name.ljust(20)} => Ok(${field.type[0].name} ( rdr.read()? )),
