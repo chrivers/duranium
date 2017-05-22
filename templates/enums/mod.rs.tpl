@@ -1,8 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-use std::default::Default;
-
 use ::wire::types::*;
 
 mod repr;
@@ -36,15 +34,12 @@ pub mod mediacommand {
 
 % for flag in flags:
 bitflags! {
+    #[derive(Default)]
     pub struct ${flag.name}: u32 {
         % for field in flag.fields:
         const ${field.aligned_name} = ${field.aligned_hex_value};
         % endfor
     }
-}
-
-impl Default for ${flag.name} {
-    fn default() -> Self { Self::empty() }
 }
 
 % endfor
