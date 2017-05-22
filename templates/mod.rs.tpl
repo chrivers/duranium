@@ -8,6 +8,7 @@ pub mod structs;
 pub mod object;
 pub mod update;
 pub mod flags;
+pub mod array;
 
 mod prelude {
     pub use std::io::{Result, Error, ErrorKind};
