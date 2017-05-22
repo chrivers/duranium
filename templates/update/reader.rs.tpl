@@ -32,7 +32,7 @@ impl CanDecode for update::${object.name} {
         rdr.read_mask(${object._match})?;
         Ok(update::${object.name} {
             % for field in object.fields:
-            ${field.name.ljust(20)}: parse_field!("packet", "${field.name}", rdr.read()?),
+            ${field.name.ljust(20)}: parse_field!("update", "${field.name}", rdr.read()?),
             % endfor
         })
     }
