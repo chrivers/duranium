@@ -64,6 +64,8 @@ def declare_update_type(tp):
 ##### struct fields #####
 
 def write_struct_field(fieldname, type):
+    if type.name == "string":
+        return "wtr.write(%s.as_str())?" % fieldname
     if type.name in ref_types:
         return "wtr.write(&%s)?" % fieldname
     else:
@@ -73,7 +75,7 @@ def write_struct_field(fieldname, type):
 
 def write_update_field(fieldname, type):
     if type.name == "string":
-        return "wtr.write(%s.as_ref())?" % fieldname
+        return "wtr.write(%s.as_str())?" % fieldname
     elif type.name == "map":
         return "wtr.write(&%s)?" % fieldname
     else:
