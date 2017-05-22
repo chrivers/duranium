@@ -32,7 +32,7 @@ impl CanDecode for ClientPacket
 <% name = lname.split("::", 1)[-1] %>\
 impl CanDecode for super::${name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        trace::packet_read("${name}");
+        trace::packet_read("${lname}");
         let res = super::${name} {
             % for fld in rust.get_packet(lname).fields:
             ${fld.name.ljust(15)}: parse_field!("packet", "${fld.name}", rdr.read()?),
