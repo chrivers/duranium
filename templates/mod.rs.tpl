@@ -17,6 +17,7 @@ mod prelude {
 
     pub use super::structs;
     pub use super::enums;
+    pub use super::flags;
     pub use super::client;
     pub use super::server;
     pub use super::object;

@@ -31,3 +31,8 @@ impl CanEncode for ${flag.name} {
 }
 
 % endfor
+
+% for flag in flags:
+diff_impl!(${flag.name});
+apply_impl!(${flag.name});
+% endfor

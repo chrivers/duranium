@@ -51,7 +51,7 @@ def declare_struct_type(tp):
     elif tp.name == "option":
         return "Option<%s>" % declare_struct_type(tp[0])
     elif tp.name == "bitflags":
-        return "enums::%s" % tp[1].name
+        return "flags::%s" % tp[1].name
     else:
         raise TypeError("No type mapping defined for [%s]" % tp.name)
 

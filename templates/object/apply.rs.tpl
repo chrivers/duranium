@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for en in enums.without("FrameType") + flags:
+% for en in enums.without("FrameType"):
 apply_impl!(enums::${en.name});
 % endfor
 

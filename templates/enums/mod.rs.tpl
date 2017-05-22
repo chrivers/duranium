@@ -6,8 +6,6 @@ mod snowflakes;
 pub mod reader;
 pub mod writer;
 
-pub use super::flags::*;
-
 % for enum in enums.without("FrameType"):
 #[derive(PartialEq,Debug,Copy,Clone)]
 pub enum ${enum.name} {
