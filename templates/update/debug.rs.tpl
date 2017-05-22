@@ -24,8 +24,6 @@ impl fmt::Debug for super::${object.name} {
         % for field in object.fields:
         % if field.type.name in {"array", "sizedarray", "map"}:
         debug_opt_array!(f, self.${field.name});
-        % elif field.type.name == "map":
-        write!(f, "${field.name}: {:?},\n", self.${field.name})?;
         % else:
         debug_opt_field!(f, self.${field.name});
         % endif
