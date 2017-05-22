@@ -1,8 +1,6 @@
 <% import rust %>\
 ${rust.header()}
 
-pub mod reader;
-pub mod writer;
 use ::packet::enums::{ConsoleType, ConnectionType};
 use ::wire::IterEnum;
 
