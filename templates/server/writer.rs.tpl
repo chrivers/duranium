@@ -2,7 +2,7 @@
 ${rust.header()}
 
 use packet::prelude::*;
-use super::enums::{frametype, mediacommand};
+use packet::enums::{frametype, mediacommand};
 use super::{ServerPacket, MediaPacket};
 
 macro_rules! write_packet {
