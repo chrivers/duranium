@@ -1,22 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::enums::{ConsoleType, ConnectionType};
-use ::wire::IterEnum;
-
-% for item in [enums.get("ConsoleType")]:
-impl IterEnum<${item.name}> for ${item.name} {
-    fn iter_enum() -> &'static [${item.name}] {
-        static TYPES: &'static [${item.name}] =
-            &[
-            % for field in enums.get(item.name).fields:
-                ${item.name}::${field.name},
-            % endfor
-            ];
-        TYPES
-    }
-}
-% endfor
+use ::packet::enums::ConnectionType;
 
 <% types = enums.get("FrameType") %>\
 pub fn classify(sig: u32) -> ConnectionType {
