@@ -29,8 +29,8 @@ impl CanDecode for ${flag.name} {
 }
 % endfor
 
-impl CanDecode for Option<Size<u32, ConsoleType>> where
-    Option<Size<u32, ConsoleType>>: Repr<u32>,
+impl<T> CanDecode for Option<Size<u32, T>> where
+    Option<Size<u32, T>>: Repr<u32>,
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         Ok(Repr::decode(rdr.read::<u32>()?))
