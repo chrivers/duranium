@@ -2,10 +2,10 @@
 ${rust.header()}
 use std::io;
 
-use ::packet::structs::*;
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
-use ::wire::trace;
+use wire::types::*;
+use wire::trace;
+
+use super::*;
 
 % for struct in structs.without("Update"):
 impl<'a> CanEncode for &'a ${struct.name} {

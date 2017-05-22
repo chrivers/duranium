@@ -5,12 +5,12 @@ pub mod reader;
 pub mod apply;
 pub mod diff;
 pub mod new;
-use ::wire::types::*;
+
+use wire::types::*;
+
+use super::enums;
 
 pub type ObjectID = u32;
-
-use ::wire::EnumMap;
-use ::packet::enums;
 
 % for object in objects:
 #[derive(Debug,Default)]

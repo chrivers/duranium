@@ -2,10 +2,8 @@
 ${rust.header()}
 use std::io::Result;
 
-use ::packet::structs::*;
-use ::wire::ArtemisDecoder;
-use ::wire::CanDecode;
 use ::wire::trace;
+use ::packet::structs::*;
 
 % for struct in structs.without("Update"):
 impl CanDecode for ${struct.name} {

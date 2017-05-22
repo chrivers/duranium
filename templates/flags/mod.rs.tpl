@@ -3,8 +3,7 @@ ${rust.header()}
 
 use std::io::{Error, ErrorKind, Result};
 
-use ::wire::{ArtemisDecoder, ArtemisEncoder};
-use ::wire::{CanDecode, CanEncode};
+use wire::types::*;
 
 % for flag in flags:
 bitflags! {

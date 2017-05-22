@@ -3,11 +3,11 @@ ${rust.header()}
 
 use std::io::{Result, Error, ErrorKind};
 
-use ::packet::enums::frametype;
-use ::packet::client::ClientPacket;
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
-use ::wire::trace;
+use wire::trace;
+use wire::types::*;
+
+use packet::enums::frametype;
+use packet::client::ClientPacket;
 use packet::client;
 
 macro_rules! write_packet {

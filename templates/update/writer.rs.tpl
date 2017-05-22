@@ -3,13 +3,11 @@ ${rust.header()}
 use std::io;
 use std::io::Result;
 
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
-use ::wire::trace;
-use ::wire::types::*;
+use wire::trace;
+use wire::types::*;
 
-use ::packet::update::{self, Update, ObjectUpdate};
-use ::packet::enums::ObjectType;
+use packet::update::{self, Update, ObjectUpdate};
+use packet::enums::ObjectType;
 
 macro_rules! write_update
 {

@@ -3,9 +3,9 @@ ${rust.header()}
 pub mod reader;
 pub mod writer;
 
-use ::packet::enums;
-use ::packet::structs;
-use ::wire::EnumMap;
+use super::enums;
+use super::structs;
+
 use ::wire::types::*;
 
 % for packet in [packets.get("ServerPacket"), packets.get("MediaPacket")]:

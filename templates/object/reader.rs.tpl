@@ -2,10 +2,10 @@
 ${rust.header()}
 use std::io::Result;
 
-use ::packet::object;
-use ::wire::ArtemisDecoder;
-use ::wire::CanDecode;
-use ::wire::trace;
+use wire::types::*;
+use wire::trace;
+
+use packet::object;
 
 % for object in objects:
 <%obj = "object::%s" % object.name %>

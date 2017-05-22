@@ -1,11 +1,11 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::enums;
-use ::packet::object;
-use ::packet::update;
-use ::wire::types::Field;
-use ::wire::Apply;
+use wire::types::*;
+
+use packet::enums;
+use packet::object;
+use packet::update;
 
 % for en in enums.without("FrameType") + flags:
 apply_impl!(enums::${en.name});

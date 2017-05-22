@@ -1,9 +1,6 @@
 use std::io::Result;
-use ::wire::types::*;
+use wire::types::*;
 use super::ConsoleType;
-
-use ::wire::{ArtemisDecoder, ArtemisEncoder};
-use ::wire::{CanDecode, CanEncode};
 
 impl Repr<u32> for Option<Size<u32, ConsoleType>> where
     Self: Copy

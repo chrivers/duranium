@@ -3,10 +3,10 @@ ${rust.header()}
 
 use std::io::{Result, Error, ErrorKind};
 
-use ::packet::enums::{frametype, mediacommand};
-use ::wire::ArtemisDecoder;
-use ::wire::CanDecode;
-use ::wire::trace;
+use wire::trace;
+use wire::types::*;
+
+use super::enums::{frametype, mediacommand};
 use super::{ServerPacket, MediaPacket};
 
 % for name, prefix, parser in [("ServerPacket", "frametype", parsers.get("ServerParser")), ("MediaPacket", "mediacommand", parsers.get("MediaParser")) ]:

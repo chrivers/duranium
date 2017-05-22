@@ -2,12 +2,11 @@
 ${rust.header()}
 use std::io::Result;
 
-use ::packet::enums::{frametype, mediacommand};
-use ::wire::ArtemisEncoder;
-use ::wire::CanEncode;
-use ::wire::trace;
+use wire::types::*;
+use wire::trace;
 
-use ::packet::server::{ServerPacket, MediaPacket};
+use super::enums::{frametype, mediacommand};
+use super::{ServerPacket, MediaPacket};
 
 macro_rules! write_packet {
     ($name:expr, $major:expr, $tp:ty, None,        $wtr:ident, $pkt:ident) => {{

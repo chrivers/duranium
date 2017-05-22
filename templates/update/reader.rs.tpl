@@ -2,12 +2,12 @@
 ${rust.header()}
 use std::io::{Result, Error, ErrorKind};
 
-use ::packet::update;
-use ::packet::update::{Update, ObjectUpdate};
-use ::packet::enums::ObjectType;
-use ::wire::{CanDecode, ArtemisDecoder};
-use ::wire::trace;
-use ::wire::types::*;
+use wire::trace;
+use wire::types::*;
+
+use packet::update;
+use packet::update::{Update, ObjectUpdate};
+use packet::enums::ObjectType;
 
 impl CanDecode for ObjectUpdate {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {

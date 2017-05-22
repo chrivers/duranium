@@ -3,10 +3,10 @@ ${rust.header()}
 
 use std::io::{Result, Error, ErrorKind};
 
-use ::packet::enums::frametype;
-use ::wire::ArtemisDecoder;
-use ::wire::CanDecode;
-use ::wire::trace;
+use wire::trace;
+use wire::types::*;
+
+use super::enums::frametype;
 use super::ClientPacket;
 
 <% parser = parsers.get("ClientParser") %>
