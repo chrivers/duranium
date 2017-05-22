@@ -1,12 +1,12 @@
 <% import rust %>\
 ${rust.header()}
+
 mod reader;
 mod writer;
 
 use packet::prelude::*;
 
 <% packet = packets.get("ClientPacket") %>\
-
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}
@@ -30,7 +30,7 @@ pub struct ${case.name}
     % for line in util.format_comment(field.comment, indent="/// ", width=74):
     ${line}
     % endfor
-    ${field.name}: ${rust.declare_struct_type(field.type)},
+    pub ${field.name}: ${rust.declare_struct_type(field.type)},
     % endfor
 }
 
