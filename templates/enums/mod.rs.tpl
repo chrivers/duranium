@@ -6,6 +6,8 @@ mod snowflakes;
 pub mod reader;
 pub mod writer;
 
+use packet::prelude::*;
+
 % for enum in enums.without("FrameType"):
 #[derive(PartialEq,Debug,Copy,Clone)]
 pub enum ${enum.name} {
@@ -29,3 +31,8 @@ pub mod mediacommand {
     pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
     % endfor
 }
+
+% for en in enums.without("FrameType"):
+diff_impl!(${en.name});
+apply_impl!(${en.name});
+% endfor

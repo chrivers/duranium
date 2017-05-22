@@ -3,17 +3,12 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for en in enums.without("FrameType"):
-apply_impl!(enums::${en.name});
-% endfor
-
 % for object in objects:
 <%
  T = "object::%s" % object.name
  U = "update::%s" % object.name
  %>
-impl Apply for ${T} where
-{
+impl Apply for ${T} {
     type Update = ${U};
     fn apply(&mut self, update: &${U}) {
         % for field in object.fields:

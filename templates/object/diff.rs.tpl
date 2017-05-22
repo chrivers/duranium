@@ -3,10 +3,6 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for en in enums.without("FrameType"):
-diff_impl!(enums::${en.name});
-% endfor
-
 % for object in objects:
 <%
  T = "object::%s" % object.name
