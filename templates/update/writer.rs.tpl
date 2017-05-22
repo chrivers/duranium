@@ -24,9 +24,9 @@ macro_rules! write_update
 
 impl<'a> CanEncode for &'a ObjectUpdate {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
-        match &self.update {
+        match self.update {
             % for type in enums.get("ObjectType").fields:
-            &Update::${type.name}(ref data) => write_update!(${type.name}, wtr, self, data),
+            Update::${type.name}(ref data) => write_update!(${type.name}, wtr, self, data),
             % endfor
             _ => Err(io::Error::new(io::ErrorKind::InvalidData, "unsupported protocol version")),
         }

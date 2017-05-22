@@ -26,9 +26,9 @@ macro_rules! write_packet {
 % for name, prefix, parser in [("ServerPacket", "frametype", "ServerParser"), ("MediaPacket", "mediacommand", "MediaParser") ]:
 impl<'a> CanEncode for &'a ${name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
-        match self {
+        match *self {
         % for name, info in sorted(rust.generate_packet_ids(parser).items()):
-            &${name}(ref pkt) => write_packet!("${name}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
+            ${name}(ref pkt) => write_packet!("${name}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
         % endfor
         }
     }

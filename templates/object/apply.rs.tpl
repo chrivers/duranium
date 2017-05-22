@@ -28,14 +28,14 @@ macro_rules! apply_impl {
 impl Apply for String {
     type Update = Field<String>;
     fn apply(&mut self, update: &Field<String>) {
-        if let &Field::Val(ref x) = update {
+        if let Field::Val(ref x) = *update {
             *self = x.to_string()
         }
     }
     fn produce(&self, update: &Field<String>) -> Self {
-        match update {
-            &Field::Val(ref s) => s.clone(),
-            &Field::NA => self.clone()
+        match *update {
+            Field::Val(ref s) => s.clone(),
+            Field::NA => self.clone()
         }
     }
 }
