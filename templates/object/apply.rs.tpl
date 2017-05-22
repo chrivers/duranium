@@ -5,25 +5,7 @@ use ::packet::enums;
 use ::packet::object;
 use ::packet::update;
 use ::wire::types::Field;
-use ::wire::{Apply, EnumMap, RangeEnum};
-
-impl<E, V> Apply for EnumMap<E, V> where
-    V: Apply<Update=Field<V>>,
-    E: RangeEnum,
-{
-    type Update = EnumMap<E, Field<V>>;
-
-    fn apply(&mut self, update: &EnumMap<E, Field<V>>) {
-        self.data.iter_mut().zip(update.data.iter()).map(
-            |(s, o)| s.apply(o)
-        ).last();
-    }
-    fn produce(&self, update: &EnumMap<E, Field<V>>) -> Self {
-        EnumMap::new(self.data.iter().zip(update.data.iter()).map(
-            |(s, o)| s.produce(o)).collect()
-        )
-    }
-}
+use ::wire::Apply;
 
 % for en in enums.without("FrameType") + flags:
 apply_impl!(enums::${en.name});
