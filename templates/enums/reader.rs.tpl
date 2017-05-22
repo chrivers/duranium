@@ -1,7 +1,7 @@
 <% import rust %>\
 ${rust.header()}
 
-use ::packet::enums::*;
+use packet::enums::*;
 
 % for enum in enums.without("FrameType"):
 impl From<u32> for ${enum.name} {
