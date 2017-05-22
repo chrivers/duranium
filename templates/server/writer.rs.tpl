@@ -36,7 +36,7 @@ impl<'a> CanEncode for &'a ${name} {
 <% name = lname.split("::", 1)[-1] %>\
 impl<'a> CanEncode for &'a super::${name} {
     fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()> {
-        % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
+        % for fld in rust.get_packet(lname).fields:
         write_field!("packet", "${fld.name}", self.${fld.name}, _${rust.write_struct_field("self.%s" % fld.name, fld.type)});
         % endfor
         Ok(())

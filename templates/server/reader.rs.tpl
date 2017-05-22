@@ -17,7 +17,7 @@ impl CanDecode for ${name}
             % else:
             ${prefix}::${field.name.ljust(20)} => {
                 match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
-                % for pkt in rust.get_parser(field.type[0].name).fields:
+                    % for pkt in rust.get_parser(field.type[0].name).fields:
                     ${pkt.name} => Ok(${pkt.type[0].name} ( rdr.read()? )),
                     % endfor
                     subtype => Err(Error::new(ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
@@ -38,7 +38,7 @@ impl CanDecode for super::${name} {
     fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::packet_read("${lname}");
         Ok(super::${name} {
-            % for fld in rust.get_packet("%s::%s" % (prefix, name)).fields:
+            % for fld in rust.get_packet(lname).fields:
             ${fld.name}: parse_field!("packet", "${fld.name}", _rdr.read()?),
             % endfor
         })
