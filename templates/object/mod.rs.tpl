@@ -8,8 +8,6 @@ mod new;
 
 use packet::prelude::*;
 
-pub type ObjectID = u32;
-
 % for object in objects:
 #[derive(Debug,Default)]
 pub struct ${object.name} {

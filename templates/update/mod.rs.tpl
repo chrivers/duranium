@@ -7,8 +7,6 @@ mod debug;
 
 use packet::prelude::*;
 
-use super::object::ObjectID;
-
 #[derive(Debug)]
 pub struct ObjectUpdate {
     pub object_id: ObjectID,
