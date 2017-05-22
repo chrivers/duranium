@@ -1,10 +1,10 @@
 <% import rust %>\
 ${rust.header()}
 
-pub mod reader;
-pub mod apply;
-pub mod diff;
-pub mod new;
+mod reader;
+mod apply;
+mod diff;
+mod new;
 
 use packet::prelude::*;
 

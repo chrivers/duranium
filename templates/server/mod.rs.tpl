@@ -1,7 +1,8 @@
 <% import rust %>\
 ${rust.header()}
-pub mod reader;
-pub mod writer;
+
+mod reader;
+mod writer;
 
 use packet::prelude::*;
 
