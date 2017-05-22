@@ -5,7 +5,18 @@ use std::io::{Error, ErrorKind, Result};
 
 use ::wire::{ArtemisDecoder, ArtemisEncoder};
 use ::wire::{CanDecode, CanEncode};
-use ::packet::enums::*;
+
+% for flag in flags:
+bitflags! {
+    #[derive(Default)]
+    pub struct ${flag.name}: u32 {
+        % for field in flag.fields:
+        const ${field.aligned_name} = ${field.aligned_hex_value};
+        % endfor
+    }
+}
+
+% endfor
 
 % for flag in flags:
 impl CanDecode for ${flag.name} {
@@ -14,6 +25,8 @@ impl CanDecode for ${flag.name} {
     }
 }
 
+% endfor
+% for flag in flags:
 impl CanEncode for ${flag.name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         wtr.write(self.bits())

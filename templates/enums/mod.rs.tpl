@@ -6,6 +6,8 @@ mod snowflakes;
 pub mod reader;
 pub mod writer;
 
+pub use super::flags::*;
+
 % for enum in enums.without("FrameType"):
 #[derive(PartialEq,Debug,Copy,Clone)]
 pub enum ${enum.name} {
@@ -29,15 +31,3 @@ pub mod mediacommand {
     pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
     % endfor
 }
-
-% for flag in flags:
-bitflags! {
-    #[derive(Default)]
-    pub struct ${flag.name}: u32 {
-        % for field in flag.fields:
-        const ${field.aligned_name} = ${field.aligned_hex_value};
-        % endfor
-    }
-}
-
-% endfor
