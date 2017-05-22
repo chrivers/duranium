@@ -8,22 +8,6 @@ use ::packet::update;
 use ::wire::types::Field;
 use ::wire::{Diff, EnumMap, RangeEnum};
 
-macro_rules! diff_impl {
-    ( $tp:ty ) => {
-        impl Diff for $tp {
-            type Other = $tp;
-            type Update = Field<$tp>;
-            fn diff(&self, other: $tp) -> Self::Update {
-                if *self == other {
-                    Field::NA
-                } else {
-                    Field::Val(other)
-                }
-            }
-        }
-    }
-}
-
 impl<E, V> Diff for EnumMap<E, V>
 where
     V: Diff<Other=V> + Copy,
@@ -38,20 +22,6 @@ where
         )
     }
 }
-
-diff_impl!(bool);
-
-diff_impl!(i8);
-diff_impl!(i16);
-diff_impl!(i32);
-
-diff_impl!(u8);
-diff_impl!(u16);
-diff_impl!(u32);
-diff_impl!(u64);
-diff_impl!(f32);
-
-diff_impl!(String);
 
 % for en in enums.without("FrameType") + flags:
 diff_impl!(enums::${en.name});
