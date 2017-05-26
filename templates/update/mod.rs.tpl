@@ -15,8 +15,8 @@ pub struct ObjectUpdate {
 
 #[derive(Debug)]
 pub enum Update {
-% for object in objects:
-    ${object.name}(${object.name}),
+% for fld in parsers.get("ObjectUpdateV240").fields:
+    ${fld.name}(${fld.type[0].name}),
 % endfor
 }
 
