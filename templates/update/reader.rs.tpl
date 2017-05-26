@@ -12,8 +12,8 @@ impl CanDecode for ObjectUpdate {
         Ok(ObjectUpdate {
             object_id: object_id,
             update: match *object_type {
-                % for type in enums.get("ObjectTypeV240").fields:
-                ObjectTypeV240::${type.name.ljust(20)} => Update::${type.name}(rdr.read()?),
+                % for fld in parsers.get("ObjectUpdateV240").fields:
+                ObjectTypeV240::${fld.name.ljust(20)} => Update::${fld.type[0].name}(rdr.read()?),
                 % endfor
                 ObjectTypeV240::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
             }
