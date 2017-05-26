@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::prelude::*;
 use packet::update::{Update, ObjectUpdate};
-use packet::enums::ObjectType;
+use packet::enums::ObjectTypeV240;
 
 impl CanDecode for ObjectUpdate {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
@@ -12,10 +12,10 @@ impl CanDecode for ObjectUpdate {
         Ok(ObjectUpdate {
             object_id: object_id,
             update: match *object_type {
-                % for type in enums.get("ObjectType").fields:
-                ObjectType::${type.name.ljust(20)} => Update::${type.name}(rdr.read()?),
+                % for type in enums.get("ObjectTypeV240").fields:
+                ObjectTypeV240::${type.name.ljust(20)} => Update::${type.name}(rdr.read()?),
                 % endfor
-                ObjectType::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
+                ObjectTypeV240::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
             }
         })
     }
