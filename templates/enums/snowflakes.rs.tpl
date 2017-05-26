@@ -1,14 +1,14 @@
 use packet::prelude::*;
 
-use super::ConsoleType;
+use super::ConsoleTypeV240;
 
-impl Repr<u32> for Option<Size<u32, ConsoleType>> where
+impl Repr<u32> for Option<Size<u32, ConsoleTypeV240>> where
     Self: Copy
 {
     fn decode(x: u32) -> Self {
         match x {
             0 => None,
-            n => Some(Size::new(ConsoleType::from(n - 1))
+            n => Some(Size::new(ConsoleTypeV240::from(n - 1))
             )
         }
     }
@@ -26,7 +26,7 @@ impl<T> CanDecode for Option<Size<u32, T>> where
     }
 }
 
-impl CanEncode for Option<Size<u32, ConsoleType>> {
+impl CanEncode for Option<Size<u32, ConsoleTypeV240>> {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         wtr.write::<u32>(self.encode())
     }
