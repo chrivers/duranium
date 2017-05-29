@@ -31,13 +31,13 @@ impl CanDecode for ${name}
 }
 % endfor
 
-% for prefix, parser in [("ServerPacket", "ServerParser"), ("MediaPacket", "MediaParser")]:
-% for name, info in rust.generate_packet_ids(parser):
-impl CanDecode for super::${name} {
+% for packet in [server.get("ServerPacket"), server.get("MediaPacket")]:
+% for case in packet:
+impl CanDecode for super::${case.name} {
     fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {
-        trace::packet_read("${prefix}::${name}");
-        Ok(super::${name} {
-            % for fld in server.get(prefix).get(name).fields:
+        trace::packet_read("${packet.name}::${case.name}");
+        Ok(super::${case.name} {
+            % for fld in case.fields:
             ${fld.aligned_name} : parse_field!("packet", "${fld.name}", _rdr.read()?),
             % endfor
         })

@@ -23,6 +23,11 @@ impl ArrayMarker for structs::FighterBay {
     const MARKER: u32 = 0x00000000;
 }
 
+impl ArrayMarker for structs::UpdateV210 {
+    type Item = u32;
+    const MARKER: u32 = 0x00000000;
+}
+
 impl ArrayMarker for structs::UpdateV240 {
     type Item = u32;
     const MARKER: u32 = 0x00000000;
