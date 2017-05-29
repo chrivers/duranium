@@ -76,7 +76,7 @@ def _write_struct_field(fld):
         return "_wtr.write(self.%s)?" % fld.name
 
 def write_struct_field(name, fld):
-    return 'write_field!("%s", "%s", self.%s, %s);' % (
+    return 'write_field!("%s", "%s", self.%s, %s)' % (
         name,
         fld.name,
         fld.name,
