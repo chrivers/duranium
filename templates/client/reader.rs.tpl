@@ -5,13 +5,12 @@ use packet::prelude::*;
 use packet::enums::frametype;
 use super::ClientPacket;
 
-<% parser = parsers.get("ClientParser") %>
 impl CanDecode for ClientPacket
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         match rdr.read::<u32>()? {
-            % for field in parser.fields:
+            % for field in parsers.get("ClientParser").fields:
             % if field.type.name == "struct":
             frametype::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
@@ -28,12 +27,12 @@ impl CanDecode for ClientPacket
     }
 }
 
-% for name, info in rust.generate_packet_ids("ClientParser"):
-impl CanDecode for super::${name} {
+% for packet in client.get("ClientPacket"):
+impl CanDecode for super::${packet.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        trace::packet_read("ClientPacket::${name}");
-        Ok(super::${name} {
-            % for fld in client.get("ClientPacket").get(name).fields:
+        trace::packet_read("ClientPacket::${packet.name}");
+        Ok(super::${packet.name} {
+            % for fld in packet.fields:
             ${fld.aligned_name}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })
