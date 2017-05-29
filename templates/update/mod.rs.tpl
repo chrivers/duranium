@@ -8,7 +8,7 @@ mod debug;
 use packet::prelude::*;
 
 #[derive(Debug)]
-pub struct ObjectUpdate {
+pub struct UpdateV240 {
     pub object_id: ObjectID,
     pub update: Update,
 }

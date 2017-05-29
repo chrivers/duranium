@@ -2,25 +2,25 @@
 ${rust.header()}
 
 use packet::prelude::*;
-use packet::update::{Update, ObjectUpdate};
+use packet::update::{Update, UpdateV240};
 use packet::enums::ObjectTypeV240;
 
 macro_rules! write_update
 {
-    ( $name:ident, $wtr:ident, $slf:expr, $data:expr ) => (
+    ( $group:ident, $name:ident, $wtr:ident, $slf:expr, $data:expr ) => (
         {
-            $wtr.write(Size::<u8, _>::new(ObjectTypeV240::$name))?;
+            $wtr.write(Size::<u8, _>::new($group::$name))?;
             $wtr.write($slf.object_id)?;
             $wtr.write($data)
         }
     )
 }
 
-impl<'a> CanEncode for &'a ObjectUpdate {
+impl<'a> CanEncode for &'a UpdateV240 {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         match self.update {
-            % for type in enums.get("ObjectTypeV240").fields:
-            Update::${type.name}(ref data) => write_update!(${type.name}, wtr, self, data),
+            % for type in enums.get("ObjectTypeV240").consts:
+            Update::${type.name}(ref data) => write_update!(ObjectTypeV240, ${type.name}, wtr, self, data),
             % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
@@ -31,7 +31,7 @@ impl<'a> CanEncode for &'a ObjectUpdate {
 impl<'a> CanEncode for &'a update::${object.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::update_write("${object.name}");
-        wtr.begin_mask(${object._match})?;
+        wtr.begin_mask(${object.arg.name})?;
         % for field in object.fields:
         ${rust.write_update_field("self."+field.name, field.type)};
         % endfor

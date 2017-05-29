@@ -2,14 +2,14 @@
 ${rust.header()}
 
 use packet::prelude::*;
-use packet::update::{Update, ObjectUpdate};
-use packet::enums::ObjectTypeV240;
+use packet::update::{Update, UpdateV210, UpdateV240};
+use packet::enums::{ObjectTypeV210, ObjectTypeV240};
 
-impl CanDecode for ObjectUpdate {
+impl CanDecode for UpdateV240 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         let object_type: Size<u8, _> = rdr.read()?;
         let object_id   = rdr.read()?;
-        Ok(ObjectUpdate {
+        Ok(UpdateV240 {
             object_id: object_id,
             update: match *object_type {
                 % for fld in parsers.get("ObjectUpdateV240").fields:
@@ -25,7 +25,7 @@ impl CanDecode for ObjectUpdate {
 impl CanDecode for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::update_read("${object.name}");
-        rdr.read_mask(${object._match})?;
+        rdr.read_mask(${object.arg.name})?;
         Ok(update::${object.name} {
             % for field in object.fields:
             ${field.name.ljust(20)}: parse_field!("update", "${field.name}", rdr.read()?),

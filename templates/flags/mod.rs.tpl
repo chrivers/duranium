@@ -7,7 +7,7 @@ use packet::prelude::*;
 bitflags! {
     #[derive(Default)]
     pub struct ${flag.name}: u32 {
-        % for field in flag.fields:
+        % for field in flag.consts:
         const ${field.aligned_name} = ${field.aligned_hex_value};
         % endfor
     }
