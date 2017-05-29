@@ -30,10 +30,10 @@ impl<'a> CanEncode for &'a ClientPacket {
     }
 }
 
-% for name, info in rust.generate_packet_ids("ClientParser"):
-impl<'a> CanEncode for &'a super::${name} {
+% for case in client.get("ClientPacket"):
+impl<'a> CanEncode for &'a super::${case.name} {
     fn write(self, mut _wtr: &mut ArtemisEncoder) -> Result<()> {
-        % for fld in client.get("ClientPacket").get(name).fields:
+        % for fld in case.fields:
         ${rust.write_struct_field("packet", fld)};
         % endfor
         Ok(())
