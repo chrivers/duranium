@@ -32,9 +32,9 @@ impl<'a> CanEncode for &'a ClientPacket {
 
 % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
 impl<'a> CanEncode for &'a super::${name} {
-    fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
+    fn write(self, mut _wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in client.get("ClientPacket").get(name).fields:
-        write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field(fld)});
+        ${rust.write_struct_field("packet", fld)};
         % endfor
         Ok(())
     }
