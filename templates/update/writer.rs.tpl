@@ -43,7 +43,7 @@ impl<'a> CanEncode for &'a UpdateV240 {
 impl<'a> CanEncode for &'a update::${object.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::update_write("${object.name}");
-        wtr.begin_mask(${object.arg.name})?;
+        wtr.begin_mask(${object.expr[0]})?;
         % for field in object.fields:
         ${rust.write_update_field(field)};
         % endfor

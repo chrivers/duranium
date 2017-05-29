@@ -103,5 +103,5 @@ def generate_packet_ids(parsername):
         elif field.type.name == "parser":
             prs = context["parsers"].get(field.type[0].name)
             for fld in prs.fields:
-                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg.name)
+                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.expr[0])
     return sorted(res.items())

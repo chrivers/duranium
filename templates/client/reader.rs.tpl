@@ -14,7 +14,7 @@ impl CanDecode for ClientPacket
             % if field.type.name == "struct":
             frametype::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
-            frametype::${field.aligned_name} => match rdr.read::<${field.type.link.arg.name}>()? {
+            frametype::${field.aligned_name} => match rdr.read::<${field.type.link.expr[0]}>()? {
                 % for pkt in field.type.link.fields:
                 ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
                 % endfor

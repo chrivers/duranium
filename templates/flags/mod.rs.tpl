@@ -6,7 +6,7 @@ use packet::prelude::*;
 % for flag in flags:
 bitflags! {
     #[derive(Default)]
-    pub struct ${flag.name}: ${flag.arg} {
+    pub struct ${flag.name}: ${flag.expr[0]} {
         % for field in flag.consts:
         const ${field.aligned_name} = ${field.aligned_hex_value};
         % endfor

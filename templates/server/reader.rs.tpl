@@ -16,7 +16,7 @@ impl CanDecode for ${name}
             ${prefix}::${field.aligned_name} => Ok(${name}::${field.type[0].name} ( rdr.read()? )),
             % else:
             ${prefix}::${field.aligned_name} => {
-                match rdr.read::<${field.type.link.arg.name}>()? {
+                match rdr.read::<${field.type.link.expr[0]}>()? {
                     % for pkt in field.type.link.fields:
                     ${pkt.name} => Ok(${name}::${pkt.type[0].name} ( rdr.read()? )),
                     % endfor
