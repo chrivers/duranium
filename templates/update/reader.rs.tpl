@@ -41,7 +41,7 @@ impl CanDecode for UpdateV240 {
 impl CanDecode for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::update_read("${object.name}");
-        rdr.read_mask(${object.expr[0]})?;
+        rdr.read_mask(${object.const("MASK_BYTES", "nope")})?;
         Ok(update::${object.name} {
             % for field in object.fields:
             ${field.aligned_name} : parse_field!("update", "${field.name}", rdr.read()?),
