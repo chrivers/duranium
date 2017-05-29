@@ -13,11 +13,11 @@ impl CanDecode for ClientPacket
         match rdr.read::<u32>()? {
             % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.name.ljust(15)} => Ok(${field.type[0].name}(rdr.read()?)),
+            frametype::${field.name.ljust(15)} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
-            frametype::${field.name.ljust(15)} => match rdr.read::<${rust.get_parser(field.type[0].name).arg}>()? {
-                % for pkt in rust.get_parser(field.type[0].name).fields:
-                ${pkt.name} => Ok(${pkt.type[0].name}(rdr.read()?)),
+            frametype::${field.name.ljust(15)} => match rdr.read::<${field.type[0].link.arg.name}>()? {
+                % for pkt in field.type[0].link.fields:
+                ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
                 % endfor
                 subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", frametype::${field.name}, subtype)))
             },
@@ -32,9 +32,9 @@ impl CanDecode for ClientPacket
 <% name = lname.split("::", 1)[-1] %>\
 impl CanDecode for super::${name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        trace::packet_read("${lname}");
+        trace::packet_read("ClientPacket::${name}");
         Ok(super::${name} {
-            % for fld in rust.get_packet(lname).fields:
+            % for fld in client.get("ClientPacket").get(lname).fields:
             ${fld.name.ljust(15)}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })

@@ -24,7 +24,7 @@ impl<'a> CanEncode for &'a ClientPacket {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
         % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
-            ${name}(ref pkt) => write_packet!("${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
+            ClientPacket::${name}(ref pkt) => write_packet!("ClientPacket::${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
         % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
@@ -35,7 +35,7 @@ impl<'a> CanEncode for &'a ClientPacket {
 <% name = lname.split("::", 1)[-1] %>\
 impl<'a> CanEncode for &'a client::${name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
-        % for fld in rust.get_packet(lname).fields:
+        % for fld in client.get("ClientPacket").get(lname).fields:
         write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type)});
         % endfor
         Ok(())

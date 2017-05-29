@@ -23,8 +23,8 @@ macro_rules! write_packet {
 impl<'a> CanEncode for &'a ${name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
-        % for name, info in sorted(rust.generate_packet_ids(parser).items()):
-            ${name}(ref pkt) => write_packet!("${name}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
+        % for fname, info in sorted(rust.generate_packet_ids(parser).items()):
+            ${name}::${fname}(ref pkt) => write_packet!("${name}::${fname}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
         % endfor
         }
     }
@@ -36,7 +36,7 @@ impl<'a> CanEncode for &'a ${name} {
 <% name = lname.split("::", 1)[-1] %>\
 impl<'a> CanEncode for &'a super::${name} {
     fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()> {
-        % for fld in rust.get_packet(lname).fields:
+        % for fld in server.get(prefix).get(lname).fields:
         write_field!("packet", "${fld.name}", self.${fld.name}, _${rust.write_struct_field("self.%s" % fld.name, fld.type)});
         % endfor
         Ok(())

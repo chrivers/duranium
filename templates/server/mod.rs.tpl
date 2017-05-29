@@ -6,17 +6,17 @@ mod writer;
 
 use packet::prelude::*;
 
-% for packet in [packets.get("ServerPacket"), packets.get("MediaPacket")]:
+% for packet in server:
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}
 {
-% for case in packet.fields:
+% for case in packet:
     ${case.name}(${case.name}),
 % endfor
 }
 
-% for case in packet.fields:
+% for case in packet:
 % if case.name.startswith("__"):
 #[allow(non_camel_case_types)]
 % endif
