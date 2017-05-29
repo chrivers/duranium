@@ -34,11 +34,11 @@ impl<'a> CanEncode for &'a ${name} {
 }
 % endfor
 
-% for prefix, parser in [("ServerPacket", "ServerParser"), ("MediaPacket", "MediaParser") ]:
+% for packet, parser in [("ServerPacket", "ServerParser"), ("MediaPacket", "MediaParser")]:
 % for name, info in rust.generate_packet_ids(parser):
 impl<'a> CanEncode for &'a super::${name} {
     fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()> {
-        % for fld in server.get(prefix).get(name).fields:
+        % for fld in server.get(packet).get(name).fields:
         ${rust.write_struct_field("packet", fld)};
         % endfor
         Ok(())

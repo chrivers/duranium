@@ -21,20 +21,20 @@ pub struct UpdateV240 {
 
 #[derive(Debug)]
 pub enum Update {
-% for fld in parsers.get("ObjectUpdateV240").fields:
+    % for fld in parsers.get("ObjectUpdateV240").fields:
     ${fld.name}(${fld.type.link.name}),
-% endfor
-% for fld in parsers.get("ObjectUpdateV210").fields:
+    % endfor
+    % for fld in parsers.get("ObjectUpdateV210").fields:
 <% if parsers.get("ObjectUpdateV240").fields.get(fld.name, False): continue %>\
     ${fld.name}(${fld.type.link.name}),
-% endfor
+    % endfor
 }
 
 % for object in objects:
 pub struct ${object.name} {
-% for field in object.fields:
+    % for field in object.fields:
     pub ${field.name}: ${rust.declare_update_type(field.type)},
-% endfor
+    % endfor
 }
 
 % endfor
