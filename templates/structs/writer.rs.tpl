@@ -8,8 +8,8 @@ use super::*;
 impl<'a> CanEncode for &'a ${struct.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::struct_write("${struct.name}");
-        % for field in struct.fields:
-        write_field!("struct", "${field.name}", &self.${field.name}, ${rust.write_struct_field(field)});
+        % for fld in struct.fields:
+        write_field!("struct", "${fld.name}", self.${fld.name}, ${rust.write_struct_field(fld)});
         % endfor
         Ok(())
     }
