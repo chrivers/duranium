@@ -13,9 +13,9 @@ impl CanDecode for ClientPacket
         match rdr.read::<u32>()? {
             % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.name.ljust(15)} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
+            frametype::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
-            frametype::${field.name.ljust(15)} => match rdr.read::<${field.type.link.arg.name}>()? {
+            frametype::${field.aligned_name} => match rdr.read::<${field.type.link.arg.name}>()? {
                 % for pkt in field.type.link.fields:
                 ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
                 % endfor

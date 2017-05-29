@@ -13,9 +13,9 @@ impl CanDecode for ${name}
         match rdr.read::<u32>()? {
             % for field in parser.fields:
             % if field.type.name == "struct":
-            ${prefix}::${field.name.ljust(20)} => Ok(${name}::${field.type[0].name} ( rdr.read()? )),
+            ${prefix}::${field.aligned_name} => Ok(${name}::${field.type[0].name} ( rdr.read()? )),
             % else:
-            ${prefix}::${field.name.ljust(20)} => {
+            ${prefix}::${field.aligned_name} => {
                 match rdr.read::<${field.type.link.arg.name}>()? {
                     % for pkt in field.type.link.fields:
                     ${pkt.name} => Ok(${name}::${pkt.type[0].name} ( rdr.read()? )),

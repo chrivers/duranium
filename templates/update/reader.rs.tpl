@@ -13,7 +13,7 @@ impl CanDecode for UpdateV210 {
             object_id: object_id,
             update: match *object_type {
                 % for fld in parsers.get("ObjectUpdateV210").fields:
-                ObjectTypeV210::${fld.name.ljust(20)} => Update::${fld.name}(rdr.read()?),
+                ObjectTypeV210::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
                 % endfor
                 ObjectTypeV210::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
             }
@@ -29,7 +29,7 @@ impl CanDecode for UpdateV240 {
             object_id: object_id,
             update: match *object_type {
                 % for fld in parsers.get("ObjectUpdateV240").fields:
-                ObjectTypeV240::${fld.name.ljust(20)} => Update::${fld.name}(rdr.read()?),
+                ObjectTypeV240::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
                 % endfor
                 ObjectTypeV240::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
             }
