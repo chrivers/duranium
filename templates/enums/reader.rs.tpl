@@ -3,11 +3,11 @@ ${rust.header()}
 
 use packet::enums::*;
 
-% for enum in enums.without("FrameType"):
+% for enum in enums:
 impl From<u32> for ${enum.name} {
     fn from(n: u32) -> ${enum.name} {
         match n {
-            % for case in enum.fields:
+            % for case in enum.consts:
             ${case.aligned_hex_value} => ${enum.name}::${case.name},
             % endfor
             val => ${enum.name}::__Unknown(val as u32)

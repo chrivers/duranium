@@ -12,15 +12,15 @@ macro_rules! repr_impl {
     }
 }
 
-% for enum in enums.without("FrameType"):
+% for enum in enums:
 repr_impl!{ ${enum.name}, u8 }
 repr_impl!{ ${enum.name}, u32 }
 % endfor
 
-% for enum in enums.without("FrameType"):
-impl Default for super::${enum.name.ljust(20)} { fn default() -> Self { super::${enum.name}::${enum.fields[0].name} } }
+% for enum in enums:
+impl Default for super::${enum.name.ljust(20)} { fn default() -> Self { super::${enum.name}::${enum.consts[0].name} } }
 % endfor
 
-% for enum in enums.without("FrameType"):
-impl RangeEnum for super::${enum.name.ljust(20)} { const HIGHEST: usize = ${enum.fields[-1].aligned_hex_value}; }
+% for enum in enums:
+impl RangeEnum for super::${enum.name.ljust(20)} { const HIGHEST: usize = ${enum.consts[-1].aligned_hex_value}; }
 % endfor

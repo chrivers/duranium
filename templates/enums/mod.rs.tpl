@@ -8,10 +8,10 @@ mod writer;
 
 use packet::prelude::*;
 
-% for enum in enums.without("FrameType"):
+% for enum in enums:
 #[derive(PartialEq,Debug,Copy,Clone)]
 pub enum ${enum.name} {
-    % for case in enum.fields:
+    % for case in enum.consts:
     ${case.name},
     % endfor
     __Unknown(u32),
@@ -20,19 +20,19 @@ pub enum ${enum.name} {
 % endfor
 pub mod frametype {
     #![allow(non_upper_case_globals)]
-    % for case in enums.get("FrameType").fields:
+    % for case in parsers.get("FrameType").consts:
     pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
     % endfor
 }
 
 pub mod mediacommand {
     #![allow(non_upper_case_globals)]
-    % for case in enums.get("MediaCommand").fields:
+    % for case in parsers.get("MediaCommand").consts:
     pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
     % endfor
 }
 
-% for en in enums.without("FrameType"):
+% for en in enums:
 diff_impl!(${en.name});
 apply_impl!(${en.name});
 % endfor
