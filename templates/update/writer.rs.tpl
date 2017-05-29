@@ -2,8 +2,9 @@
 ${rust.header()}
 
 use packet::prelude::*;
-use packet::update::{Update, UpdateV240};
-use packet::enums::ObjectTypeV240;
+use packet::update::{Update};
+use packet::update::{UpdateV210, UpdateV240};
+use packet::enums::{ObjectTypeV210, ObjectTypeV240};
 
 macro_rules! write_update
 {
@@ -14,6 +15,17 @@ macro_rules! write_update
             $wtr.write($data)
         }
     )
+}
+
+impl<'a> CanEncode for &'a UpdateV210 {
+    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
+        match self.update {
+            % for type in enums.get("ObjectTypeV210").consts:
+            Update::${type.name}(ref data) => write_update!(ObjectTypeV210, ${type.name}, wtr, self, data),
+            % endfor
+            _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
+        }
+    }
 }
 
 impl<'a> CanEncode for &'a UpdateV240 {

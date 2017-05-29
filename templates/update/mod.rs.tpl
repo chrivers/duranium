@@ -8,6 +8,12 @@ mod debug;
 use packet::prelude::*;
 
 #[derive(Debug)]
+pub struct UpdateV210 {
+    pub object_id: ObjectID,
+    pub update: Update,
+}
+
+#[derive(Debug)]
 pub struct UpdateV240 {
     pub object_id: ObjectID,
     pub update: Update,
@@ -16,7 +22,11 @@ pub struct UpdateV240 {
 #[derive(Debug)]
 pub enum Update {
 % for fld in parsers.get("ObjectUpdateV240").fields:
-    ${fld.name}(${fld.type[0].name}),
+    ${fld.name}(${fld.type[0].link.name}),
+% endfor
+% for fld in parsers.get("ObjectUpdateV210").fields:
+<% if parsers.get("ObjectUpdateV240").fields.get(fld.name, False): continue %>\
+    ${fld.name}(${fld.type[0].link.name}),
 % endfor
 }
 

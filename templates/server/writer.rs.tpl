@@ -26,6 +26,9 @@ impl<'a> CanEncode for &'a ${name} {
         % for fname, info in sorted(rust.generate_packet_ids(parser).items()):
             ${name}::${fname}(ref pkt) => write_packet!("${name}::${fname}", ${prefix}::${info[1]}, ${info[3]}, ${info[2]}, wtr, pkt),
         % endfor
+        % if name == "ServerPacket":
+        ref unknown => return Err(Error::new(ErrorKind::InvalidData, format!("unknown server packet type [{:?}]", unknown))),
+        % endif
         }
     }
 }

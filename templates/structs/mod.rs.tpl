@@ -6,8 +6,8 @@ mod writer;
 use packet::prelude::*;
 
 pub use super::update::{Update};
-pub use super::server::{ObjectUpdatesV240};
-pub use super::update::{UpdateV240};
+pub use super::server::{ObjectUpdatesV210, ObjectUpdatesV240};
+pub use super::update::{UpdateV210, UpdateV240};
 
 % for struct in structs:
 #[derive(Debug)]
