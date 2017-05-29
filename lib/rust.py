@@ -35,11 +35,11 @@ declare_map = {
 }
 
 
-def fullname(tp):
-    if tp.parent:
-        return "%s::%s" % (fullname(tp.parent), tp.name)
+def fullname(blk):
+    if blk.parent:
+        return "%s::%s" % (fullname(blk.parent), blk.name)
     else:
-        return tp.name
+        return blk.name
 
 def declare_struct_type(tp):
     if not tp:
