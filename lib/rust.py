@@ -67,13 +67,13 @@ def declare_update_type(tp):
 
 ##### struct fields #####
 
-def write_struct_field(fieldname, type):
-    if type.name == "string":
-        return "wtr.write(%s.as_str())?" % fieldname
-    if type.name in ref_types:
-        return "wtr.write(&%s)?" % fieldname
+def write_struct_field(fld):
+    if fld.type.name == "string":
+        return "wtr.write(self.%s.as_str())?" % fld.name
+    if fld.type.name in ref_types:
+        return "wtr.write(&self.%s)?" % fld.name
     else:
-        return "wtr.write(%s)?" % fieldname
+        return "wtr.write(self.%s)?" % fld.name
 
 ##### updates fields #####
 

@@ -34,7 +34,7 @@ impl<'a> CanEncode for &'a ClientPacket {
 impl<'a> CanEncode for &'a super::${name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in client.get("ClientPacket").get(name).fields:
-        write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field("self.%s" % fld.name, fld.type)});
+        write_field!("packet", "${fld.name}", self.${fld.name}, ${rust.write_struct_field(fld)});
         % endfor
         Ok(())
     }
