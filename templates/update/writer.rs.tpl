@@ -45,7 +45,7 @@ impl<'a> CanEncode for &'a update::${object.name} {
         trace::update_write("${object.name}");
         wtr.begin_mask(${object.arg.name})?;
         % for field in object.fields:
-        ${rust.write_update_field("self."+field.name, field.type)};
+        ${rust.write_update_field(field)};
         % endfor
         wtr.end_mask()
     }

@@ -85,13 +85,13 @@ def write_struct_field(name, fld):
 
 ##### updates fields #####
 
-def write_update_field(fieldname, type):
-    if type.name == "string":
-        return "wtr.write(%s.as_str())?" % fieldname
-    elif type.name == "map":
-        return "wtr.write(&%s)?" % fieldname
+def write_update_field(fld):
+    if fld.type.name == "string":
+        return "wtr.write(self.%s.as_str())?" % fld.name
+    elif fld.type.name == "map":
+        return "wtr.write(&self.%s)?" % fld.name
     else:
-        return "wtr.write(%s)?" % (fieldname)
+        return "wtr.write(self.%s)?" % fld.name
 
 ##### packets #####
 
