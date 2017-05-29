@@ -25,13 +25,21 @@ ref_types = {
     "struct",
     "ascii_string",
     "array",
-    "map"
+    "map",
+    "packet",
 }
 
 declare_map = {
     "string": "String",
     "ascii_string": "AsciiString",
 }
+
+
+def fullname(tp):
+    if tp.parent:
+        return "%s::%s" % (fullname(tp.parent), tp.name)
+    else:
+        return tp.name
 
 def declare_struct_type(tp):
     if not tp:
@@ -45,19 +53,19 @@ def declare_struct_type(tp):
     elif tp.name == "struct":
         return "structs::%s" % tp[0].name
     elif tp.name == "enum":
-        return "Size<%s, enums::%s>" % (declare_struct_type(tp[0]), tp[1].name)
+        return "Size<%s, %s>" % (declare_struct_type(tp.type[0]), fullname(tp[0].link))
     elif tp.name == "map":
-        return "EnumMap<enums::%s, %s>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<%s, %s>" % (fullname(tp[0][0].link), declare_struct_type(tp[1]))
     elif tp.name == "option":
         return "Option<%s>" % declare_struct_type(tp[0])
-    elif tp.name == "bitflags":
-        return "flags::%s" % tp[1].name
+    elif tp.name in {"packet", "parser", "flags"}:
+        return fullname(tp[0].link)
     else:
-        raise TypeError("No type mapping defined for [%s]" % tp.name)
+        raise TypeError("No type mapping defined for [%s]" % tp)
 
 def declare_update_type(tp):
     if tp.name == "map":
-        return "EnumMap<enums::%s, Field<%s>>" % (tp[0].name, declare_struct_type(tp[1]))
+        return "EnumMap<%s, Field<%s>>" % (fullname(tp[0][0].link), declare_struct_type(tp[1]))
     else:
         return "Field<%s>" % declare_struct_type(tp)
 
@@ -85,11 +93,11 @@ def write_update_field(fieldname, type):
 
 def generate_packet_ids(parsername):
     res = {}
-    for field in get_parser(parsername).fields:
+    for field in context["parsers"].get(parsername).fields:
         if field.type.name == "struct":
             res[field.type[0].name] = (field.type, field.name, None, None)
         elif field.type.name == "parser":
-            prs = get_parser(field.type[0].name)
+            prs = context["parsers"].get(field.type[0].name)
             for fld in prs.fields:
-                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg)
+                res[fld.type[0].name] = (fld.type, field.name, fld.name, prs.arg.name)
     return res
