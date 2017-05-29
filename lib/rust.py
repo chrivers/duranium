@@ -34,12 +34,8 @@ declare_map = {
     "ascii_string": "AsciiString",
 }
 
-
 def fullname(blk):
-    if blk.parent:
-        return "%s::%s" % (fullname(blk.parent), blk.name)
-    else:
-        return blk.name
+    return "::".join(blk.path)
 
 def declare_struct_type(tp):
     if not tp:
@@ -53,19 +49,19 @@ def declare_struct_type(tp):
     elif tp.name == "struct":
         return "structs::%s" % tp[0].name
     elif tp.name == "enum":
-        return "Size<%s, %s>" % (declare_struct_type(tp.type[0]), fullname(tp[0].link))
+        return "Size<%s, %s>" % (declare_struct_type(tp[0][0]), fullname(tp.link))
     elif tp.name == "map":
-        return "EnumMap<%s, %s>" % (fullname(tp[0][0].link), declare_struct_type(tp[1]))
+        return "EnumMap<%s, %s>" % (fullname(tp[0].link), declare_struct_type(tp[1]))
     elif tp.name == "option":
         return "Option<%s>" % declare_struct_type(tp[0])
-    elif tp.name in {"packet", "parser", "flags"}:
-        return fullname(tp[0].link)
+    elif tp.link:
+        return fullname(tp.link)
     else:
         raise TypeError("No type mapping defined for [%s]" % tp)
 
 def declare_update_type(tp):
     if tp.name == "map":
-        return "EnumMap<%s, Field<%s>>" % (fullname(tp[0][0].link), declare_struct_type(tp[1]))
+        return "EnumMap<%s, Field<%s>>" % (fullname(tp[0].link), declare_struct_type(tp[1]))
     else:
         return "Field<%s>" % declare_struct_type(tp)
 

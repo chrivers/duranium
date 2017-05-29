@@ -22,11 +22,11 @@ pub struct UpdateV240 {
 #[derive(Debug)]
 pub enum Update {
 % for fld in parsers.get("ObjectUpdateV240").fields:
-    ${fld.name}(${fld.type[0].link.name}),
+    ${fld.name}(${fld.type.link.name}),
 % endfor
 % for fld in parsers.get("ObjectUpdateV210").fields:
 <% if parsers.get("ObjectUpdateV240").fields.get(fld.name, False): continue %>\
-    ${fld.name}(${fld.type[0].link.name}),
+    ${fld.name}(${fld.type.link.name}),
 % endfor
 }
 

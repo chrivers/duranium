@@ -16,8 +16,8 @@ impl CanDecode for ${name}
             ${prefix}::${field.name.ljust(20)} => Ok(${name}::${field.type[0].name} ( rdr.read()? )),
             % else:
             ${prefix}::${field.name.ljust(20)} => {
-                match rdr.read::<${field.type[0].link.arg.name}>()? {
-                    % for pkt in field.type[0].link.fields:
+                match rdr.read::<${field.type.link.arg.name}>()? {
+                    % for pkt in field.type.link.fields:
                     ${pkt.name} => Ok(${name}::${pkt.type[0].name} ( rdr.read()? )),
                     % endfor
                     subtype => Err(Error::new(ErrorKind::InvalidData, format!("Server frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))

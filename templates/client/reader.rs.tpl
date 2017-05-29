@@ -15,8 +15,8 @@ impl CanDecode for ClientPacket
             % if field.type.name == "struct":
             frametype::${field.name.ljust(15)} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
-            frametype::${field.name.ljust(15)} => match rdr.read::<${field.type[0].link.arg.name}>()? {
-                % for pkt in field.type[0].link.fields:
+            frametype::${field.name.ljust(15)} => match rdr.read::<${field.type.link.arg.name}>()? {
+                % for pkt in field.type.link.fields:
                 ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
                 % endfor
                 subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", frametype::${field.name}, subtype)))
