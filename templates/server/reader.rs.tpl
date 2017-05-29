@@ -39,7 +39,7 @@ impl CanDecode for super::${name} {
         trace::packet_read("${prefix}::${lname}");
         Ok(super::${name} {
             % for fld in server.get(prefix).get(lname).fields:
-            ${fld.name}: parse_field!("packet", "${fld.name}", _rdr.read()?),
+            ${fld.aligned_name} : parse_field!("packet", "${fld.name}", _rdr.read()?),
             % endfor
         })
     }

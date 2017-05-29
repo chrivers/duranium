@@ -10,7 +10,7 @@ impl CanDecode for ${obj} {
         trace::struct_read("${obj}");
         Ok(${obj} {
             % for fld in object.fields:
-            ${fld.name}: parse_field!("packet", "${fld.name}", rdr.read()?),
+            ${fld.aligned_name} : parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })
     }

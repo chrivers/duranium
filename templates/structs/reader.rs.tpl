@@ -10,7 +10,7 @@ impl CanDecode for ${struct.name} {
         trace::struct_read("${struct.name}");
         Ok(${struct.name} {
             % for field in struct.fields:
-            ${field.name}: parse_field!("struct", "${field.name}", rdr.read()?),
+            ${field.aligned_name} : parse_field!("struct", "${field.name}", rdr.read()?),
             % endfor
         })
     }

@@ -44,7 +44,7 @@ impl CanDecode for update::${object.name} {
         rdr.read_mask(${object.arg.name})?;
         Ok(update::${object.name} {
             % for field in object.fields:
-            ${field.name.ljust(20)}: parse_field!("update", "${field.name}", rdr.read()?),
+            ${field.aligned_name} : parse_field!("update", "${field.name}", rdr.read()?),
             % endfor
         })
     }
