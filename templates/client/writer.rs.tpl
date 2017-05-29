@@ -22,7 +22,7 @@ macro_rules! write_packet {
 impl<'a> CanEncode for &'a ClientPacket {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
-            % for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
+            % for name, info in rust.generate_packet_ids("ClientParser"):
             ClientPacket::${name}(ref pkt) => write_packet!("ClientPacket::${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
             % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
@@ -30,7 +30,7 @@ impl<'a> CanEncode for &'a ClientPacket {
     }
 }
 
-% for name, info in sorted(rust.generate_packet_ids("ClientParser").items()):
+% for name, info in rust.generate_packet_ids("ClientParser"):
 impl<'a> CanEncode for &'a super::${name} {
     fn write(self, mut _wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in client.get("ClientPacket").get(name).fields:

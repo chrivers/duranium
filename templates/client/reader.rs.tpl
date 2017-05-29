@@ -28,13 +28,12 @@ impl CanDecode for ClientPacket
     }
 }
 
-% for lname, info in sorted(rust.generate_packet_ids("ClientParser").items()):
-<% name = lname.split("::", 1)[-1] %>\
+% for name, info in rust.generate_packet_ids("ClientParser"):
 impl CanDecode for super::${name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::packet_read("ClientPacket::${name}");
         Ok(super::${name} {
-            % for fld in client.get("ClientPacket").get(lname).fields:
+            % for fld in client.get("ClientPacket").get(name).fields:
             ${fld.aligned_name}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })
