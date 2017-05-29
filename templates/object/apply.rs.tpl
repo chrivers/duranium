@@ -11,9 +11,9 @@ use packet::prelude::*;
 impl Apply for ${T} {
     type Update = ${U};
     fn apply(&mut self, update: &${U}) {
-        % for field in object.fields:
+    % for field in object.fields:
         self.${field.name}.apply(&update.${field.name});
-        % endfor
+    % endfor
     }
     fn produce(&self, update: &${U}) -> Self {
         Self {
