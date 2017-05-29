@@ -83,17 +83,6 @@ def write_update_field(fieldname, type):
 
 ##### packets #####
 
-def get_packet(name):
-    packets = context["packets"]
-    if "::" in name:
-        packetname, casename = name.split("::",1)
-        return packets.get(packetname).fields.get(casename)
-    else:
-        return packets.get(name)
-
-def get_parser(name):
-    return context["parsers"].get(name)
-
 def generate_packet_ids(parsername):
     res = {}
     for field in get_parser(parsername).fields:
