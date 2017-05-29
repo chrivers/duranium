@@ -5,10 +5,11 @@ mod writer;
 
 use packet::prelude::*;
 
-pub use super::update::ObjectUpdate;
-pub use super::server::MediaPacket;
+pub use super::update::{Update};
+pub use super::server::{ObjectUpdatesV240};
+pub use super::update::{UpdateV240};
 
-% for struct in structs.without("Update"):
+% for struct in structs:
 #[derive(Debug)]
 pub struct ${struct.name} {
     % for field in struct.fields:

@@ -4,7 +4,7 @@ ${rust.header()}
 use packet::prelude::*;
 use super::*;
 
-% for struct in structs.without("Update"):
+% for struct in structs.without("ObjectUpdateV210", "ObjectUpdateV240"):
 impl<'a> CanEncode for &'a ${struct.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         trace::struct_write("${struct.name}");

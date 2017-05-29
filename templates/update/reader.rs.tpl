@@ -2,8 +2,8 @@
 ${rust.header()}
 
 use packet::prelude::*;
-use packet::update::{Update, UpdateV210, UpdateV240};
-use packet::enums::{ObjectTypeV210, ObjectTypeV240};
+use packet::update::{Update, UpdateV240};
+use packet::enums::{ObjectTypeV240};
 
 impl CanDecode for UpdateV240 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {

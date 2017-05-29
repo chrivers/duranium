@@ -4,7 +4,7 @@ ${rust.header()}
 use packet::prelude::*;
 use super::*;
 
-% for struct in structs.without("Update"):
+% for struct in structs.without("ObjectUpdateV210", "ObjectUpdateV240"):
 impl CanDecode for ${struct.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::struct_read("${struct.name}");
