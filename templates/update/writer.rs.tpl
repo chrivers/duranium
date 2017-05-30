@@ -17,27 +17,19 @@ macro_rules! write_update
     )
 }
 
-impl<'a> CanEncode for &'a UpdateV210 {
+% for update, types in [("UpdateV210", "ObjectTypeV210"), ("UpdateV240", "ObjectTypeV240")]:
+impl<'a> CanEncode for &'a ${update} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         match self.update {
-            % for type in _enums.get("ObjectTypeV210").consts:
-            Update::${type.name}(ref data) => write_update!(ObjectTypeV210, ${type.name}, wtr, self, data),
+            % for type in _enums.get(types).consts:
+            Update::${type.name}(ref data) => write_update!(${types}, ${type.name}, wtr, self, data),
             % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }
 
-impl<'a> CanEncode for &'a UpdateV240 {
-    fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
-        match self.update {
-            % for type in _enums.get("ObjectTypeV240").consts:
-            Update::${type.name}(ref data) => write_update!(ObjectTypeV240, ${type.name}, wtr, self, data),
-            % endfor
-            _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
-        }
-    }
-}
+% endfor
 
 % for object in _objects:
 impl<'a> CanEncode for &'a update::${object.name} {
