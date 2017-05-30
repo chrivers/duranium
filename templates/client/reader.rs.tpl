@@ -15,11 +15,11 @@ impl CanDecode for ${packet.name}
         match rdr.read::<u32>()? {
             % for field in parser.fields:
             % if field.type.name == "struct":
-            ${prefix}::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
+            ${prefix}::${field.aligned_name} => Ok(${packet.name}::${field.type[0].name}(rdr.read()?)),
             % else:
             ${prefix}::${field.aligned_name} => match rdr.read::<${field.type[0][0]}>()? {
                 % for pkt in field.type.link.fields:
-                ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
+                ${pkt.name} => Ok(${packet.name}::${pkt.type[0].name}(rdr.read()?)),
                 % endfor
                 subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
             },

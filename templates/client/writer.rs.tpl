@@ -26,7 +26,7 @@ impl<'a> CanEncode for &'a ${packet.name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
             % for name, info in rust.generate_packet_ids(parser.name):
-            ${packet.name}::${name}(ref pkt) => write_packet!("${packet.name}::${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
+            ${packet.name}::${name}(ref pkt) => write_packet!("${packet.name}::${name}", ${prefix}::${info[1]}, ${info[2]}, wtr, pkt),
             % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
