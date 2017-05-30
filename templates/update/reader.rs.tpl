@@ -5,37 +5,25 @@ use packet::prelude::*;
 use packet::update::{Update, UpdateV210, UpdateV240};
 use packet::enums::{ObjectTypeV210, ObjectTypeV240};
 
-impl CanDecode for UpdateV210 {
+% for update, parser in [("UpdateV210", _parser.get("ObjectUpdateV210")), ("UpdateV240", _parser.get("ObjectUpdateV240"))]:
+<% prefix = parser.field("@type").type.link.name %>\
+impl CanDecode for ${update} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         let object_type: Size<u8, _> = rdr.read()?;
         let object_id   = rdr.read()?;
-        Ok(UpdateV210 {
+        Ok(${update} {
             object_id: object_id,
             update: match *object_type {
-                % for fld in _parser.get("ObjectUpdateV210").fields:
-                ObjectTypeV210::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
+                % for fld in parser.field("@type").type.link.consts:
+                ${prefix}::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
                 % endfor
-                ObjectTypeV210::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
+                ${prefix}::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
             }
         })
     }
 }
 
-impl CanDecode for UpdateV240 {
-    fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        let object_type: Size<u8, _> = rdr.read()?;
-        let object_id   = rdr.read()?;
-        Ok(UpdateV240 {
-            object_id: object_id,
-            update: match *object_type {
-                % for fld in _parser.get("ObjectUpdateV240").fields:
-                ObjectTypeV240::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
-                % endfor
-                ObjectTypeV240::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
-            }
-        })
-    }
-}
+% endfor
 
 % for object in _objects:
 impl CanDecode for update::${object.name} {
