@@ -7,8 +7,8 @@ mod writer;
 use packet::prelude::*;
 
 % for packet in _server:
-#[derive(Debug)]
 #[allow(non_camel_case_types)]
+#[derive(Debug)]
 pub enum ${packet.name}
 {
 % for case in packet:

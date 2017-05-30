@@ -19,22 +19,22 @@ macro_rules! write_packet {
     }};
 }
 
-% for name, prefix, parser in [("ServerPacket", "frametype", "ServerParser"), ("MediaPacket", "mediacommand", "MediaParser") ]:
-impl<'a> CanEncode for &'a ${name} {
+% for packet in _server:
+<% parser = packet.field("@parser").type.link %>\
+<% prefix = parser.field("@type").type.link.name.lower() %>\
+impl<'a> CanEncode for &'a ${packet.name} {
     fn write(self, wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
-        % for fname, info in rust.generate_packet_ids(parser):
-            ${name}::${fname}(ref pkt) => write_packet!("${name}::${fname}", ${prefix}::${info[1]}, ${info[2]}, ${info[3]}, wtr, pkt),
+        % for name, info in rust.generate_packet_ids(parser.name):
+            ${packet.name}::${name}(ref pkt) => write_packet!("${packet.name}::${name}", ${prefix}::${info[1]}, ${info[2]}, ${info[3]}, wtr, pkt),
         % endfor
-        % if name == "ServerPacket":
+        % if packet.name == "ServerPacket":
         ref unknown => return Err(Error::new(ErrorKind::InvalidData, format!("unknown server packet type [{:?}]", unknown))),
         % endif
         }
     }
 }
-% endfor
 
-% for packet in [_server.get("ServerPacket"), _server.get("MediaPacket")]:
 % for case in packet:
 impl<'a> CanEncode for &'a super::${case.name} {
     fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()> {

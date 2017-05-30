@@ -19,18 +19,21 @@ macro_rules! write_packet {
     }};
 }
 
-impl<'a> CanEncode for &'a ClientPacket {
+% for packet in _client:
+<% parser = packet.field("@parser").type.link %>\
+<% prefix = parser.field("@type").type.link.name.lower() %>\
+impl<'a> CanEncode for &'a ${packet.name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         match *self {
-            % for name, info in rust.generate_packet_ids("ClientParser"):
-            ClientPacket::${name}(ref pkt) => write_packet!("ClientPacket::${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
+            % for name, info in rust.generate_packet_ids(parser.name):
+            ${packet.name}::${name}(ref pkt) => write_packet!("${packet.name}::${name}", frametype::${info[1]}, ${info[2]}, wtr, pkt),
             % endfor
             _ => Err(Error::new(ErrorKind::InvalidData, "unsupported protocol version")),
         }
     }
 }
 
-% for case in _client.get("ClientPacket"):
+% for case in packet:
 impl<'a> CanEncode for &'a super::${case.name} {
     fn write(self, mut _wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in case.fields:
@@ -40,4 +43,5 @@ impl<'a> CanEncode for &'a super::${case.name} {
     }
 }
 
+% endfor
 % endfor

@@ -5,20 +5,23 @@ use packet::prelude::*;
 use packet::enums::frametype;
 use super::ClientPacket;
 
-impl CanDecode for ClientPacket
+% for packet in _client:
+<% parser = packet.field("@parser").type.link %>\
+<% prefix = parser.field("@type").type.link.name.lower() %>\
+impl CanDecode for ${packet.name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         match rdr.read::<u32>()? {
-            % for field in _parser.get("ClientParser").fields:
+            % for field in parser.fields:
             % if field.type.name == "struct":
-            frametype::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
+            ${prefix}::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
-            frametype::${field.aligned_name} => match rdr.read::<${field.type[0][0]}>()? {
+            ${prefix}::${field.aligned_name} => match rdr.read::<${field.type[0][0]}>()? {
                 % for pkt in field.type.link.fields:
                 ${pkt.name} => Ok(ClientPacket::${pkt.type[0].name}(rdr.read()?)),
                 % endfor
-                subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", frametype::${field.name}, subtype)))
+                subtype => Err(Error::new(ErrorKind::InvalidData, format!("Client frame 0x{:08x} unknown subtype: 0x{:02x}", ${prefix}::${field.name}, subtype)))
             },
             % endif
             % endfor
@@ -27,16 +30,17 @@ impl CanDecode for ClientPacket
     }
 }
 
-% for packet in _client.get("ClientPacket"):
-impl CanDecode for super::${packet.name} {
+% for case in packet:
+impl CanDecode for super::${case.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
-        trace::packet_read("ClientPacket::${packet.name}");
-        Ok(super::${packet.name} {
-            % for fld in packet.fields:
+        trace::packet_read("${packet.name}::${case.name}");
+        Ok(super::${case.name} {
+            % for fld in case.fields:
             ${fld.aligned_name}: parse_field!("packet", "${fld.name}", rdr.read()?),
             % endfor
         })
     }
 }
 
+% endfor
 % endfor
