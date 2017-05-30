@@ -92,11 +92,11 @@ def write_update_field(fld):
 
 def generate_packet_ids(parsername):
     res = {}
-    for field in context["parsers"].get(parsername).fields:
+    for field in context["_parser"].get(parsername).fields:
         if field.type.name == "struct":
             res[field.type[0].name] = (field.type, field.name, None, None)
         elif field.type.name == "parser":
-            prs = context["parsers"].get(field.type[0].name)
+            prs = context["_parser"].get(field.type[0].name)
             for fld in prs.fields:
                 res[fld.type[0].name] = (fld.type, field.name, fld.name, field.type[0][0])
     return sorted(res.items())

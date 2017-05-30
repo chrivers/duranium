@@ -6,7 +6,7 @@ mod writer;
 
 use packet::prelude::*;
 
-<% packet = client.get("ClientPacket") %>\
+<% packet = _client.get("ClientPacket") %>\
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}

@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for object in objects:
+% for object in _objects:
 <%
  T = "object::%s" % object.name
  U = "update::%s" % object.name

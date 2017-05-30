@@ -12,7 +12,7 @@ impl CanDecode for UpdateV210 {
         Ok(UpdateV210 {
             object_id: object_id,
             update: match *object_type {
-                % for fld in parsers.get("ObjectUpdateV210").fields:
+                % for fld in _parser.get("ObjectUpdateV210").fields:
                 ObjectTypeV210::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
                 % endfor
                 ObjectTypeV210::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
@@ -28,7 +28,7 @@ impl CanDecode for UpdateV240 {
         Ok(UpdateV240 {
             object_id: object_id,
             update: match *object_type {
-                % for fld in parsers.get("ObjectUpdateV240").fields:
+                % for fld in _parser.get("ObjectUpdateV240").fields:
                 ObjectTypeV240::${fld.aligned_name} => Update::${fld.name}(rdr.read()?),
                 % endfor
                 ObjectTypeV240::__Unknown(x) => return Err(Error::new(ErrorKind::InvalidData, format!("unknown object update type [{}]", x))),
@@ -37,7 +37,7 @@ impl CanDecode for UpdateV240 {
     }
 }
 
-% for object in objects:
+% for object in _objects:
 impl CanDecode for update::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::update_read("${object.name}");

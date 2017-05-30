@@ -6,7 +6,7 @@ mod writer;
 
 use packet::prelude::*;
 
-% for packet in server:
+% for packet in _server:
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}

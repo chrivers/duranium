@@ -18,7 +18,7 @@ macro_rules! debug_opt_field {
     };
 }
 
-% for object in objects:
+% for object in _objects:
 impl fmt::Debug for super::${object.name} {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         % for field in object.fields:

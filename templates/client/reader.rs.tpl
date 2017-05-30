@@ -10,7 +10,7 @@ impl CanDecode for ClientPacket
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
     {
         match rdr.read::<u32>()? {
-            % for field in parsers.get("ClientParser").fields:
+            % for field in _parser.get("ClientParser").fields:
             % if field.type.name == "struct":
             frametype::${field.aligned_name} => Ok(ClientPacket::${field.type[0].name}(rdr.read()?)),
             % else:
@@ -27,7 +27,7 @@ impl CanDecode for ClientPacket
     }
 }
 
-% for packet in client.get("ClientPacket"):
+% for packet in _client.get("ClientPacket"):
 impl CanDecode for super::${packet.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::packet_read("ClientPacket::${packet.name}");

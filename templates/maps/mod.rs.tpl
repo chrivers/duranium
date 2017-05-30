@@ -3,15 +3,15 @@ ${rust.header()}
 
 use packet::enums::ConnectionType;
 
-<% types = parsers.get("FrameType") %>\
+<% types = _parser.get("FrameType") %>\
 pub fn classify(sig: u32) -> ConnectionType {
     match sig {
         // Client messages
-        % for x in parsers.get("ClientParser").fields:
+        % for x in _parser.get("ClientParser").fields:
         ${types.consts.get(x.name).aligned_hex_value} => ConnectionType::Client, // ${x.name}
         % endfor
         // Server messages
-        % for x in parsers.get("ServerParser").fields:
+        % for x in _parser.get("ServerParser").fields:
         ${types.consts.get(x.name).aligned_hex_value} => ConnectionType::Server, // ${x.name}
         % endfor
         _ => ConnectionType::__Unknown(0),

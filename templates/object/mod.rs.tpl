@@ -8,7 +8,7 @@ mod new;
 
 use packet::prelude::*;
 
-% for object in objects:
+% for object in _objects:
 #[derive(Debug,Default)]
 pub struct ${object.name} {
 % for field in object.fields:

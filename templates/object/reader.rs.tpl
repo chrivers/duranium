@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for object in objects:
+% for object in _objects:
 impl CanDecode for super::${object.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         trace::struct_read("object::${object.name}");

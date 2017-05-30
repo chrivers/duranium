@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::prelude::*;
 
-% for flag in flags:
+% for flag in _flags:
 bitflags! {
     #[derive(Default)]
     pub struct ${flag.name}: ${flag.fields.get("@type").type} {
@@ -15,7 +15,7 @@ bitflags! {
 
 % endfor
 
-% for flag in flags:
+% for flag in _flags:
 impl CanDecode for ${flag.name} {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self> {
         ${flag.name}::from_bits(rdr.read()?).ok_or_else(|| Error::new(ErrorKind::InvalidData, "could not parse ${flag.name} bitflags"))
@@ -23,7 +23,7 @@ impl CanDecode for ${flag.name} {
 }
 
 % endfor
-% for flag in flags:
+% for flag in _flags:
 impl CanEncode for ${flag.name} {
     fn write(self, mut wtr: &mut ArtemisEncoder) -> Result<()> {
         wtr.write(self.bits())
@@ -32,7 +32,7 @@ impl CanEncode for ${flag.name} {
 
 % endfor
 
-% for flag in flags:
+% for flag in _flags:
 diff_impl!(${flag.name});
 apply_impl!(${flag.name});
 % endfor

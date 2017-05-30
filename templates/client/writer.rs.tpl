@@ -30,7 +30,7 @@ impl<'a> CanEncode for &'a ClientPacket {
     }
 }
 
-% for case in client.get("ClientPacket"):
+% for case in _client.get("ClientPacket"):
 impl<'a> CanEncode for &'a super::${case.name} {
     fn write(self, mut _wtr: &mut ArtemisEncoder) -> Result<()> {
         % for fld in case.fields:

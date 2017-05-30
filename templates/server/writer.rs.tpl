@@ -34,7 +34,7 @@ impl<'a> CanEncode for &'a ${name} {
 }
 % endfor
 
-% for packet in [server.get("ServerPacket"), server.get("MediaPacket")]:
+% for packet in [_server.get("ServerPacket"), _server.get("MediaPacket")]:
 % for case in packet:
 impl<'a> CanEncode for &'a super::${case.name} {
     fn write(self, _wtr: &mut ArtemisEncoder) -> Result<()> {

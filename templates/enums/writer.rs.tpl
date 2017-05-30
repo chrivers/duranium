@@ -3,7 +3,7 @@ ${rust.header()}
 
 use packet::enums::*;
 
-% for enum in enums:
+% for enum in _enums:
 impl From<${enum.name}> for u32 {
     fn from(n: ${enum.name}) -> u32 {
         match n {

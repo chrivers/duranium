@@ -5,7 +5,7 @@ use packet::prelude::*;
 use packet::enums::{frametype, mediacommand};
 use super::{ServerPacket, MediaPacket};
 
-% for name, prefix, parser in [("ServerPacket", "frametype", parsers.get("ServerParser")), ("MediaPacket", "mediacommand", parsers.get("MediaParser")) ]:
+% for name, prefix, parser in [("ServerPacket", "frametype", _parser.get("ServerParser")), ("MediaPacket", "mediacommand", _parser.get("MediaParser")) ]:
 impl CanDecode for ${name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
@@ -31,7 +31,7 @@ impl CanDecode for ${name}
 }
 % endfor
 
-% for packet in [server.get("ServerPacket"), server.get("MediaPacket")]:
+% for packet in [_server.get("ServerPacket"), _server.get("MediaPacket")]:
 % for case in packet:
 impl CanDecode for super::${case.name} {
     fn read(_rdr: &mut ArtemisDecoder) -> Result<Self> {

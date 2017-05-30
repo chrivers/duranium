@@ -9,7 +9,7 @@ pub use super::update::{Update};
 pub use super::server::{ObjectUpdatesV210, ObjectUpdatesV240};
 pub use super::update::{UpdateV210, UpdateV240};
 
-% for struct in structs:
+% for struct in _structs:
 #[derive(Debug)]
 pub struct ${struct.name} {
     % for field in struct.fields:
