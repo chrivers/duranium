@@ -5,7 +5,8 @@ use packet::prelude::*;
 use packet::enums::{frametype, mediacommand};
 use super::{ServerPacket, MediaPacket};
 
-% for name, prefix, parser in [("ServerPacket", "frametype", _parser.get("ServerParser")), ("MediaPacket", "mediacommand", _parser.get("MediaParser")) ]:
+% for name, parser in [("ServerPacket", _parser.get("ServerParser")), ("MediaPacket", _parser.get("MediaParser")) ]:
+<% prefix = parser.field("@type").type.link.name.lower() %>\
 impl CanDecode for ${name}
 {
     fn read(rdr: &mut ArtemisDecoder) -> Result<Self>
