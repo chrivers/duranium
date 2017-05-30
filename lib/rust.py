@@ -67,31 +67,26 @@ def declare_update_type(tp):
 
 ##### struct fields #####
 
-def _write_struct_field(fld):
+def _write_field(fld):
     if fld.type.name == "string":
-        return "_wtr.write(self.%s.as_str())?" % fld.name
-    if fld.type.name in ref_types:
-        return "_wtr.write(&self.%s)?" % fld.name
+        return "self.%s.as_str()" % fld.name
+    elif fld.type.name in ref_types:
+        return "&self.%s" % fld.name
     else:
-        return "_wtr.write(self.%s)?" % fld.name
+        return "self.%s" % fld.name
 
 def write_struct_field(name, fld):
-    return 'write_field!("%s", "%s", self.%s, %s)' % (
+    return 'write_field!("%s", "%s", self.%s, _wtr.write(%s)?)' % (
         name,
         fld.name,
         fld.name,
-        _write_struct_field(fld)
+        _write_field(fld),
     )
 
 ##### updates fields #####
 
 def write_update_field(fld):
-    if fld.type.name == "string":
-        return "wtr.write(self.%s.as_str())?" % fld.name
-    elif fld.type.name == "map":
-        return "wtr.write(&self.%s)?" % fld.name
-    else:
-        return "wtr.write(self.%s)?" % fld.name
+    return "wtr.write(%s)?" % _write_field(fld)
 
 ##### packets #####
 
