@@ -6,7 +6,7 @@ mod writer;
 
 use packet::prelude::*;
 
-<% packet = _client.get("ClientPacket") %>\
+% for packet in _client:
 #[derive(Debug)]
 #[allow(non_camel_case_types)]
 pub enum ${packet.name}
@@ -34,4 +34,5 @@ pub struct ${case.name}
     % endfor
 }
 
+% endfor
 % endfor
