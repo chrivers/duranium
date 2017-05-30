@@ -18,21 +18,20 @@ pub enum ${enum.name} {
 }
 
 % endfor
-pub mod frametype {
-    #![allow(non_upper_case_globals)]
-    % for case in _parser.get("FrameType").consts:
-    pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
-    % endfor
-}
-
-pub mod mediacommand {
-    #![allow(non_upper_case_globals)]
-    % for case in _parser.get("MediaCommand").consts:
-    pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
-    % endfor
-}
 
 % for en in _enums:
 diff_impl!(${en.name});
 apply_impl!(${en.name});
+% endfor
+
+% for blk in _parser:
+% if blk.expr == "enum":
+pub mod ${blk.name.lower()} {
+    #![allow(non_upper_case_globals)]
+    % for case in blk.consts:
+    pub const ${case.aligned_name} : u32 = ${case.aligned_hex_value};
+    % endfor
+}
+
+% endif
 % endfor
